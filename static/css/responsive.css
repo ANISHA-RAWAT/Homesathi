@@ -1,0 +1,38 @@
+/* ============================
+   RESPONSIVE — WOODEN THEME
+   ============================ */
+
+@media (max-width:900px) {
+    .navbar-links { display:none; }
+    .search-layout { grid-template-columns:1fr; }
+    .detail-layout { grid-template-columns:1fr; }
+    .footer-inner  { grid-template-columns:1fr 1fr; }
+    .steps-grid    { grid-template-columns:repeat(2,1fr); }
+    .property-card-horizontal { flex-direction:column; }
+    .card-image-fixed { width:100%; height:200px; }
+}
+
+@media (max-width:640px) {
+    .hero { padding:60px 0; }
+    .hero-title { font-size:2rem; }
+
+    .hero-search-bar {
+        flex-direction:column;
+        padding:12px;
+        gap:10px;
+    }
+
+    .hero-search-input,
+    .hero-search-select,
+    .hero-search-btn { width:100%; }
+
+    .hero-search-select { border-left:none; border-top:1px solid var(--border); padding-top:10px; }
+
+    .hero-stats { flex-direction:column; gap:12px; }
+    .stat-divider { width:60px; height:1px; }
+
+    .property-grid { grid-template-columns:1fr; }
+    .steps-grid    { grid-template-columns:1fr; }
+    .footer-inner  { grid-template-columns:1fr; }
+    .detail-features { gap:10px; }
+}

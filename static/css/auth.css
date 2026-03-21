@@ -1,0 +1,175 @@
+/* ============================
+   AUTH PAGES — WOODEN THEME
+   ============================ */
+
+.auth-page {
+    min-height: calc(100vh - var(--navbar-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--surface);
+}
+
+.auth-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: var(--shadow);
+}
+
+/* HEADER */
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.auth-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* AVATAR */
+.avatar-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0 auto 16px;
+}
+
+.avatar-lg {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    object-fit: cover;
+    border: 3px solid var(--accent-light);
+}
+
+/* FORM */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 24px;
+}
+
+/* Override Django's auto-rendered inputs to match wooden theme */
+.auth-form input,
+.auth-form select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: var(--font);
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(203, 153, 126, 0.15);
+}
+
+.form-help {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.form-errors {
+    background: #fde8e8;
+    color: var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+}
+
+/* FOOTER LINK */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--accent);
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.auth-footer a:hover { color: var(--primary); }
+
+/* PROFILE */
+.profile-info {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.profile-info .quick-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.profile-info .quick-info-row:last-child { border-bottom: none; }
+.profile-info .quick-info-row span:last-child {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Alert tweaks for auth page */
+.auth-card .alert {
+    margin-bottom: 16px;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+}
+
+.auth-card .alert-success { background: #d4edda; color: #2d6a4f; }
+.auth-card .alert-error   { background: #fde8e8; color: var(--danger); }
+.auth-card .alert-warning { background: var(--accent-pale); color: var(--primary); }
+.auth-card .alert-info    { background: var(--accent-pale); color: var(--primary); }

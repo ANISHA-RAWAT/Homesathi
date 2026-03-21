@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Post Property{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/post_propertyfree.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+<h1>Post Property</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" id="propertyForm">
+{% csrf_token %}
+
+<!-- PROPERTY TYPE -->
+<div class="form-section">
+<h3>Property Type</h3>
+{{ form.property_category }}
+{{ form.property_type }}
+{% for error in form.property_category.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+{% for error in form.property_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- BEDROOMS -->
+<div class="form-section">
+<h3>Bedrooms</h3>
+{{ form.bhk }}
+{% for error in form.bhk.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- CONSTRUCTION STATUS -->
+<div class="form-section">
+<h3>Construction Status</h3>
+{{ form.construction_status }}
+{% for error in form.construction_status.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- POSTED BY -->
+<div class="form-section">
+<h3>Posted By</h3>
+{{ form.posted_by }}
+{% for error in form.posted_by.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- AREA -->
+<div class="form-section">
+<h3>Area</h3>
+{{ form.min_area }}
+{{ form.max_area }}
+{{ form.area_unit }}
+{% for error in form.min_area.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+{% for error in form.max_area.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- LOCALITY -->
+<div class="form-section">
+<h3>Locality</h3>
+{{ form.location }}
+{% for error in form.location.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- ADDRESS -->
+<div class="form-section">
+<h3>Address</h3>
+{{ form.address }}
+{% for error in form.address.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- PURCHASE TYPE -->
+<div class="form-section">
+<h3>Purchase Type</h3>
+{{ form.purchase_type }}
+{% for error in form.purchase_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- FURNISHING -->
+<div class="form-section">
+<h3>Furnishing</h3>
+{{ form.furnishing }}
+{% for error in form.furnishing.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- PROPERTY AGE -->
+<div class="form-section">
+<h3>Property Age</h3>
+{{ form.property_age }}
+{% for error in form.property_age.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- PREFERRED TENANTS -->
+<div class="form-section">
+<h3>Preferred Tenants</h3>
+{{ form.preferred_tenants }}
+{% for error in form.preferred_tenants.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- AMENITIES -->
+<div class="form-section amenities">
+<h3>Amenities</h3>
+<div class="amenities-grid">
+{% for checkbox in form.amenities %}
+<label class="amenity-item">{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+{% endfor %}
+</div>
+{% for error in form.amenities.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- UPLOAD PHOTOS -->
+<div class="form-section">
+<h3>Upload Photos <span style="color:red;">*</span></h3>
+<input type="file" name="property_images" id="property_images" multiple accept="image/*">
+</div>
+
+<!-- UPLOAD VIDEO -->
+<div class="form-section">
+<h3>Upload Video</h3>
+<input type="file" name="property_video">
+</div>
+
+<!-- DESCRIPTION -->
+<div class="form-section">
+<h3>Property Description</h3>
+{{ form.description }}
+{% for error in form.description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- TITLE -->
+<div class="form-section">
+<h3>Title *</h3>
+{{ form.title }}
+{% for error in form.title.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- LISTING TYPE -->
+<div class="form-section">
+<h3>Listing Type *</h3>
+{{ form.listing_type }}
+{% for error in form.listing_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- PRICE -->
+<div class="form-section">
+<h3>Price (₹) *</h3>
+{{ form.price }}
+{% for error in form.price.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- CITY -->
+<div class="form-section">
+<h3>City *</h3>
+{{ form.city }}
+{% for error in form.city.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- STATE -->
+<div class="form-section">
+<h3>State</h3>
+{{ form.state }}
+{% for error in form.state.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>
+
+<!-- BUTTONS -->
+<div class="button-row">
+<button type="reset" class="cancel-btn">Cancel</button>
+<button type="submit" class="submit-btn">Submit Property</button>
+</div>
+
+</form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/post_propertyfree.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,199 @@
+/* ============================
+   NAVBAR — WOODEN THEME
+   ============================ */
+
+.navbar {
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:var(--primary);
+    backdrop-filter:blur(12px);
+    border-bottom:3px solid var(--accent);
+    height:var(--navbar-h);
+}
+
+.navbar-inner {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:var(--navbar-h);
+}
+
+.navbar-brand {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.3rem;
+    color:var(--accent-pale);
+}
+
+.navbar-brand svg path {
+    fill:var(--accent-light);
+}
+
+.navbar-links {
+    display:flex;
+    align-items:center;
+    gap:4px;
+    list-style:none;
+}
+
+.navbar-links li a,
+.navbar-links li > a {
+    padding:8px 12px;
+    border-radius:var(--radius-sm);
+    color:rgba(255,232,214,0.85);
+    font-weight:500;
+    font-size:0.9rem;
+    transition:var(--transition);
+}
+
+.navbar-links li a:hover {
+    background:rgba(255,255,255,0.12);
+    color:var(--accent-pale);
+}
+
+/* Login/Signup buttons in navbar */
+.navbar-links .btn-outline {
+    background:transparent;
+    border:1.5px solid var(--accent-light);
+    color:var(--accent-pale);
+    padding:7px 16px;
+}
+
+.navbar-links .btn-outline:hover {
+    background:var(--accent-light);
+    color:var(--primary);
+}
+
+.navbar-links .btn-primary {
+    background:var(--accent);
+    color:white;
+    border:none;
+    padding:8px 16px;
+}
+
+.navbar-links .btn-primary:hover {
+    background:var(--accent-light);
+    color:var(--primary);
+}
+
+/* INBOX LINK */
+.navbar-inbox {
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+/* AVATAR DROPDOWN */
+.navbar-dropdown {
+    position:relative;
+}
+
+.navbar-avatar {
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:var(--accent);
+    color:white;
+    font-weight:700;
+    font-size:1rem;
+    border:2px solid var(--accent-light);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:var(--transition);
+}
+
+.navbar-avatar:hover {
+    background:var(--accent-light);
+    color:var(--primary);
+}
+
+.dropdown-menu {
+    display:none;
+    position:absolute;
+    right:0;
+    top:calc(100% + 8px);
+    background:white;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-lg);
+    min-width:160px;
+    overflow:hidden;
+}
+
+.dropdown-menu.open { display:block; }
+
+.dropdown-menu a {
+    display:block;
+    padding:11px 16px;
+    font-size:0.875rem;
+    color:var(--text);
+    transition:var(--transition);
+}
+
+.dropdown-menu a:hover {
+    background:var(--surface);
+    color:var(--primary);
+}
+
+/* FOOTER */
+.footer {
+    background:var(--primary-dark);
+    color:var(--accent-pale);
+    padding:48px 0 0;
+    margin-top:60px;
+}
+
+.footer-inner {
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:40px;
+    padding-bottom:40px;
+}
+
+.footer-brand strong {
+    font-family:var(--font-display);
+    font-size:1.3rem;
+    color:var(--accent-pale);
+    display:block;
+    margin-bottom:8px;
+}
+
+.footer-brand p {
+    color:var(--muted);
+    font-size:0.9rem;
+}
+
+.footer-col strong {
+    display:block;
+    color:var(--accent-light);
+    font-size:0.85rem;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:12px;
+}
+
+.footer-col a {
+    display:block;
+    color:var(--muted);
+    font-size:0.9rem;
+    margin-bottom:8px;
+    transition:var(--transition);
+}
+
+.footer-col a:hover {
+    color:var(--accent-pale);
+}
+
+.footer-bottom {
+    border-top:1px solid rgba(255,255,255,0.08);
+    padding:16px 20px;
+    text-align:center;
+    font-size:0.8rem;
+    color:var(--muted);
+}

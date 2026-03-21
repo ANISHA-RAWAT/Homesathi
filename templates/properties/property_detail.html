@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ property.title }} — RentalHome{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a><span>/</span>
+            <a href="{% url 'property_search' %}">Search</a><span>/</span>
+            <span>{{ property.title|truncatechars:40 }}</span>
+        </nav>
+        <div class="detail-layout">
+            <div class="detail-main">
+                <div class="gallery">
+                    {% if images %}
+                        <div class="gallery-main" id="mainImage">
+                            <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="mainImg" class="gallery-main-img">
+                            <span class="gallery-badge badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
+                            <span class="gallery-views">👁 {{ property.view_count }} views</span>
+                        </div>
+                        {% if images|length > 1 %}
+                        <div class="gallery-thumbs">
+                            {% for img in images %}
+                            <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
+                                 class="gallery-thumb {% if forloop.first %}active{% endif %}"
+                                 onclick="switchImage('{{ img.image.url }}', this)">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="gallery-placeholder">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <p>No photos uploaded</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="detail-header">
+                    <div>
+                        <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
+                        <h1 class="detail-title">{{ property.title }}</h1>
+                        <div class="detail-location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            {{ property.location }}, {{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-price-block">
+                        <div class="detail-price">{{ property.formatted_price }}</div>
+                        {% if property.listing_type == 'rent' %}<div class="detail-price-note">per month</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="detail-features">
+                    {% if property.bedrooms %}<div class="feature-item"><span class="feature-icon">🛏</span><span class="feature-val">{{ property.bedrooms }}</span><span class="feature-label">Bedrooms</span></div>{% endif %}
+                    {% if property.bathrooms %}<div class="feature-item"><span class="feature-icon">🚿</span><span class="feature-val">{{ property.bathrooms }}</span><span class="feature-label">Bathrooms</span></div>{% endif %}
+                    {% if property.area_sqft %}<div class="feature-item"><span class="feature-icon">📐</span><span class="feature-val">{{ property.area_sqft }}</span><span class="feature-label">Sq. Ft.</span></div>{% endif %}
+                    <div class="feature-item">
+                        <span class="feature-icon">{% if property.is_furnished %}✅{% else %}🪑{% endif %}</span>
+                        <span class="feature-val">{% if property.is_furnished %}Yes{% else %}No{% endif %}</span>
+                        <span class="feature-label">Furnished</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2>About This Property</h2>
+                    <p class="detail-description">{{ property.description }}</p>
+                </div>
+
+                <div class="detail-section privacy-notice">
+                    <div class="privacy-icon">🔒</div>
+                    <div>
+                        <h3>Privacy Protected</h3>
+                        <p>Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email address.</p>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="detail-sidebar">
+                <div class="contact-card">
+                    <div class="contact-card-header">
+                        <div class="owner-avatar">{{ property.owner.email|slice:":1"|upper }}</div>
+                        <div>
+                            <div class="owner-name">{{ property.owner.full_name }}</div>
+                            <div class="owner-label">Property Owner</div>
+                        </div>
+                        <span class="privacy-badge">🔒 Private</span>
+                    </div>
+                    <p class="contact-intro">Interested? Send a message — their contact info stays private.</p>
+                    <form method="post" class="inquiry-form" id="inquiryForm">
+                        {% csrf_token %}
+                        {% for field in inquiry_form %}
+                        <div class="form-group">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.errors %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}{% endif %}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary btn-full btn-connect">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Connect with Owner
+                        </button>
+                        <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
+                    </form>
+                </div>
+
+                <div class="quick-info-card">
+                    <h4>Quick Info</h4>
+                    <div class="quick-info-row"><span>Listed</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
+                    <div class="quick-info-row"><span>Type</span><span>{{ property.get_listing_type_display }}</span></div>
+                    <div class="quick-info-row"><span>Views</span><span>{{ property.view_count }}</span></div>
+                    {% if user == property.owner %}
+                    <div class="owner-actions">
+                        <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline">Edit Listing</a>
+                        <form method="post" action="{% url 'delete_property' property.pk %}" onsubmit="return confirm('Delete this listing?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchImage(src, thumb) {
+    document.getElementById('mainImg').src = src;
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+}
+</script>
+{% endblock %}

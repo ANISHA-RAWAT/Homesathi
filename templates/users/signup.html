@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account — RentalHome{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="auth-logo">🏠</div>
+            <h1>Create Account</h1>
+            <p>Join RentalHome and start finding or listing properties</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">
+                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="form-help">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-full btn-lg">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a href="{% url 'login' %}">Log in</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

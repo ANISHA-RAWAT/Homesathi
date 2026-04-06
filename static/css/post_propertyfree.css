@@ -1,0 +1,156 @@
+/* ============================
+   POST PROPERTY FREE — WOODEN THEME
+   ============================ */
+
+.form-container {
+    width:70%;
+    margin:40px auto;
+    background:white;
+    padding:40px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+}
+
+.form-container h1 {
+    color:var(--text);
+    margin-bottom:35px;
+    font-size:32px;
+    font-family:var(--font-display);
+}
+
+.form-section {
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:25px;
+    padding-bottom:25px;
+    border-bottom:1px solid var(--border);
+}
+
+.form-section:last-of-type { border-bottom:none; }
+
+.form-section h3 {
+    width:220px;
+    min-width:220px;
+    color:var(--primary);
+    font-size:15px;
+    font-weight:600;
+}
+
+/* Scoped to .form-section only — does NOT affect hero search bar */
+.form-section select,
+.form-section input,
+.form-section textarea {
+    padding:10px 12px;
+    border-radius:var(--radius-sm);
+    border:1.5px solid var(--border);
+    font-size:14px;
+    font-family:var(--font);
+    outline:none;
+    min-width:180px;
+    color:var(--text);
+    background:white;
+    transition:border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-section select:focus,
+.form-section input:focus,
+.form-section textarea:focus {
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(203,153,126,0.15);
+}
+
+.form-section textarea {
+    width:100%;
+    height:130px;
+    resize:none;
+}
+
+/* LAND MODE — disabled sections */
+.form-section.land-disabled {
+    opacity:0.4;
+    pointer-events:none;
+}
+
+/* AMENITIES */
+.amenities { flex-direction:column; align-items:flex-start; }
+
+.amenities-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    width:100%;
+}
+
+.amenity-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--accent-pale);
+    border:1px solid var(--accent-light);
+    padding:10px 14px;
+    border-radius:var(--radius-sm);
+    font-weight:500;
+    font-size:14px;
+    cursor:pointer;
+    transition:var(--transition);
+}
+
+.amenity-item:hover { background:var(--accent-light); border-color:var(--accent); }
+
+.amenity-item input[type="checkbox"] {
+    width:18px;
+    height:18px;
+    accent-color:var(--accent);
+}
+
+/* BUTTONS */
+.button-row {
+    display:flex;
+    gap:12px;
+    margin-top:32px;
+    justify-content:flex-end;
+}
+
+.submit-btn {
+    background:var(--primary);
+    color:white;
+    border:none;
+    padding:12px 28px;
+    border-radius:var(--radius-sm);
+    font-size:15px;
+    font-family:var(--font);
+    font-weight:600;
+    cursor:pointer;
+    transition:var(--transition);
+}
+
+.submit-btn:hover { background:var(--primary-dark); }
+
+.cancel-btn {
+    background:white;
+    color:var(--text);
+    border:1.5px solid var(--border);
+    padding:12px 28px;
+    border-radius:var(--radius-sm);
+    font-size:15px;
+    font-family:var(--font);
+    cursor:pointer;
+    transition:var(--transition);
+}
+
+.cancel-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+/* RESPONSIVE */
+@media (max-width:900px) {
+    .form-container { width:90%; padding:24px; }
+    .form-section { flex-direction:column; align-items:flex-start; }
+    .form-section h3 { width:auto; min-width:auto; }
+    .amenities-grid { grid-template-columns:repeat(2,1fr); }
+}
+
+@media (max-width:640px) {
+    .form-container { width:100%; margin:0; border-radius:0; }
+    .button-row { flex-direction:column-reverse; }
+    .submit-btn, .cancel-btn { width:100%; text-align:center; }
+}

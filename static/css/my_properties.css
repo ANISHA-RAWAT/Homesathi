@@ -1,0 +1,29 @@
+/* RENTED BUTTON */
+.btn-warning {
+    background: #a5a58d;
+    color: white;
+    border: none;
+}
+
+.btn-warning:hover {
+    background: #6b705c;
+}
+
+/* RENTED STATUS BADGE */
+.status-rented {
+    background: #6b705c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+/* ALIGN ACTION BUTTONS */
+.table-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}

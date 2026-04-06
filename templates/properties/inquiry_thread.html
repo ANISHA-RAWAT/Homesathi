@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Conversation — RentalHome{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+  <div class="container" style="max-width:760px">
+    <div class="thread-header">
+      <a href="{% url 'inbox' %}" class="breadcrumb-back">← Back to Inbox</a>
+      <div class="thread-property-card">
+        <div>
+          <div class="thread-property-label">Conversation about</div>
+          <div class="thread-property-title">
+            <a href="{% url 'property_detail' inquiry.property.pk %}">{{ inquiry.property.title }}</a>
+          </div>
+          <div class="thread-property-loc">📍 {{ inquiry.property.city }}</div>
+        </div>
+        <span class="card-price">{{ inquiry.property.formatted_price }}</span>
+      </div>
+      <div class="privacy-notice" style="margin-top:12px">
+        <div class="privacy-icon">🔒</div>
+        <div><strong>Privacy Protected</strong> — Neither party's email address is visible here. All communication stays on-platform.</div>
+      </div>
+    </div>
+
+    <div class="thread-messages" id="chat-messages">
+      <!-- Initial inquiry message -->
+      <div class="thread-msg thread-msg--buyer">
+        <div class="thread-msg-avatar">{{ inquiry.seeker_name|slice:":1"|upper }}</div>
+        <div class="thread-msg-body">
+          <div class="thread-msg-sender">{{ inquiry.seeker_name }} <span class="thread-msg-role">Buyer</span></div>
+          <div class="thread-msg-text">{{ inquiry.message }}</div>
+          <div class="thread-msg-time">{{ inquiry.created_at|date:"M d, Y H:i" }}</div>
+        </div>
+      </div>
+
+      {% for reply in replies %}
+      <div class="thread-msg thread-msg--{{ reply.sender_role }}">
+        <div class="thread-msg-avatar">
+          {% if reply.sender_role == 'seller' %}{{ inquiry.property.owner.full_name|slice:":1"|upper }}
+          {% else %}{{ inquiry.seeker_name|slice:":1"|upper }}{% endif %}
+        </div>
+        <div class="thread-msg-body">
+          <div class="thread-msg-sender">
+            {% if reply.sender_role == 'seller' %}
+              {{ inquiry.property.owner.full_name }} <span class="thread-msg-role thread-msg-role--seller">Owner</span>
+            {% else %}
+              {{ inquiry.seeker_name }} <span class="thread-msg-role">Buyer</span>
+            {% endif %}
+          </div>
+          <div class="thread-msg-text">{{ reply.message }}</div>
+          <div class="thread-msg-time">{{ reply.created_at|date:"M d, Y H:i" }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if inquiry.status != 'closed' %}
+    <div class="thread-reply-box">
+      <h3>Write a Reply</h3>
+      <div class="form-group">
+        <textarea id="chat-input" rows="3" placeholder="Type your message..."></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button id="chat-send" class="btn btn-primary">Send Reply →</button>
+      </div>
+      <div id="chat-status" style="color:red;margin-top:8px;font-size:0.85rem"></div>
+    </div>
+    {% else %}
+    <p style="text-align:center;color:var(--text-muted);padding:20px">This conversation is closed.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  const inquiryId = {{ inquiry.pk }};
+  const isseller = {{ is_seller|yesno:"true,false" }};
+
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const chatSocket = new WebSocket(`${wsProtocol}://${window.location.host}/ws/chat/${inquiryId}/`);
+
+  const messagesDiv = document.getElementById('chat-messages');
+  const chatInput  = document.getElementById('chat-input');
+  const chatSend   = document.getElementById('chat-send');
+  const chatStatus = document.getElementById('chat-status');
+
+  // Auto scroll to bottom
+  function scrollToBottom() {
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  scrollToBottom();
+
+  chatSocket.onopen = function () {
+    chatStatus.textContent = '';
+  };
+
+  chatSocket.onclose = function () {
+    chatStatus.textContent = 'Connection lost. Please refresh the page.';
+  };
+
+  chatSocket.onerror = function () {
+    chatStatus.textContent = 'Connection error. Please refresh the page.';
+  };
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `thread-msg thread-msg--${data.sender_role}`;
+    msgDiv.innerHTML = `
+      <div class="thread-msg-avatar">${data.avatar}</div>
+      <div class="thread-msg-body">
+        <div class="thread-msg-sender">
+          ${data.sender_name}
+          <span class="thread-msg-role ${data.sender_role === 'seller' ? 'thread-msg-role--seller' : ''}">
+            ${data.sender_role === 'seller' ? 'Owner' : 'Buyer'}
+          </span>
+        </div>
+        <div class="thread-msg-text">${data.message}</div>
+        <div class="thread-msg-time">${data.timestamp}</div>
+      </div>
+    `;
+    messagesDiv.appendChild(msgDiv);
+    scrollToBottom();
+  };
+
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    chatSocket.send(JSON.stringify({ message: message }));
+    chatInput.value = '';
+  }
+
+  chatSend.addEventListener('click', sendMessage);
+
+  chatInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
+{% endblock %}

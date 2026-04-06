@@ -1,0 +1,186 @@
+/* ============================
+   SEARCH PAGE — WOODEN THEME
+   ============================ */
+
+.search-page { background:var(--surface); min-height:calc(100vh - var(--navbar-h)); }
+
+.search-header {
+    background:var(--primary);
+    padding:32px 0;
+    border-bottom:3px solid var(--accent);
+}
+
+.search-header h1 {
+    font-family:var(--font-display);
+    font-size:1.8rem;
+    color:var(--accent-pale);
+    margin-bottom:4px;
+}
+
+.search-count {
+    color:rgba(255,232,214,0.7);
+    font-size:0.9rem;
+}
+
+.search-layout {
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:32px;
+    padding:40px 20px;
+    max-width:1200px;
+    margin:0 auto;
+}
+
+/* FILTER PANEL */
+.filter-panel {
+    background:white;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+    box-shadow:var(--shadow-sm);
+    position:sticky;
+    top:calc(var(--navbar-h) + 16px);
+}
+
+.filter-title {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:1rem;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:20px;
+    padding-bottom:12px;
+    border-bottom:2px solid var(--accent-light);
+}
+
+.filter-group {
+    margin-bottom:16px;
+}
+
+.filter-label {
+    display:block;
+    font-size:0.8rem;
+    font-weight:600;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:6px;
+}
+
+.filter-panel input,
+.filter-panel select {
+    width:100%;
+    padding:9px 12px;
+    border:1.5px solid var(--border);
+    border-radius:var(--radius-sm);
+    font-size:0.875rem;
+    font-family:var(--font);
+    color:var(--text);
+    background:white;
+    transition:border-color 0.2s;
+}
+
+.filter-panel input:focus,
+.filter-panel select:focus {
+    border-color:var(--accent);
+    outline:none;
+    box-shadow:0 0 0 3px rgba(203,153,126,0.12);
+}
+
+.price-range {
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.price-range span {
+    color:var(--text-muted);
+    font-size:0.85rem;
+    flex-shrink:0;
+}
+
+.price-range input { min-width:0; }
+
+/* RESULTS */
+.results-toolbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.results-info {
+    font-size:0.875rem;
+    color:var(--text-muted);
+}
+
+.property-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.property-grid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.property-card-horizontal {
+    display: flex;
+    width: 100%;
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+/* LEFT IMAGE */
+.card-image-fixed {
+    width: 280px;
+    height: 200px;
+    flex-shrink: 0;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* RIGHT CONTENT */
+.card-body {
+    flex: 1;
+    padding: 18px;
+}
+
+.empty-state-search {
+    background:white;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:60px 20px;
+}
+/* RENTED BADGE ON CARD */
+.rented-badge {
+    background: #6b705c;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* OPTIONAL: disable button look */
+.card-footer .rented-badge {
+    display: inline-block;
+}
+
+/* OPTIONAL: dim rented cards */
+.property-card.rented {
+    opacity: 0.7;
+}
+
+.search-page {
+    margin-top: var(--navbar-h);
+}

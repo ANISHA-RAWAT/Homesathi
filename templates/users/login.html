@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In — RentalHome{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="auth-logo">🏠</div>
+            <h1>Welcome Back</h1>
+            <p>Log in to manage your listings and inquiries</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-full btn-lg">
+                Log In
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account?
+            <a href="{% url 'signup' %}">Sign up free</a>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Inbox — RentalHome{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+  <div class="container" style="max-width:860px">
+    <div class="dashboard-header">
+      <div>
+        <h1>📬 Inbox</h1>
+        <p>All your conversations in one place. No email addresses are ever shown.</p>
+      </div>
+    </div>
+
+    {% if seller_inquiries %}
+    <div class="inbox-section">
+      <h2 class="inbox-section-title">🏠 Inquiries on Your Properties</h2>
+      {% for inq in seller_inquiries %}
+      <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-row {% if inq.status == 'pending' %}inbox-row--unread{% endif %}">
+        <div class="inbox-icon">💬</div>
+        <div class="inbox-info">
+          <div class="inbox-subject">{{ inq.property.title }}</div>
+          <div class="inbox-preview">From: <strong>{{ inq.seeker_name }}</strong> — {{ inq.message|truncatechars:80 }}</div>
+        </div>
+        <div class="inbox-meta">
+          <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
+          <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if buyer_inquiries %}
+    <div class="inbox-section">
+      <h2 class="inbox-section-title">🔍 Your Sent Inquiries</h2>
+      {% for inq in buyer_inquiries %}
+      <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-row">
+        <div class="inbox-icon">🏡</div>
+        <div class="inbox-info">
+          <div class="inbox-subject">{{ inq.property.title }}</div>
+          <div class="inbox-preview">{{ inq.message|truncatechars:80 }}</div>
+        </div>
+        <div class="inbox-meta">
+          <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
+          <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not seller_inquiries and not buyer_inquiries %}
+    <div class="empty-state">
+      <div style="font-size:3rem">📭</div>
+      <h3>No messages yet</h3>
+      <p>When you send or receive inquiries, they'll appear here.</p>
+      <a href="{% url 'property_search' %}" class="btn btn-primary">Browse Properties</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

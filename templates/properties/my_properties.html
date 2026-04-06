@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}My Listings — RentalHome{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>My Listings</h1>
+                <p>Manage your property listings</p>
+            </div>
+            <a href="{% url 'post_propertyfree' %}" class="btn btn-primary">+ Add New Listing</a>
+        </div>
+
+        {% if properties %}
+        <div class="listings-table-wrap">
+            <table class="listings-table">
+                <thead>
+                    <tr>
+                        <th>Property</th><th>Type</th><th>Price</th><th>Views</th><th>Status</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prop in properties %}
+                    <tr>
+                        <td>
+                            <div class="table-prop-info">
+                                {% if prop.primary_image %}
+                                    <img src="{{ prop.primary_image.image.url }}" class="table-prop-thumb" alt="">
+                                {% else %}
+                                    <div class="table-prop-thumb-placeholder">🏠</div>
+                                {% endif %}
+                                <div>
+                                    <a href="{% url 'property_detail' prop.pk %}" class="table-prop-title">{{ prop.title }}</a>
+                                    <div class="table-prop-loc">{{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="chip chip-sm">{{ prop.get_listing_type_display }}</span></td>
+                        <td class="price-cell">{{ prop.formatted_price }}</td>
+                        <td>👁 {{ prop.view_count }}</td>
+                        <td><span class="status-dot status-{{ prop.status }}">{{ prop.get_status_display }}</span></td>
+                       <td>
+    <div class="table-actions">
+
+        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-xs btn-outline">View</a>
+
+        <a href="{% url 'edit_property' prop.pk %}" class="btn btn-xs btn-outline">Edit</a>
+
+        <form method="post" action="{% url 'delete_property' prop.pk %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-xs btn-danger">Delete</button>
+        </form>
+
+        {% if not prop.is_rented %}
+        <form method="post" action="{% url 'mark_rented' prop.pk %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-xs btn-warning">Rented</button>
+        </form>
+        {% else %}
+        <span class="status-rented">Rented</span>
+        {% endif %}
+
+    </div>
+</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size:4rem">🏡</div>
+            <h3>No listings yet</h3>
+            <p>Post your first property and start receiving inquiries!</p>
+            <a href="{% url 'post_propertyfree' %}" class="btn btn-primary">List Your Property</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -236,5 +236,9 @@ class InquiryReply(models.Model):
         ordering = ['created_at']
 
     def __str__(self):
+<<<<<<< HEAD
         return f"{self.sender_role} reply on {self.inquiry}"
     is_rented = models.BooleanField(default=False)
+=======
+        return f"{self.sender_role} reply on {self.inquiry}"
+>>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5

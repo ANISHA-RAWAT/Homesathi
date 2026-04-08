@@ -115,6 +115,7 @@
     color:var(--text-muted);
 }
 
+<<<<<<< HEAD
 .property-grid {
     display: flex;
     flex-direction: column;
@@ -154,12 +155,16 @@
     flex: 1;
     padding: 18px;
 }
+=======
+.property-grid-list { gap:16px; }
+>>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 
 .empty-state-search {
     background:white;
     border:1px solid var(--border);
     border-radius:var(--radius);
     padding:60px 20px;
+<<<<<<< HEAD
 }
 /* RENTED BADGE ON CARD */
 .rented-badge {
@@ -183,4 +188,6 @@
 
 .search-page {
     margin-top: var(--navbar-h);
+=======
+>>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 }

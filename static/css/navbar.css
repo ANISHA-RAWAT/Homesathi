@@ -6,8 +6,14 @@
     position:sticky;
     top:0;
     z-index:100;
+<<<<<<< HEAD
     backdrop-filter:blur(12px);
     border-bottom: 3px solid transparent;
+=======
+    background:var(--primary);
+    backdrop-filter:blur(12px);
+    border-bottom:3px solid var(--accent);
+>>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
     height:var(--navbar-h);
 }
 
@@ -195,6 +201,7 @@
     text-align:center;
     font-size:0.8rem;
     color:var(--muted);
+<<<<<<< HEAD
 }
 .navbar {
     position: absolute;
@@ -288,4 +295,6 @@
 .navbar a,
 .navbar-brand {
     color: white !important;
+=======
+>>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 }

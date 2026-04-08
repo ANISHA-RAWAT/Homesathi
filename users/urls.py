@@ -14,5 +14,5 @@ urlpatterns = [
 
     # ───────── USER ─────────
     path('profile/', views.profile_view, name='profile'),
-    path('faq/', views.faq, name='faq'),
+    path('faq/', views.faq, name='faq')
 ]

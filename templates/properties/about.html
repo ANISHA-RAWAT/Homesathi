@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="about-hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+        <h1>Building Trust in Real Estate</h1>
+        <p>Homesathi helps you discover, list, and connect — without complexity.</p>
+    </div>
+</section>
+
+<!-- INTRO -->
+<section class="about-intro container">
+    <h2>Who We Are</h2>
+    <p>
+        Homesathi is a modern real estate platform designed to simplify property
+        discovery and listing. We eliminate unnecessary middlemen and provide a
+        direct, secure, and user-friendly experience.
+    </p>
+</section>
+
+<!-- FEATURES -->
+<section class="about-features">
+    <div class="container">
+        <h2>What Makes Us Different</h2>
+
+        <div class="features-grid">
+            <div class="feature">
+                <h3>🔍 Smart Search</h3>
+                <p>Find properties instantly using powerful filters.</p>
+            </div>
+
+            <div class="feature">
+                <h3>🏠 Easy Listing</h3>
+                <p>Post your property in minutes with full control.</p>
+            </div>
+
+            <div class="feature">
+                <h3>🔐 Privacy Focus</h3>
+                <p>Your data stays safe — no unwanted exposure.</p>
+            </div>
+
+            <div class="feature">
+                <h3>📩 Direct Contact</h3>
+                <p>Connect directly without brokers or delays.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="about-steps">
+    <div class="container">
+        <h2>How It Works</h2>
+
+        <div class="steps">
+            <div class="step">
+                <span>01</span>
+                <h4>Search</h4>
+                <p>Browse listings using filters</p>
+            </div>
+
+            <div class="step">
+                <span>02</span>
+                <h4>Explore</h4>
+                <p>View detailed property info</p>
+            </div>
+
+            <div class="step">
+                <span>03</span>
+                <h4>Connect</h4>
+                <p>Contact owners directly</p>
+            </div>
+
+            <div class="step">
+                <span>04</span>
+                <h4>List</h4>
+                <p>Post your own property easily</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="about-why">
+    <div class="container">
+        <h2>Why Choose Homesathi?</h2>
+
+        <div class="why-grid">
+            <div>✔ No middlemen</div>
+            <div>✔ Fast & simple UI</div>
+            <div>✔ Secure communication</div>
+            <div>✔ Full control for users</div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -13,8 +13,5 @@ urlpatterns = [
     path('my-properties/', views.my_properties, name='my_properties'),
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/<int:pk>/', views.inquiry_thread, name='inquiry_thread'),
-<<<<<<< HEAD
     path('mark-rented/<int:pk>/', views.mark_rented, name='mark_rented'),
-=======
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 ]

@@ -5,21 +5,21 @@
 .search-page { background:var(--surface); min-height:calc(100vh - var(--navbar-h)); }
 
 .search-header {
-    background:var(--primary);
-    padding:32px 0;
-    border-bottom:3px solid var(--accent);
+  background: #F8F9FA; /* remove green */
+  padding: 120px 0 40px; /* adds space for fixed header */
+  border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 .search-header h1 {
-    font-family:var(--font-display);
-    font-size:1.8rem;
-    color:var(--accent-pale);
-    margin-bottom:4px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1E2A1E; /* dark text instead of white */
+  margin-bottom: 10px;
 }
-
 .search-count {
-    color:rgba(255,232,214,0.7);
-    font-size:0.9rem;
+  font-size: 16px;
+  color: #6B7280;
 }
 
 .search-layout {
@@ -115,7 +115,6 @@
     color:var(--text-muted);
 }
 
-<<<<<<< HEAD
 .property-grid {
     display: flex;
     flex-direction: column;
@@ -155,16 +154,12 @@
     flex: 1;
     padding: 18px;
 }
-=======
-.property-grid-list { gap:16px; }
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 
 .empty-state-search {
     background:white;
     border:1px solid var(--border);
     border-radius:var(--radius);
     padding:60px 20px;
-<<<<<<< HEAD
 }
 /* RENTED BADGE ON CARD */
 .rented-badge {
@@ -187,7 +182,23 @@
 }
 
 .search-page {
-    margin-top: var(--navbar-h);
-=======
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
+    margin-top: 50;
+}
+/* HERO SECTION (Search Page) */
+.hero {
+  background: #F8F9FA;
+  padding: 120px 20px 40px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #1E2A1E;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 16px;
+  color: #6B7280;
 }

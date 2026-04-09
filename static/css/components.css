@@ -86,23 +86,7 @@
 .badge-rent  { background:var(--primary); }
 .badge-sell  { background:var(--accent); }
 
-/* CHIPS */
-.chip {
-    padding:8px 16px;
-    border-radius:99px;
-    background:white;
-    border:1px solid var(--border);
-    font-size:0.875rem;
-    cursor:pointer;
-    transition:var(--transition);
-    color:var(--text);
-}
-
-.chip:hover {
-    background:var(--accent);
-    border-color:var(--accent);
-    color:white;
-}
+/* CHIPS — defined in home.css for quick-filters context */
 
 /* STATUS DOTS */
 .status-dot {

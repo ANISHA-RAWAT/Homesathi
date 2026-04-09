@@ -283,7 +283,6 @@ def delete_property(request, pk):
     if request.method == 'POST':
         property_obj.delete()
         messages.success(request, 'Property deleted.')
-<<<<<<< HEAD
     return redirect('my_properties')
 
 from django.shortcuts import redirect, get_object_or_404
@@ -292,6 +291,4 @@ def mark_rented(request, pk):
     prop = get_object_or_404(Property, pk=pk)
     prop.is_rented = True
     prop.save()
-=======
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
     return redirect('my_properties')

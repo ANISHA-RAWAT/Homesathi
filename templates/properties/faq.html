@@ -1,13 +1,14 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>FAQs - PropertyHub</title>
-    <link rel="stylesheet" href="{% static 'faq.css' %}">
-    <script src="{% static 'properties/faq.js' %}"></script>
-</head>
-<body>
+
+{% block title %}FAQs - Homesathi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+{% endblock %}
+
+{% block content %}
+
 <section class="faq-section">
 
     <div class="container">
@@ -70,66 +71,19 @@
                 </div>
             </div>
 
-            <div class="faq-item">
-                <button class="faq-question">
-                    How is the property price determined?
-                    <span class="icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>Prices are based on market trends, location, amenities, demand, and property condition.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">
-                    Can I apply for a home loan through your platform?
-                    <span class="icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>Yes, we partner with financial institutions to help buyers apply for home loans easily.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">
-                    What happens after I make an offer?
-                    <span class="icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>The seller reviews your offer and negotiates if necessary before finalizing the agreement.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">
-                    Is the property legally verified?
-                    <span class="icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>We encourage all buyers to verify property documents legally. Some listings may include verified badges.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-question">
-                    How can I contact customer support?
-                    <span class="icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    <p>You can contact our support team via email, phone, or the contact form on our website.</p>
-                </div>
-            </div>
-
         </div>
 
         <div class="contact-section">
             <h2>Still have a question?</h2>
-            <p>Our support team is here to help you make the right property decision.</p>
-            <a href="/contact/" class="contact-btn">Contact Us</a>
+            <p>Our support team is here to help you.</p>
         </div>
 
     </div>
 
 </section>
-</body>
-</html>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/faq.js' %}"></script>
+{% endblock %}

@@ -4,28 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>{% block title %}HOMESATHI — Find Your Perfect Space{% endblock %}</title>
-=======
-    <title>{% block title %}RentalHome — Find Your Perfect Space{% endblock %}</title>
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components.css' %}">
-    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" href="{% static 'css/property.css' %}">
-    <link rel="stylesheet" href="{% static 'css/search.css' %}">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
-<<<<<<< HEAD
-    <link rel="stylesheet" href="{% static 'css/faq.css' %}">
+   {% if '/admin' not in request.path %}
 
-=======
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/property.css' %}">
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+
+{% endif %}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -33,7 +27,6 @@
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="container navbar-inner">
-<<<<<<< HEAD
 
         <!-- Logo / Brand -->
         <a href="{% url 'home' %}" class="navbar-brand">
@@ -42,26 +35,17 @@
         </a>
 
         <!-- Desktop links -->
-=======
-        <a href="{% url 'home' %}" class="navbar-brand">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <path d="M14 3L2 12h3v13h7v-8h4v8h7V12h3L14 3z" fill="var(--accent-light)"/>
-            </svg>
-            RentalHome
-        </a>
-
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
         <ul class="navbar-links">
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'property_search' %}">Search</a></li>
             <li><a href="{% url 'post_propertyfree' %}">Post Property Free</a></li>
-<<<<<<< HEAD
             <li><a href="{% url 'faq' %}">FAQ</a></li>
-=======
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
+             <li><a href="{% url 'about' %}">AboutUs</a></li>
+              <li><a href="{% url 'contactus' %}">ContactUs</a></li>
+              {% if user.is_authenticated %}
 
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'my_properties' %}">My Listings</a></li>
+    <li><a href="{% url 'my_properties' %}">My Listings</a></li>
+
                 <li>
                     <a href="{% url 'inbox' %}" class="navbar-inbox">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -71,37 +55,21 @@
                         Inbox
                     </a>
                 </li>
-<<<<<<< HEAD
                 <li class="navbar-dropdown">
                     <button class="navbar-avatar" id="avatarBtn">
                         {{ user.username|first|upper }}
                     </button>
                     <div class="dropdown-menu" id="avatarMenu">
-=======
-                <!-- AVATAR WITH DROPDOWN -->
-                <li class="navbar-dropdown">
-                    <button class="navbar-avatar" onclick="this.nextElementSibling.classList.toggle('open')">
-                        {{ user.username|first|upper }}
-                    </button>
-                    <div class="dropdown-menu">
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
                         <a href="{% url 'my_properties' %}">My Listings</a>
                         <a href="{% url 'post_propertyfree' %}">Post Property</a>
                         <a href="{% url 'logout' %}">Logout</a>
                     </div>
                 </li>
-<<<<<<< HEAD
             {% else %}
-=======
-
-            {% else %}
-                <!-- LOGIN & SIGNUP BUTTONS -->
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
                 <li><a href="{% url 'login' %}" class="btn btn-outline">Login</a></li>
                 <li><a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a></li>
             {% endif %}
         </ul>
-<<<<<<< HEAD
 
         <!-- Hamburger (mobile/tablet only) -->
         <button class="nav-hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
@@ -144,11 +112,6 @@
     {% endif %}
 </div>
 
-=======
-    </div>
-</nav>
-
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 <main>
     {% if messages %}
     <div class="container" style="padding-top:16px;">
@@ -165,11 +128,7 @@
 <footer class="footer">
     <div class="container footer-inner">
         <div class="footer-brand">
-<<<<<<< HEAD
             <strong>Homesathi</strong>
-=======
-            <strong>RentalHome</strong>
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
             <p>Find your perfect space with privacy and ease.</p>
         </div>
         <div class="footer-col">
@@ -184,7 +143,6 @@
         </div>
     </div>
     <div class="footer-bottom">
-<<<<<<< HEAD
         <p>© 2026 Homesathi. All rights reserved. Owner contact details are never publicly revealed.</p>
     </div>
 </footer>
@@ -239,12 +197,7 @@
 })();
 </script>
 
-=======
-        <p>© 2025 RentalHome. All rights reserved. Owner contact details are never publicly revealed.</p>
-    </div>
-</footer>
-
->>>>>>> 37f5721e6e8a6a6e2687a9ac7f785021092f71e5
 {% block extra_js %}{% endblock %}
+
 </body>
 </html>

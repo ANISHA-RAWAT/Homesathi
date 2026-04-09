@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -155,6 +156,38 @@ def logout_view(request):
 # ─────────────────────────────────────────────────────────────
 @login_required
 def profile_view(request):
-    return render(request, 'users/profile.html')
+    return render(request, 'users/profile.html') 
+
 def faq(request):
     return render(request, 'properties/faq.html')
+def contactus(request):
+    return render(request,'properties/contactus.html' )
+def about(request):
+    return render(request, 'properties/about.html')
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        # save to DB (optional)
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            message=message
+        )
+
+        # 🔥 SEND EMAIL
+        send_mail(
+            subject=f"New Contact Message from {name}",
+            message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=['homesathi.support@gmail.com'],
+            fail_silently=False,
+        )
+
+        messages.success(request, "Message sent successfully!")
+        return redirect("contact")
+
+    return render(request, "users/contact.html")

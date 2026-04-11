@@ -10,12 +10,17 @@ class Property(models.Model):
     ]
 
     PROPERTY_TYPE_CHOICES = [
+        # Residential
         ('apartment', 'Apartment'),
         ('house', 'House'),
         ('villa', 'Villa'),
-        ('studio', 'Studio'),
-        ('commercial', 'Commercial'),
-        ('land', 'Land'),
+        ('studio', '1 RK / Studio Apartment'),
+        # Commercial
+        ('office', 'Office'),
+        ('retail', 'Retail / Shop'),
+        ('plot', 'Plot / Land'),
+        ('storage', 'Storage / Warehouse'),
+        ('work_live_studio', 'Work-Live Studio'),
     ]
 
     PROPERTY_CATEGORY_CHOICES = [

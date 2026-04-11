@@ -84,16 +84,49 @@
 }
 
 /* WHY */
-.about-why {
-    background: #344e41;
-    color: white;
-    padding: 60px 20px;
+.why-section {
+    background: #3f5747;
+    padding: 80px 20px;
     text-align: center;
+}
+
+.why-title {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 40px;
 }
 
 .why-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-    gap: 20px;
-    margin-top: 30px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.why-card {
+    background: rgba(255,255,255,0.08);
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+}
+
+.why-card span {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.why-card h4 {
+    margin-bottom: 10px;
+}
+
+.why-card p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.why-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.15);
 }

@@ -1,6 +1,26 @@
 from django import forms
 from .models import Property, PropertyImage, Inquiry
 
+RESIDENTIAL_TYPES = [
+    ('', 'Select Property Type'),
+    ('apartment', 'Apartment'),
+    ('house', 'House'),
+    ('villa', 'Villa'),
+    ('studio', '1 RK / Studio Apartment'),
+]
+
+COMMERCIAL_TYPES = [
+    ('', 'Select Property Type'),
+    ('office', 'Office'),
+    ('retail', 'Retail / Shop'),
+    ('plot', 'Plot / Land'),
+    ('storage', 'Storage / Warehouse'),
+    ('work_live_studio', 'Work-Live Studio'),
+]
+
+ALL_TYPES = RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:]
+
+
 class PropertyForm(forms.ModelForm):
     AMENITY_CHOICES = [
         ('Lift', 'Lift'),
@@ -22,7 +42,7 @@ class PropertyForm(forms.ModelForm):
     class Meta:
         model = Property
         fields = [
-            'title', 'listing_type', 'property_type', 'property_category',
+            'title', 'listing_type', 'property_category', 'property_type',
             'price', 'min_price', 'max_price',
             'city', 'state', 'location', 'address',
             'bhk', 'bedrooms', 'bathrooms',
@@ -32,31 +52,50 @@ class PropertyForm(forms.ModelForm):
             'preferred_tenants', 'amenities', 'description',
         ]
         widgets = {
-            'title':               forms.TextInput(attrs={'placeholder': 'e.g. 2BHK Apartment in Ludhiana'}),
-            'price':               forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
-            'min_price':           forms.NumberInput(attrs={'placeholder': 'Minimum Price'}),
-            'max_price':           forms.NumberInput(attrs={'placeholder': 'Maximum Price'}),
-            'city':                forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
-            'state':               forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
-            'location':            forms.TextInput(attrs={'placeholder': 'Area / Locality'}),
-            'address':             forms.TextInput(attrs={'placeholder': 'e.g. House No. 12, Street 4, Model Town'}),
-            'bedrooms':            forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
-            'bathrooms':           forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
-            'area_sqft':           forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
-            'min_area':            forms.NumberInput(attrs={'placeholder': 'Min Area'}),
-            'max_area':            forms.NumberInput(attrs={'placeholder': 'Max Area'}),
-            'description':         forms.Textarea(attrs={'placeholder': 'Write about locality, schools, hospitals, highway access etc', 'rows': 4}),
+            'title':       forms.TextInput(attrs={'placeholder': 'e.g. 2BHK Apartment in Ludhiana'}),
+            'price':       forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
+            'min_price':   forms.NumberInput(attrs={'placeholder': 'Minimum Price'}),
+            'max_price':   forms.NumberInput(attrs={'placeholder': 'Maximum Price'}),
+            'city':        forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
+            'state':       forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
+            'location':    forms.TextInput(attrs={'placeholder': 'Area / Locality'}),
+            'address':     forms.TextInput(attrs={'placeholder': 'e.g. House No. 12, Street 4, Model Town'}),
+            'bedrooms':    forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
+            'bathrooms':   forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
+            'area_sqft':   forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
+            'min_area':    forms.NumberInput(attrs={'placeholder': 'Min Area'}),
+            'max_area':    forms.NumberInput(attrs={'placeholder': 'Max Area'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Write about locality, schools, hospitals, highway access etc', 'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Required fields — everything else is optional
-        required_fields = ['title', 'listing_type', 'property_type', 'price', 'city', 'description']
-
+        # Required fields
+        required_fields = ['title', 'listing_type', 'property_category', 'property_type', 'price', 'city', 'description']
         for field_name, field in self.fields.items():
-            if field_name not in required_fields:
-                field.required = False
+            field.required = field_name in required_fields
+
+        # Category dropdown with blank prompt
+        self.fields['property_category'].choices = [
+            ('', 'Select Category'),
+            ('residential', 'Residential'),
+            ('commercial', 'Commercial'),
+        ]
+
+        # Dynamic property_type choices based on selected category
+        category = None
+        if self.data.get('property_category'):
+            category = self.data.get('property_category')
+        elif self.instance and self.instance.pk:
+            category = self.instance.property_category
+
+        if category == 'commercial':
+            self.fields['property_type'].choices = COMMERCIAL_TYPES
+        elif category == 'residential':
+            self.fields['property_type'].choices = RESIDENTIAL_TYPES
+        else:
+            self.fields['property_type'].choices = [('', 'Select Category First')] + ALL_TYPES[1:]
 
         # Pre-populate amenities from existing instance
         if self.instance and self.instance.pk and self.instance.amenities:

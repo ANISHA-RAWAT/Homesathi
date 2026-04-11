@@ -182,4 +182,49 @@
 
 {% block extra_js %}
 <script src="{% static 'js/post_propertyfree.js' %}" defer></script>
+<script>
+(function() {
+    var RESIDENTIAL = [
+        ['', 'Select Property Type'],
+        ['apartment', 'Apartment'],
+        ['house', 'House'],
+        ['villa', 'Villa'],
+        ['studio', '1 RK / Studio Apartment'],
+    ];
+    var COMMERCIAL = [
+        ['', 'Select Property Type'],
+        ['office', 'Office'],
+        ['retail', 'Retail / Shop'],
+        ['plot', 'Plot / Land'],
+        ['storage', 'Storage / Warehouse'],
+        ['work_live_studio', 'Work-Live Studio'],
+    ];
+
+    var categorySelect = document.querySelector('[name="property_category"]');
+    var typeSelect     = document.querySelector('[name="property_type"]');
+
+    if (!categorySelect || !typeSelect) return;
+
+    function updateTypeOptions(category, keepValue) {
+        var options = category === 'commercial' ? COMMERCIAL : category === 'residential' ? RESIDENTIAL : [['', 'Select Category First']];
+        var current = keepValue || typeSelect.value;
+        typeSelect.innerHTML = '';
+        options.forEach(function(opt) {
+            var el = document.createElement('option');
+            el.value = opt[0];
+            el.textContent = opt[1];
+            if (opt[0] === current) el.selected = true;
+            typeSelect.appendChild(el);
+        });
+    }
+
+    // On page load — populate based on current category value
+    updateTypeOptions(categorySelect.value, typeSelect.value);
+
+    // On category change — repopulate and clear selection
+    categorySelect.addEventListener('change', function() {
+        updateTypeOptions(this.value, '');
+    });
+})();
+</script>
 {% endblock %}

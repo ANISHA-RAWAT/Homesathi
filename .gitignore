@@ -3,4 +3,4 @@ __pycache__/
 *.pyc
 .env
 staticfiles/
-echo "venv/"
+venv/

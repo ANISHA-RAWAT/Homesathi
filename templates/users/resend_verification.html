@@ -1,34 +1,41 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
-{% block title %}Resend Verification — RentalHome{% endblock %}
+{% block title %}Check Your Email — HomeSathi{% endblock %}
 
 {% block content %}
 <div class="auth-page">
-    <div class="auth-card">
+    <div class="auth-card" style="text-align:center; max-width:480px;">
 
-        <div class="auth-header">
-            <div class="auth-logo">📬</div>
-            <h1>Resend Verification</h1>
-            <p>Enter your email and we'll resend the verification link</p>
+        <div style="font-size:4rem; margin-bottom:16px;">📬</div>
+
+        <h1 style="font-family:var(--font-display); color:var(--primary); margin-bottom:8px;">
+            Check Your Inbox
+        </h1>
+
+        <p style="color:var(--text-muted); margin-bottom:24px; line-height:1.7;">
+            We've sent a verification link to your email address.
+            Click the link in the email to activate your account.
+        </p>
+
+        <div style="background:var(--accent-pale); border:1px solid var(--accent-light);
+                    border-radius:var(--radius); padding:16px 20px; margin-bottom:24px; text-align:left;">
+            <p style="margin:0 0 8px 0; font-weight:600; color:var(--primary);">📋 What to do next:</p>
+            <ul style="margin:0; padding-left:20px; color:var(--text); line-height:1.8;">
+                <li>Open your email inbox</li>
+                <li>Look for an email from <strong>HomeSathi</strong></li>
+                <li>Click the <strong>verification link</strong> inside</li>
+                <li>You'll be redirected to login</li>
+            </ul>
         </div>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label class="form-label">Registered Email Address</label>
-                <input type="email" name="email" required
-                       class="form-input" placeholder="you@example.com">
-            </div>
-            <button type="submit" class="btn btn-primary btn-full btn-lg">
-                Resend Verification Email
-            </button>
-        </form>
+        <div style="background:var(--surface); border:1px solid var(--border);
+                    border-radius:var(--radius); padding:14px 20px; margin-bottom:24px;">
+            <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+                ⚠️ The link expires in <strong>24 hours</strong>.
+                Check your spam folder if you don't see the email.
+            </p>
+        </div>
 
         <div class="auth-footer">
             <a href="{% url 'login' %}">← Back to Login</a>

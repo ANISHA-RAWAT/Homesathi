@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from .models import PendingUser
+import socket
 
 User = get_user_model()
 
@@ -52,6 +53,21 @@ class SignupForm(forms.Form):
             'class': 'form-input'
         })
     )
+
+    # ─────────────────────────────────────
+    # VALIDATE EMAIL DOMAIN EXISTS
+    # ─────────────────────────────────────
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            domain = email.split('@')[-1]
+            try:
+                socket.getaddrinfo(domain, None)
+            except socket.gaierror:
+                raise forms.ValidationError(
+                    "This email address does not exist. Please enter a valid email."
+                )
+        return email
 
     # ─────────────────────────────────────
     # VALIDATE PASSWORD MATCH

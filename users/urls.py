@@ -16,5 +16,6 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('faq/', views.faq, name='faq'),
     path('contactus/', views.contactus, name='contactus'),
-    path('about/', views.about, name='about')
+    path('contact-send/', views.contact_view, name='contact_view'),
+    path('about/', views.about, name='about'),
 ]

@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,7 +15,7 @@ User = get_user_model()
 
 
 # ─────────────────────────────────────────────────────────────
-# SIGNUP (User NOT saved yet)
+# SIGNUP
 # ─────────────────────────────────────────────────────────────
 def signup_view(request):
 
@@ -33,6 +32,7 @@ def signup_view(request):
                 messages.error(request, "Account already exists. Please login.")
                 return redirect('login')
 
+            # ── Check if email is deliverable by attempting send ──
             PendingUser.objects.filter(email=email).delete()
 
             pending = PendingUser.objects.create(
@@ -47,9 +47,10 @@ def signup_view(request):
                 reverse('confirm_signup', args=[str(pending.token)])
             )
 
-            send_mail(
-                subject='Confirm Your Signup — Rental Platform',
-                message=f"""
+            try:
+                send_mail(
+                    subject='Confirm Your Signup — HomeSathi',
+                    message=f"""
 Hi {pending.first_name},
 
 Thank you for signing up!
@@ -62,12 +63,17 @@ Click the link below to verify your account:
 
 If you did not create this account, ignore this email.
 
-— Rental Platform Team
+— HomeSathi Team
 """,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[pending.email],
-                fail_silently=False,
-            )
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[pending.email],
+                    fail_silently=False,
+                )
+            except Exception:
+                # ── Email failed (address not found etc.) ──
+                pending.delete()
+                form.add_error(None, "Could not send verification email. Please check your email address and try again.")
+                return render(request, 'users/signup.html', {'form': form})
 
             messages.success(request, "Verification email sent. Please check your inbox.")
             return redirect('verification_sent')
@@ -79,7 +85,7 @@ If you did not create this account, ignore this email.
 
 
 # ─────────────────────────────────────────────────────────────
-# CONFIRM SIGNUP — only ONE definition, with is_active=True
+# CONFIRM SIGNUP
 # ─────────────────────────────────────────────────────────────
 def confirm_signup(request, token):
 
@@ -114,7 +120,7 @@ def confirm_signup(request, token):
 # VERIFICATION SENT PAGE
 # ─────────────────────────────────────────────────────────────
 def verification_sent(request):
-    return render(request, 'verification_sent.html')
+    return render(request, 'users/resend_verification.html')
 
 
 # ─────────────────────────────────────────────────────────────
@@ -156,38 +162,47 @@ def logout_view(request):
 # ─────────────────────────────────────────────────────────────
 @login_required
 def profile_view(request):
-    return render(request, 'users/profile.html') 
+    return render(request, 'users/profile.html')
 
+
+# ─────────────────────────────────────────────────────────────
+# STATIC PAGES
+# ─────────────────────────────────────────────────────────────
 def faq(request):
     return render(request, 'properties/faq.html')
-def contactus(request):
-    return render(request,'properties/contactus.html' )
+
 def about(request):
     return render(request, 'properties/about.html')
 
+
+# ─────────────────────────────────────────────────────────────
+# CONTACT US
+# ─────────────────────────────────────────────────────────────
+def contactus(request):
+    return render(request, 'properties/contactus.html')
+
 def contact_view(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
 
-        # save to DB (optional)
-        ContactMessage.objects.create(
-            name=name,
-            email=email,
-            message=message
-        )
+        if not name or not email or not message:
+            messages.error(request, "Please fill in all fields.")
+            return render(request, 'properties/contactus.html')
 
-        # 🔥 SEND EMAIL
-        send_mail(
-            subject=f"New Contact Message from {name}",
-            message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}",
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=['homesathi.support@gmail.com'],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                subject=f"New Contact Message from {name}",
+                message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[settings.EMAIL_HOST_USER],
+                fail_silently=False,
+            )
+            messages.success(request, "Message sent successfully! We'll get back to you soon.")
+        except Exception:
+            messages.error(request, "Failed to send message. Please email us directly.")
 
-        messages.success(request, "Message sent successfully!")
-        return redirect("contact")
+        return redirect('contactus')
 
-    return render(request, "users/contact.html")
+    return render(request, 'properties/contactus.html')

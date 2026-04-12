@@ -62,9 +62,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Homesathi2',
+        'NAME': 'homesathi',
         'USER': 'root',
-        'PASSWORD': 'K@shishsqlsaroj123456',
+        'PASSWORD': 'Anish@123?<>',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -105,6 +105,6 @@ EMAIL_HOST_USER = 'homesathi.support@gmail.com'
 EMAIL_HOST_PASSWORD = 'kuambfktfczhdrjq'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SITE_NAME = 'RentalHome'
+SITE_NAME = 'Homesathi'
 
 FEATURED_PROPERTIES_COUNT = 5

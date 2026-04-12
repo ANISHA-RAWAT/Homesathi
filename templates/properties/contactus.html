@@ -10,7 +10,7 @@
 <section class="contact-hero">
     <div class="container">
         <h1>Contact Us</h1>
-        <p>We’re here to help. Reach out to us anytime.</p>
+        <p>We're here to help. Reach out to us anytime.</p>
     </div>
 </section>
 
@@ -22,7 +22,7 @@
             <h2>Get in Touch</h2>
             <p>
                 Have questions about listings, posting a property, or anything else?
-                Feel free to reach out — we’d love to hear from you.
+                Feel free to reach out — we'd love to hear from you.
             </p>
 
             <div class="contact-box">
@@ -49,17 +49,22 @@
         <div class="contact-form">
             <h2>Send a Message</h2>
 
-            <form method="POST">
-                {% csrf_token %}
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
 
+            <form method="POST" action="{% url 'contact_view' %}">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
                 <button type="submit">Send Message</button>
             </form>
 
             <p class="note">
-                * Please use email above to contact us.
+                * We'll reply to your email within 24 hours.
             </p>
         </div>
 

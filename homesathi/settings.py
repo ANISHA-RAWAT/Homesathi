@@ -105,6 +105,6 @@ EMAIL_HOST_USER = 'homesathi.support@gmail.com'
 EMAIL_HOST_PASSWORD = 'kuambfktfczhdrjq'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SITE_NAME = 'RentalHome'
+SITE_NAME = 'Homesathi'
 
 FEATURED_PROPERTIES_COUNT = 5

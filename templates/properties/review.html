@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reviews — Homesathi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="reviews-page">
+    <div class="container">
+
+        <div class="reviews-heading">
+            <h1>Customer Reviews</h1>
+            <p>See what our users say about Homesathi</p>
+        </div>
+
+        <!-- Rating summary -->
+        <div class="rating-summary-row">
+
+            <div class="rating-bars">
+                {% for bar in bar_data %}
+                <div class="bar-row">
+                    <span class="bar-label">{{ bar.label }}</span>
+                    <span class="bar-star">&#9733;</span>
+                    <div class="bar-track">
+                        <div class="bar-fill bar-w-{{ bar.width }}"></div>
+                    </div>
+                    <span class="bar-count">{{ bar.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="avg-score-box">
+                <div class="avg-number">{{ avg_display }}</div>
+                <div class="avg-stars">
+                    {% for filled in avg_stars %}
+                    <span class="avg-star {% if filled %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </div>
+                <div class="avg-label">{{ total }} Rating{{ total|pluralize }}</div>
+            </div>
+
+        </div>
+
+        <!-- Reviews + Form -->
+        <div class="reviews-main-row">
+
+            <div class="recent-reviews">
+                <h2>Recent Feedbacks</h2>
+                {% if approved_reviews %}
+                    {% for review in approved_reviews %}
+                    <div class="review-card">
+                        <div class="review-avatar">{{ review.name|slice:":1"|upper }}</div>
+                        <div class="review-body">
+                            <div class="review-top">
+                                <span class="review-name">{{ review.name }}</span>
+                                <span class="review-stars">
+                                    {% for i in "12345" %}
+                                    <span class="{% if forloop.counter <= review.rating %}star-filled{% else %}star-empty{% endif %}">&#9733;</span>
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <p class="review-text">{{ review.message|truncatechars:140 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-reviews">
+                        <p>No reviews yet. Be the first to leave one!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="add-review-box">
+                <h2>Add a Review</h2>
+
+                {% if success %}
+                <div class="review-success">
+                    Your review has been submitted and is awaiting admin approval.
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="review-error">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST" class="review-form">
+                    {% csrf_token %}
+
+                    <label>Add Your Rating <span class="req">*</span></label>
+                    <div class="star-picker" id="starPicker">
+                        <span class="pick-star" data-val="1">&#9734;</span>
+                        <span class="pick-star" data-val="2">&#9734;</span>
+                        <span class="pick-star" data-val="3">&#9734;</span>
+                        <span class="pick-star" data-val="4">&#9734;</span>
+                        <span class="pick-star" data-val="5">&#9734;</span>
+                    </div>
+                    <input type="hidden" name="rating" id="ratingInput">
+
+                    <label>Name <span class="req">*</span></label>
+                    <input type="text" name="name" placeholder="John Doe" required value="{{ request.POST.name }}">
+
+                    <label>Email <span class="req">*</span></label>
+                    <input type="email" name="email" placeholder="john@example.com" required value="{{ request.POST.email }}">
+
+                    <label>Write Your Review <span class="req">*</span></label>
+                    <textarea name="message" rows="4" placeholder="Write here..." required>{{ request.POST.message }}</textarea>
+
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var stars = document.querySelectorAll('.pick-star');
+    var input = document.getElementById('ratingInput');
+    stars.forEach(function (star) {
+        star.addEventListener('mouseenter', function () {
+            var val = parseInt(this.dataset.val);
+            stars.forEach(function (s, i) {
+                s.innerHTML = i < val ? '&#9733;' : '&#9734;';
+                s.classList.toggle('hover', i < val);
+            });
+        });
+        star.addEventListener('mouseleave', function () {
+            var sel = parseInt(input.value) || 0;
+            stars.forEach(function (s, i) {
+                s.innerHTML = i < sel ? '&#9733;' : '&#9734;';
+                s.classList.toggle('selected', i < sel);
+                s.classList.remove('hover');
+            });
+        });
+        star.addEventListener('click', function () {
+            var val = parseInt(this.dataset.val);
+            input.value = val;
+            stars.forEach(function (s, i) {
+                s.innerHTML = i < val ? '&#9733;' : '&#9734;';
+                s.classList.toggle('selected', i < val);
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

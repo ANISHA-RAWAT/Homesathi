@@ -206,3 +206,5 @@ def contact_view(request):
         return redirect('contactus')
 
     return render(request, 'properties/contactus.html')
+def review(request):
+    return render(request, 'properties/review.html')

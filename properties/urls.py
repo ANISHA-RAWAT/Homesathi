@@ -14,4 +14,5 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/<int:pk>/', views.inquiry_thread, name='inquiry_thread'),
     path('mark-rented/<int:pk>/', views.mark_rented, name='mark_rented'),
+    path('reviews/', views.reviews_page, name='reviews'),
 ]

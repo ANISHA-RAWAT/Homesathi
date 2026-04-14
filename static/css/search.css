@@ -1,131 +1,96 @@
 /* ============================
-   SEARCH PAGE — WOODEN THEME
+   SEARCH PAGE — WHITE + SKY BLUE MINIMAL
    ============================ */
 
-.search-page { background:var(--surface); min-height:calc(100vh - var(--navbar-h)); }
+.search-page { background: #ffffff; min-height: calc(100vh - var(--navbar-h)); }
 
 .search-header {
-  background: #F8F9FA; /* remove green */
-  padding: 120px 0 40px; /* adds space for fixed header */
-  border-bottom: 1px solid #eee;
-  text-align: center;
+    background: #ffffff;
+    padding: 120px 0 40px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
 }
 
-.search-header h1 {
-  font-size: 36px;
-  font-weight: 700;
-  color: #1E2A1E; /* dark text instead of white */
-  margin-bottom: 10px;
-}
-.search-count {
-  font-size: 16px;
-  color: #6B7280;
-}
+.search-header h1 { font-size: 36px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+.search-count     { font-size: 16px; color: #6b7280; }
 
 .search-layout {
-    display:grid;
-    grid-template-columns:280px 1fr;
-    gap:32px;
-    padding:40px 20px;
-    max-width:1200px;
-    margin:0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* FILTER PANEL */
 .filter-panel {
-    background:white;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:24px;
-    box-shadow:var(--shadow-sm);
-    position:sticky;
-    top:calc(var(--navbar-h) + 16px);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: sticky;
+    top: calc(var(--navbar-h) + 16px);
 }
 
 .filter-title {
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:1rem;
-    font-weight:700;
-    color:var(--text);
-    margin-bottom:20px;
-    padding-bottom:12px;
-    border-bottom:2px solid var(--accent-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e8f4ff;
 }
 
-.filter-group {
-    margin-bottom:16px;
-}
+.filter-group { margin-bottom: 16px; }
 
 .filter-label {
-    display:block;
-    font-size:0.8rem;
-    font-weight:600;
-    color:var(--text-muted);
-    text-transform:uppercase;
-    letter-spacing:0.05em;
-    margin-bottom:6px;
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
 }
 
 .filter-panel input,
 .filter-panel select {
-    width:100%;
-    padding:9px 12px;
-    border:1.5px solid var(--border);
-    border-radius:var(--radius-sm);
-    font-size:0.875rem;
-    font-family:var(--font);
-    color:var(--text);
-    background:white;
-    transition:border-color 0.2s;
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    color: #1a1a2e;
+    background: white;
+    transition: border-color 0.2s;
 }
 
 .filter-panel input:focus,
 .filter-panel select:focus {
-    border-color:var(--accent);
-    outline:none;
-    box-shadow:0 0 0 3px rgba(203,153,126,0.12);
+    border-color: #00A9FF;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,169,255,0.10);
 }
 
-.price-range {
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
+.price-range { display: flex; align-items: center; gap: 8px; }
+.price-range span { color: #6b7280; font-size: 0.85rem; flex-shrink: 0; }
+.price-range input { min-width: 0; }
 
-.price-range span {
-    color:var(--text-muted);
-    font-size:0.85rem;
-    flex-shrink:0;
-}
-
-.price-range input { min-width:0; }
-
-/* RESULTS */
 .results-toolbar {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.results-info {
-    font-size:0.875rem;
-    color:var(--text-muted);
-}
-
-.property-grid {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.property-grid-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
+.results-info { font-size: 0.875rem; color: #6b7280; }
+
+.property-grid { display: flex; flex-direction: column; gap: 20px; }
+.property-grid-list { display: flex; flex-direction: column; gap: 20px; }
 
 .property-card-horizontal {
     display: flex;
@@ -133,37 +98,29 @@
     background: white;
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-/* LEFT IMAGE */
-.card-image-fixed {
-    width: 280px;
-    height: 200px;
-    flex-shrink: 0;
+.property-card-horizontal:hover {
+    box-shadow: 0 4px 20px rgba(0,169,255,0.10);
+    border-color: #A0E9FF;
 }
 
-.card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* RIGHT CONTENT */
-.card-body {
-    flex: 1;
-    padding: 18px;
-}
+.card-image-fixed { width: 280px; height: 200px; flex-shrink: 0; }
+.card-image { width: 100%; height: 100%; object-fit: cover; }
+.card-body  { flex: 1; padding: 18px; }
 
 .empty-state-search {
-    background:white;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:60px 20px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 60px 20px;
 }
-/* RENTED BADGE ON CARD */
+
 .rented-badge {
-    background: #6b705c;
+    background: #00A9FF;
     color: white;
     padding: 8px 14px;
     border-radius: 20px;
@@ -171,34 +128,4 @@
     font-weight: 500;
 }
 
-/* OPTIONAL: disable button look */
-.card-footer .rented-badge {
-    display: inline-block;
-}
-
-/* OPTIONAL: dim rented cards */
-.property-card.rented {
-    opacity: 0.7;
-}
-
-.search-page {
-    margin-top: 50;
-}
-/* HERO SECTION (Search Page) */
-.hero {
-  background: #F8F9FA;
-  padding: 120px 20px 40px;
-  text-align: center;
-}
-
-.hero h1 {
-  font-size: 40px;
-  font-weight: 700;
-  color: #1E2A1E;
-  margin-bottom: 10px;
-}
-
-.hero p {
-  font-size: 16px;
-  color: #6B7280;
-}
+.property-card.rented { opacity: 0.7; }

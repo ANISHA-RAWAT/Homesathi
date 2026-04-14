@@ -1,5 +1,5 @@
 /* ============================
-   PROPERTY CARDS & DETAIL — WOODEN THEME
+   PROPERTY CARDS & DETAIL — HOMESATHI
    ============================ */
 
 /* PROPERTY GRID */
@@ -22,7 +22,7 @@
 .property-card:hover {
     transform:translateY(-4px);
     box-shadow:var(--shadow-lg);
-    border-color:var(--accent-light);
+    border-color:#CFBB99;
 }
 
 /* CARD IMAGE */
@@ -48,8 +48,8 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    background:var(--accent-pale);
-    color:var(--muted);
+    background:#E5D7C4;
+    color:#889063;
 }
 
 .card-views {
@@ -71,7 +71,7 @@
     font-weight:700;
     text-transform:uppercase;
     letter-spacing:0.05em;
-    color:var(--accent);
+    color:#889063;
     margin-bottom:6px;
 }
 
@@ -82,7 +82,7 @@
     color:var(--text);
 }
 
-.card-title a:hover { color:var(--accent); }
+.card-title a:hover { color:#354024; }
 
 .card-location {
     display:flex;
@@ -113,7 +113,7 @@
 .card-price {
     font-size:1.1rem;
     font-weight:800;
-    color:var(--primary);
+    color:#354024;
 }
 
 .card-description {
@@ -123,7 +123,7 @@
     line-height:1.5;
 }
 
-/* HORIZONTAL CARD (search results) */
+/* HORIZONTAL CARD */
 .property-card-horizontal {
     display:flex;
     flex-direction:row;
@@ -147,7 +147,7 @@
     margin-bottom:24px;
 }
 
-.breadcrumb a:hover { color:var(--accent); }
+.breadcrumb a:hover { color:#354024; }
 
 .detail-layout {
     display:grid;
@@ -216,18 +216,18 @@
 .gallery-thumb.active,
 .gallery-thumb:hover {
     opacity:1;
-    border-color:var(--accent);
+    border-color:#354024;
 }
 
 .gallery-placeholder {
     height:420px;
-    background:var(--accent-pale);
+    background:#E5D7C4;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     border-radius:var(--radius);
-    color:var(--muted);
+    color:#889063;
     gap:12px;
 }
 
@@ -245,8 +245,8 @@
     display:inline-block;
     padding:3px 10px;
     border-radius:99px;
-    background:var(--accent-pale);
-    color:var(--accent);
+    background:#E5D7C4;
+    color:#354024;
     font-size:0.75rem;
     font-weight:700;
     text-transform:uppercase;
@@ -273,7 +273,7 @@
 .detail-price {
     font-size:1.8rem;
     font-weight:800;
-    color:var(--primary);
+    color:#354024;
 }
 
 .detail-price-note {
@@ -350,7 +350,7 @@
     width:44px;
     height:44px;
     border-radius:50%;
-    background:var(--accent);
+    background:#354024;
     color:white;
     display:flex;
     align-items:center;
@@ -366,8 +366,8 @@
 .privacy-badge {
     margin-left:auto;
     font-size:0.75rem;
-    color:var(--accent);
-    background:var(--accent-pale);
+    color:#354024;
+    background:#E5D7C4;
     padding:3px 8px;
     border-radius:99px;
 }

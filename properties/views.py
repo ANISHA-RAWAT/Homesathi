@@ -344,6 +344,7 @@ def reviews_page(request):
     # Pre-calculate filled stars for avg (list of True/False)
     avg_rounded = round(avg)
     avg_stars = [i <= avg_rounded for i in range(1, 6)]
+    print(request.POST)
 
     return render(request, 'properties/reviews.html', {
         'approved_reviews': approved,

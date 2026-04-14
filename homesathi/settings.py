@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,9 +63,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Homesathi2',
+        'NAME': 'homesathi',
         'USER': 'root',
-        'PASSWORD':'K@shishsqlsaroj123456',
+        'PASSWORD':'Anish@123?<>',
         'HOST': 'localhost',
         'PORT': '3306',
     }

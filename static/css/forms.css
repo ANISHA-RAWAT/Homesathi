@@ -1,5 +1,5 @@
 /* ============================
-   FORMS — WOODEN THEME
+   FORMS — HOMESATHI
    ============================ */
 
 .form-input,
@@ -26,9 +26,9 @@ textarea {
 select:focus,
 input:focus,
 textarea:focus {
-    border-color:var(--accent);
+    border-color:#354024;
     outline:none;
-    box-shadow:0 0 0 3px rgba(203,153,126,0.15);
+    box-shadow:0 0 0 3px rgba(53,64,36,0.12);
 }
 
 .form-group { margin-bottom:16px; }
@@ -56,6 +56,6 @@ textarea {
 
 /* INQUIRY FORM */
 .inquiry-form .form-input:focus {
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(203,153,126,0.15);
+    border-color:#354024;
+    box-shadow:0 0 0 3px rgba(53,64,36,0.12);
 }

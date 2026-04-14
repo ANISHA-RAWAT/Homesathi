@@ -1,5 +1,5 @@
 /* ============================
-   BUTTONS — WOODEN THEME
+   BUTTONS — HOMESATHI
    ============================ */
 
 .btn {
@@ -18,36 +18,36 @@
 }
 
 .btn-primary {
-    background:var(--primary);
+    background:#354024;
     color:white;
-    border-color:var(--primary);
+    border-color:#354024;
 }
 
 .btn-primary:hover {
-    background:var(--primary-dark);
-    border-color:var(--primary-dark);
+    background:#4a5c30;
+    border-color:#4a5c30;
 }
 
 .btn-outline {
     background:transparent;
-    border-color:var(--primary);
-    color:var(--primary);
+    border-color:#354024;
+    color:#354024;
 }
 
 .btn-outline:hover {
-    background:var(--primary);
+    background:#354024;
     color:white;
 }
 
 .btn-accent {
-    background:var(--accent);
+    background:#889063;
     color:white;
-    border-color:var(--accent);
+    border-color:#889063;
 }
 
 .btn-accent:hover {
-    background:var(--primary);
-    border-color:var(--primary);
+    background:#354024;
+    border-color:#354024;
 }
 
 .btn-ghost {
@@ -57,8 +57,8 @@
 }
 
 .btn-ghost:hover {
-    border-color:var(--primary);
-    color:var(--primary);
+    border-color:#354024;
+    color:#354024;
 }
 
 .btn-danger {
@@ -83,10 +83,8 @@
     color:white;
 }
 
-.badge-rent  { background:var(--primary); }
-.badge-sell  { background:var(--accent); }
-
-/* CHIPS — defined in home.css for quick-filters context */
+.badge-rent  { background:#889063; }
+.badge-sell  { background:#354024; }
 
 /* STATUS DOTS */
 .status-dot {
@@ -98,7 +96,7 @@
 }
 
 .status-active   { background:#d4edda; color:#2d6a4f; }
-.status-pending  { background:var(--accent-pale); color:var(--accent); }
+.status-pending  { background:#E5D7C4; color:#354024; }
 .status-closed   { background:var(--surface); color:var(--text-muted); }
 
 /* ALERT MESSAGES */
@@ -114,7 +112,7 @@
 
 .alert-success { background:#d4edda; color:#2d6a4f; }
 .alert-error   { background:#fde8e8; color:var(--danger); }
-.alert-info    { background:var(--accent-pale); color:var(--primary); }
+.alert-info    { background:#E5D7C4; color:#354024; }
 
 /* EMPTY STATE */
 .empty-state {
@@ -132,14 +130,15 @@
     display:flex;
     align-items:flex-start;
     gap:12px;
-    background:var(--accent-pale);
-    border:1px solid var(--accent-light);
+    background:#E5D7C4;
+    border:1px solid #CFBB99;
     border-radius:var(--radius);
     padding:16px;
 }
 
 .privacy-icon { font-size:1.4rem; }
-/* ── Flash messages — always visible above navbar ── */
+
+/* FLASH MESSAGES */
 .messages-container {
     position: fixed;
     top: 16px;
@@ -177,8 +176,8 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-.messages-container .alert-success { background: #d4edda; color: #1a5e35; border-left: 4px solid #2d6a4f; }
+.messages-container .alert-success { background:#d4edda; color:#1a5e35; border-left:4px solid #2d6a4f; }
 .messages-container .alert-error,
-.messages-container .alert-danger  { background: #fde8e8; color: #7b1d1d; border-left: 4px solid var(--danger); }
-.messages-container .alert-info    { background: var(--accent-pale); color: var(--primary-dark); border-left: 4px solid var(--accent); }
-.messages-container .alert-warning { background: #fff3cd; color: #7d4e00; border-left: 4px solid #f0a500; }
+.messages-container .alert-danger  { background:#fde8e8; color:#7b1d1d; border-left:4px solid var(--danger); }
+.messages-container .alert-info    { background:#E5D7C4; color:#354024; border-left:4px solid #889063; }
+.messages-container .alert-warning { background:#fff3cd; color:#7d4e00; border-left:4px solid #f0a500; }

@@ -1,24 +1,21 @@
-/* HERO */
+/* ============================
+   CONTACT US — WHITE + SKY BLUE MINIMAL
+   ============================ */
+
 .contact-hero {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
                 url("/static/images/hero-house.jpeg");
     background-size: cover;
     background-position: center;
-    padding: 80px 20px;
+    padding: 100px 20px 80px;
     text-align: center;
     color: white;
 }
 
-.contact-hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
+.contact-hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
+.contact-hero p  { opacity: 0.85; font-size: 1rem; }
 
-/* SECTION */
-.contact-section {
-    padding: 60px 20px;
-    background: #f9f9f9;
-}
+.contact-section { padding: 60px 20px; background: #ffffff; }
 
 .contact-container {
     display: grid;
@@ -28,41 +25,30 @@
     margin: auto;
 }
 
-/* LEFT */
-.contact-info h2 {
-    margin-bottom: 15px;
-}
-
-.contact-info p {
-    margin-bottom: 20px;
-    color: #555;
-}
+.contact-info h2 { margin-bottom: 15px; color: #1a1a2e; }
+.contact-info p  { margin-bottom: 20px; color: #6b7280; }
 
 .contact-box {
     background: white;
     padding: 18px;
     border-radius: 10px;
     margin-bottom: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e8f4ff;
+    box-shadow: 0 2px 8px rgba(0,169,255,0.05);
 }
 
-.contact-box a {
-    color: #cb997e;
-    text-decoration: none;
-    font-weight: 600;
-}
+.contact-box h3 { color: #00A9FF; margin-bottom: 6px; font-size: 0.95rem; }
+.contact-box a  { color: #00A9FF; text-decoration: none; font-weight: 600; }
 
-/* RIGHT FORM */
 .contact-form {
     background: white;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e8f4ff;
+    box-shadow: 0 2px 8px rgba(0,169,255,0.05);
 }
 
-.contact-form h2 {
-    margin-bottom: 15px;
-}
+.contact-form h2 { margin-bottom: 15px; color: #1a1a2e; }
 
 .contact-form form {
     display: flex;
@@ -73,34 +59,36 @@
 .contact-form input,
 .contact-form textarea {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #e5e7eb;
     border-radius: 6px;
     font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #00A9FF;
+    box-shadow: 0 0 0 3px rgba(0,169,255,0.10);
 }
 
 .contact-form button {
-    background: #cb997e;
+    background: #00A9FF;
     color: white;
     border: none;
     padding: 12px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+    transition: background 0.2s;
 }
 
-.contact-form button:hover {
-    background: #b58368;
-}
+.contact-form button:hover { background: #0090d9; }
 
-.note {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 10px;
-}
+.note { font-size: 0.8rem; color: #9ca3af; margin-top: 10px; }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .contact-container {
-        grid-template-columns: 1fr;
-    }
-}
+.alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
+.alert-success { background: #d4edda; color: #2d6a4f; }
+.alert-error   { background: #fde8e8; color: #A4594A; }
+
+@media (max-width: 768px) { .contact-container { grid-template-columns: 1fr; } }

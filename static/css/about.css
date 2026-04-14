@@ -1,4 +1,7 @@
-/* HERO */
+/* ============================
+   ABOUT — WHITE + SKY BLUE MINIMAL
+   ============================ */
+
 .about-hero {
     position: relative;
     height: 300px;
@@ -14,32 +17,13 @@
     background: rgba(0,0,0,0.6);
 }
 
-.hero-content {
-    position: relative;
-    text-align: center;
-    color: white;
-}
+.hero-content { position: relative; text-align: center; color: white; }
+.hero-content h1 { font-size: 2.5rem; }
+.hero-content p  { opacity: 0.9; }
 
-.hero-content h1 {
-    font-size: 2.5rem;
-}
+.about-intro { text-align: center; padding: 60px 20px; max-width: 800px; }
 
-.hero-content p {
-    opacity: 0.9;
-}
-
-/* INTRO */
-.about-intro {
-    text-align: center;
-    padding: 60px 20px;
-    max-width: 800px;
-}
-
-/* FEATURES */
-.about-features {
-    background: #f8f8f8;
-    padding: 60px 20px;
-}
+.about-features { background: #f8fcff; padding: 60px 20px; }
 
 .features-grid {
     display: grid;
@@ -53,17 +37,17 @@
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    border: 1px solid #e8f4ff;
     transition: 0.3s;
 }
 
 .feature:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,169,255,0.10);
+    border-color: #A0E9FF;
 }
 
-/* STEPS */
-.about-steps {
-    padding: 60px 20px;
-}
+.about-steps { padding: 60px 20px; background: #ffffff; }
 
 .steps {
     display: grid;
@@ -72,29 +56,22 @@
     margin-top: 30px;
 }
 
-.step {
-    text-align: center;
-}
+.step { text-align: center; }
 
 .step span {
     display: block;
     font-size: 1.5rem;
-    color: #000000;
+    color: #00A9FF;
     margin-bottom: 10px;
 }
 
-/* WHY */
 .why-section {
-    background: #3f5747;
+    background: #00A9FF;
     padding: 80px 20px;
     text-align: center;
 }
 
-.why-title {
-    color: white;
-    font-size: 2rem;
-    margin-bottom: 40px;
-}
+.why-title { color: white; font-size: 2rem; margin-bottom: 40px; }
 
 .why-grid {
     display: grid;
@@ -103,7 +80,7 @@
 }
 
 .why-card {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.15);
     padding: 25px;
     border-radius: 12px;
     color: white;
@@ -111,22 +88,10 @@
     backdrop-filter: blur(6px);
 }
 
-.why-card span {
-    font-size: 28px;
-    display: block;
-    margin-bottom: 10px;
-}
+.why-card span { font-size: 28px; display: block; margin-bottom: 10px; }
+.why-card h4   { margin-bottom: 10px; }
+.why-card p    { font-size: 14px; opacity: 0.85; }
 
-.why-card h4 {
-    margin-bottom: 10px;
-}
+.why-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.25); }
 
-.why-card p {
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.why-card:hover {
-    transform: translateY(-6px);
-    background: rgba(255,255,255,0.15);
-}
+@media (max-width: 768px) { .why-grid { grid-template-columns: 1fr 1fr; } }

@@ -4,7 +4,7 @@
 {% block title %}Reviews — Homesathi{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+<link rel="stylesheet" href="{% static 'css/review.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,9 +16,10 @@
             <p>See what our users say about Homesathi</p>
         </div>
 
-        <!-- Rating summary -->
+        <!-- Rating Summary Row -->
         <div class="rating-summary-row">
 
+            <!-- Star Bars -->
             <div class="rating-bars">
                 {% for bar in bar_data %}
                 <div class="bar-row">
@@ -32,6 +33,7 @@
                 {% endfor %}
             </div>
 
+            <!-- Average Score -->
             <div class="avg-score-box">
                 <div class="avg-number">{{ avg_display }}</div>
                 <div class="avg-stars">
@@ -44,9 +46,10 @@
 
         </div>
 
-        <!-- Reviews + Form -->
+        <!-- Recent Reviews + Add Review Form -->
         <div class="reviews-main-row">
 
+            <!-- LEFT: Recent Feedbacks -->
             <div class="recent-reviews">
                 <h2>Recent Feedbacks</h2>
                 {% if approved_reviews %}
@@ -73,20 +76,15 @@
                 {% endif %}
             </div>
 
+            <!-- RIGHT: Add Review Form -->
             <div class="add-review-box">
                 <h2>Add a Review</h2>
 
-                {% if success %}
-                <div class="review-success">
-                    Your review has been submitted and is awaiting admin approval.
-                </div>
-                {% endif %}
-
                 {% if error %}
-                <div class="review-error">{{ error }}</div>
+                <div class="review-error">&#9888; {{ error }}</div>
                 {% endif %}
 
-                <form method="POST" class="review-form">
+                <form method="POST" class="review-form" id="reviewForm">
                     {% csrf_token %}
 
                     <label>Add Your Rating <span class="req">*</span></label>
@@ -100,13 +98,13 @@
                     <input type="hidden" name="rating" id="ratingInput">
 
                     <label>Name <span class="req">*</span></label>
-                    <input type="text" name="name" placeholder="John Doe" required value="{{ request.POST.name }}">
+                    <input type="text" name="name" placeholder="John Doe" required>
 
                     <label>Email <span class="req">*</span></label>
-                    <input type="email" name="email" placeholder="john@example.com" required value="{{ request.POST.email }}">
+                    <input type="email" name="email" placeholder="john@example.com" required>
 
                     <label>Write Your Review <span class="req">*</span></label>
-                    <textarea name="message" rows="4" placeholder="Write here..." required>{{ request.POST.message }}</textarea>
+                    <textarea name="message" rows="4" placeholder="Write here..." required></textarea>
 
                     <button type="submit">Submit</button>
                 </form>
@@ -120,8 +118,10 @@
 {% block extra_js %}
 <script>
 (function () {
+    // Star picker
     var stars = document.querySelectorAll('.pick-star');
     var input = document.getElementById('ratingInput');
+
     stars.forEach(function (star) {
         star.addEventListener('mouseenter', function () {
             var val = parseInt(this.dataset.val);

@@ -8,4 +8,4 @@ urlpatterns = [
     path('', include('properties.urls')),
     path('users/', include('users.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-  + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -298,22 +298,8 @@ from django.db.models import Avg, Count
 from .models import Review
 
 def reviews_page(request):
-    approved = Review.objects.filter(is_approved=True)
-
-    # Rating stats
-    stats    = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
-    total    = approved.count()
-    avg      = approved.aggregate(avg=Avg('rating'))['avg'] or 0
-    avg_display = round(avg * 2) / 2  # round to nearest 0.5
-
-    # Build count per star 1-5
-    star_counts = {i: 0 for i in range(1, 6)}
-    for s in stats:
-        star_counts[s['rating']] = s['count']
-    max_count = max(star_counts.values()) if total else 1
 
     error = None
-    success = False
 
     if request.method == 'POST':
         name    = request.POST.get('name', '').strip()
@@ -322,29 +308,42 @@ def reviews_page(request):
         message = request.POST.get('message', '').strip()
 
         if not name or not email or not rating or not message:
-            error = "All fields are required."
+            error = "All fields are required. Please fill in every field."
         elif not rating.isdigit() or not (1 <= int(rating) <= 5):
-            error = "Please select a valid star rating."
+            error = "Please select a star rating before submitting."
         else:
             Review.objects.create(
                 name=name, email=email,
                 rating=int(rating), message=message,
                 is_approved=False
             )
-            success = True
+            # Redirect after POST so form clears and success shows cleanly
+            from django.contrib import messages as django_messages
+            django_messages.success(request, "Thank you! Your review has been submitted and is awaiting admin approval.")
+            from django.shortcuts import redirect
+            return redirect('reviews')
 
-    # Pre-calculate bar widths as plain integers (no Django tags in templates)
-    bar_data = []
+    # Build stats from approved reviews only
+    approved = Review.objects.filter(is_approved=True)
+    stats    = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
+    total    = approved.count()
+    avg      = approved.aggregate(avg=Avg('rating'))['avg'] or 0
+
+    star_counts = {i: 0 for i in range(1, 6)}
+    for s in stats:
+        star_counts[s['rating']] = s['count']
+    max_count = max(star_counts.values()) if total else 1
+
+    # Bar data with widths as plain integers
     labels = {5: 'FIVE', 4: 'FOUR', 3: 'THREE', 2: 'TWO', 1: 'ONE'}
+    bar_data = []
     for star in [5, 4, 3, 2, 1]:
         count = star_counts[star]
-        width = int(round(count / max_count * 100)) if max_count else 0
+        width = int(round(count / max_count * 100)) if max_count > 0 else 0
         bar_data.append({'star': star, 'label': labels[star], 'count': count, 'width': width})
 
-    # Pre-calculate filled stars for avg (list of True/False)
     avg_rounded = round(avg)
-    avg_stars = [i <= avg_rounded for i in range(1, 6)]
-    print(request.POST)
+    avg_stars   = [i <= avg_rounded for i in range(1, 6)]
 
     return render(request, 'properties/reviews.html', {
         'approved_reviews': approved,
@@ -353,5 +352,4 @@ def reviews_page(request):
         'bar_data':    bar_data,
         'avg_stars':   avg_stars,
         'error':       error,
-        'success':     success,
     })

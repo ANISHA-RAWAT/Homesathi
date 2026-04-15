@@ -285,7 +285,6 @@ def delete_property(request, pk):
         messages.success(request, 'Property deleted.')
     return redirect('my_properties')
 
-from django.shortcuts import redirect, get_object_or_404
 
 def mark_rented(request, pk):
     prop = get_object_or_404(Property, pk=pk)
@@ -293,57 +292,85 @@ def mark_rented(request, pk):
     prop.save()
     return redirect('my_properties')
 
+
 # ── REVIEWS ────────────────────────────────────────────────────
 from django.db.models import Avg, Count
 from .models import Review
 
+
+def _build_bar_and_stars(star_counts, max_count, avg):
+    """Helper: build bar_data list and avg_stars list."""
+    labels = {5: 'FIVE', 4: 'FOUR', 3: 'THREE', 2: 'TWO', 1: 'ONE'}
+    bar_data = []
+    for star in [5, 4, 3, 2, 1]:
+        count = star_counts[star]
+        width = int(round(count / max_count * 100)) if max_count else 0
+        bar_data.append({
+            'star': star,
+            'label': labels[star],
+            'count': count,
+            'width': width,
+        })
+    avg_rounded = round(avg)
+    avg_stars = [i <= avg_rounded for i in range(1, 6)]
+    return bar_data, avg_stars
+
+
 def reviews_page(request):
+    approved = Review.objects.filter(is_approved=True)
 
-    error = None
+    # Rating stats
+    stats = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
+    total = approved.count()
+    avg   = approved.aggregate(avg=Avg('rating'))['avg'] or 0
 
+    # Build count per star 1–5
+    star_counts = {i: 0 for i in range(1, 6)}
+    for s in stats:
+        star_counts[s['rating']] = s['count']
+    max_count = max(star_counts.values()) if total else 1
+
+    # ── POST: validate and save, then redirect (PRG pattern) ──
     if request.method == 'POST':
         name    = request.POST.get('name', '').strip()
         email   = request.POST.get('email', '').strip()
         rating  = request.POST.get('rating', '').strip()
         message = request.POST.get('message', '').strip()
 
+        error = None
         if not name or not email or not rating or not message:
-            error = "All fields are required. Please fill in every field."
+            error = "All fields are required."
         elif not rating.isdigit() or not (1 <= int(rating) <= 5):
-            error = "Please select a star rating before submitting."
-        else:
-            Review.objects.create(
-                name=name, email=email,
-                rating=int(rating), message=message,
-                is_approved=False
-            )
-            # Redirect after POST so form clears and success shows cleanly
-            from django.contrib import messages as django_messages
-            django_messages.success(request, "Thank you! Your review has been submitted and is awaiting admin approval.")
-            from django.shortcuts import redirect
-            return redirect('reviews')
+            error = "Please select a valid star rating (1–5)."
 
-    # Build stats from approved reviews only
-    approved = Review.objects.filter(is_approved=True)
-    stats    = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
-    total    = approved.count()
-    avg      = approved.aggregate(avg=Avg('rating'))['avg'] or 0
+        if error:
+            # Re-render with validation error (keep user's input via request.POST)
+            bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
+            return render(request, 'properties/reviews.html', {
+                'approved_reviews': approved,
+                'total':       total,
+                'avg_display': round(avg, 1) if avg else 0,
+                'bar_data':    bar_data,
+                'avg_stars':   avg_stars,
+                'error':       error,
+                'success':     False,
+            })
 
-    star_counts = {i: 0 for i in range(1, 6)}
-    for s in stats:
-        star_counts[s['rating']] = s['count']
-    max_count = max(star_counts.values()) if total else 1
+        # Valid submission — save and redirect so refresh doesn't resubmit
+        Review.objects.create(
+            name=name,
+            email=email,
+            rating=int(rating),
+            message=message,
+            is_approved=False,  # awaits admin approval
+        )
+        return redirect(request.path + '?submitted=1')
 
-    # Bar data with widths as plain integers
-    labels = {5: 'FIVE', 4: 'FOUR', 3: 'THREE', 2: 'TWO', 1: 'ONE'}
-    bar_data = []
-    for star in [5, 4, 3, 2, 1]:
-        count = star_counts[star]
-        width = int(round(count / max_count * 100)) if max_count > 0 else 0
-        bar_data.append({'star': star, 'label': labels[star], 'count': count, 'width': width})
+    # ── GET ──
+    # ?submitted=1 is set by the redirect above so the success banner shows once
+    success = request.GET.get('submitted') == '1'
 
-    avg_rounded = round(avg)
-    avg_stars   = [i <= avg_rounded for i in range(1, 6)]
+    bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
 
     return render(request, 'properties/reviews.html', {
         'approved_reviews': approved,
@@ -351,5 +378,6 @@ def reviews_page(request):
         'avg_display': round(avg, 1) if avg else 0,
         'bar_data':    bar_data,
         'avg_stars':   avg_stars,
-        'error':       error,
+        'error':       None,
+        'success':     success,
     })

@@ -18,6 +18,5 @@ urlpatterns = [
     path('contactus/', views.contactus, name='contactus'),
     path('contact-send/', views.contact_view, name='contact_view'),
     path('about/', views.about, name='about'),
-    path('review/', views.review, name='review'),
 
 ]

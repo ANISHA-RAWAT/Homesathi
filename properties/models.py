@@ -92,7 +92,7 @@ class Property(models.Model):
         ('sold', 'Sold/Rented'),
     ]
 
-    # ── CORE FIELDS (existing) ──
+    # ── CORE FIELDS ──
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -110,12 +110,13 @@ class Property(models.Model):
     bathrooms = models.PositiveIntegerField(default=0)
     area_sqft = models.PositiveIntegerField(null=True, blank=True, verbose_name='Area (sq ft)')
     is_furnished = models.BooleanField(default=False)
+    is_rented = models.BooleanField(default=False)   # ← FIXED: belongs on Property, not InquiryReply
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     view_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # ── NEW FIELDS ──
+    # ── EXTENDED FIELDS ──
     address = models.CharField(max_length=300, blank=True, help_text='Full street address')
     property_category = models.CharField(max_length=20, choices=PROPERTY_CATEGORY_CHOICES, blank=True)
     bhk = models.CharField(max_length=10, choices=BHK_CHOICES, blank=True)
@@ -242,17 +243,19 @@ class InquiryReply(models.Model):
 
     def __str__(self):
         return f"{self.sender_role} reply on {self.inquiry}"
-    is_rented = models.BooleanField(default=False)
+    # NOTE: is_rented was mistakenly placed here in the original — it has been
+    # moved to the Property model above where it belongs.
+
 
 class Review(models.Model):
     STAR_CHOICES = [(i, i) for i in range(1, 6)]
 
-    name       = models.CharField(max_length=100)
-    email      = models.EmailField()
-    rating     = models.PositiveSmallIntegerField(choices=STAR_CHOICES)
-    message    = models.TextField()
+    name        = models.CharField(max_length=100)
+    email       = models.EmailField()
+    rating      = models.PositiveSmallIntegerField(choices=STAR_CHOICES)
+    message     = models.TextField()
     is_approved = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']

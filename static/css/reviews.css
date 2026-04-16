@@ -164,7 +164,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #f5a623;
+    background: #00A9FF;
     color: white;
     font-weight: 700;
     font-size: 1.1rem;
@@ -277,7 +277,7 @@
 
 /* ── Submit button ────────────────────────────── */
 .review-form button {
-    background: #f5a623;
+    background: #00A9FF;
     color: white;
     border: none;
     padding: 13px;

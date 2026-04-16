@@ -1,40 +1,110 @@
 from django import forms
 from .models import Property, PropertyImage, Inquiry
 
+# ── FURNISHING ITEMS ──────────────────────────────────────────────────────────
+FURNISHING_ITEM_CHOICES = [
+    ('water_purifier', 'Water Purifier'),
+    ('fan', 'Fan'),
+    ('exhaust_fan', 'Exhaust Fan'),
+    ('dining_table', 'Dining Table'),
+    ('geyser', 'Geyser'),
+    ('light', 'Light'),
+    ('modular_kitchen', 'Modular Kitchen'),
+    ('curtains', 'Curtains'),
+    ('bed', 'Bed'),
+    ('wardrobe', 'Wardrobe'),
+    ('sofa', 'Sofa'),
+    ('microwave', 'Microwave'),
+    ('ac', 'AC'),
+    ('chimney', 'Chimney'),
+    ('fridge', 'Refrigerator'),
+    ('stove', 'Stove'),
+    ('tv', 'TV'),
+    ('washing_machine', 'Washing Machine'),
+]
+
+AMENITY_CHOICES = [
+    ('lift', 'Lift'),
+    ('park', 'Park'),
+    ('gym', 'Gym'),
+    ('power_backup', 'Power Backup'),
+    ('clubhouse', 'Clubhouse'),
+    ('parking', 'Parking'),
+    ('gas_pipeline', 'Gas Pipeline'),
+    ('swimming_pool', 'Swimming Pool'),
+    ('security_guards', 'Security Guards'),
+    ('cctv', 'CCTV'),
+    ('intercom', 'Intercom'),
+    ('rainwater_harvesting', 'Rainwater Harvesting'),
+]
+
+OVERLOOKING_CHOICES = [
+    ('garden', 'Garden / Park'),
+    ('main_road', 'Main Road'),
+    ('pool', 'Swimming Pool'),
+    ('club', 'Club / Amenities'),
+    ('other_units', 'Other Units'),
+]
+
+PG_COMMON_AREA_CHOICES = [
+    ('wifi', 'Wi-Fi'),
+    ('ac_room', 'AC Room'),
+    ('attached_bath', 'Attached Bathroom'),
+    ('tv', 'TV'),
+    ('fridge', 'Refrigerator'),
+    ('laundry', 'Laundry'),
+    ('meals', 'Meals Included'),
+    ('housekeeping', 'Housekeeping'),
+    ('cctv', 'CCTV'),
+    ('parking', 'Parking'),
+]
+
 RESIDENTIAL_TYPES = [
-    ('', 'Select Property Type'),
-    ('apartment', 'Apartment'),
-    ('house', 'House'),
-    ('villa', 'Villa'),
-    ('studio', '1 RK / Studio Apartment'),
+    ('', 'Select sub-type'),
+    ('flat_apartment', 'Flat / Apartment'),
+    ('independent_house_villa', 'Independent House / Villa'),
+    ('builder_floor', 'Independent / Builder Floor'),
+    ('plot_land_res', 'Plot / Land'),
+    ('studio_1rk', '1 RK / Studio Apartment'),
+    ('farmhouse', 'Farmhouse'),
 ]
 
 COMMERCIAL_TYPES = [
-    ('', 'Select Property Type'),
-    ('office', 'Office'),
+    ('', 'Select sub-type'),
+    ('office', 'Office Space'),
     ('retail', 'Retail / Shop'),
-    ('plot', 'Plot / Land'),
+    ('plot_land_com', 'Commercial Plot / Land'),
     ('storage', 'Storage / Warehouse'),
-    ('work_live_studio', 'Work-Live Studio'),
+    ('dance_studio', 'Dance / Fitness Studio'),
+    ('coworking', 'Co-working Space'),
+    ('showroom', 'Showroom'),
+    ('restaurant_cafe', 'Restaurant / Café'),
 ]
 
-ALL_TYPES = RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:]
+# Plot/land types — no BHK/floors needed
+PLOT_TYPES = {'plot_land_res', 'plot_land_com', 'farmhouse'}
+# Types where floor-level fields make sense
+FLOOR_TYPES = {'flat_apartment', 'builder_floor', 'studio_1rk', 'office', 'retail', 'coworking', 'showroom'}
 
 
 class PropertyForm(forms.ModelForm):
-    AMENITY_CHOICES = [
-        ('Lift', 'Lift'),
-        ('Park', 'Park'),
-        ('Gym', 'Gym'),
-        ('Power Backup', 'Power Backup'),
-        ('Clubhouse', 'Clubhouse'),
-        ('Parking', 'Parking'),
-        ('Gas Pipeline', 'Gas Pipeline'),
-        ('Swimming Pool', 'Swimming Pool'),
-        ('Security Guards', 'Security Guards'),
-    ]
     amenities = forms.MultipleChoiceField(
         choices=AMENITY_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    furnishing_items = forms.MultipleChoiceField(
+        choices=FURNISHING_ITEM_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    overlooking = forms.MultipleChoiceField(
+        choices=OVERLOOKING_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    pg_common_areas = forms.MultipleChoiceField(
+        choices=PG_COMMON_AREA_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
@@ -42,68 +112,94 @@ class PropertyForm(forms.ModelForm):
     class Meta:
         model = Property
         fields = [
-            'title', 'listing_type', 'property_category', 'property_type',
+            # identity
+            'seller_type', 'property_category', 'property_type',
+            'listing_type', 'title', 'description',
+            # price
             'price', 'min_price', 'max_price',
+            # location
             'city', 'state', 'location', 'address',
+            # specs
             'bhk', 'bedrooms', 'bathrooms',
-            'min_area', 'max_area', 'area_unit', 'area_sqft',
+            'area_sqft', 'min_area', 'max_area', 'area_unit',
             'construction_status', 'posted_by', 'purchase_type',
-            'furnishing', 'is_furnished', 'property_age',
-            'preferred_tenants', 'amenities', 'description',
+            'furnishing', 'is_furnished', 'property_age', 'preferred_tenants',
+            # new fields
+            'floor_number', 'total_floors',
+            'facing', 'overlooking', 'transaction_type', 'property_ownership',
+            'flooring', 'width_of_facing_road', 'water_source',
+            'key_highlights', 'key_facilities', 'vastu_compliant',
+            'furnishing_items', 'amenities',
+            # pg specific
+            'pg_for', 'pg_meals_included', 'pg_notice_period', 'pg_common_areas',
+            # builder specific
+            'project_name', 'rera_id', 'total_units',
         ]
         widgets = {
-            'title':       forms.TextInput(attrs={'placeholder': 'e.g. 2BHK Apartment in Ludhiana'}),
-            'price':       forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
-            'min_price':   forms.NumberInput(attrs={'placeholder': 'Minimum Price'}),
-            'max_price':   forms.NumberInput(attrs={'placeholder': 'Maximum Price'}),
-            'city':        forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
-            'state':       forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
-            'location':    forms.TextInput(attrs={'placeholder': 'Area / Locality'}),
-            'address':     forms.TextInput(attrs={'placeholder': 'e.g. House No. 12, Street 4, Model Town'}),
-            'bedrooms':    forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
-            'bathrooms':   forms.NumberInput(attrs={'placeholder': 'e.g. 2'}),
-            'area_sqft':   forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
-            'min_area':    forms.NumberInput(attrs={'placeholder': 'Min Area'}),
-            'max_area':    forms.NumberInput(attrs={'placeholder': 'Max Area'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Write about locality, schools, hospitals, highway access etc', 'rows': 4}),
+            'title':               forms.TextInput(attrs={'placeholder': 'e.g. Spacious 3BHK near Metro, Ludhiana'}),
+            'description':         forms.Textarea(attrs={'rows': 4, 'placeholder': 'Describe the property, locality highlights, nearby landmarks…'}),
+            'price':               forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
+            'min_price':           forms.NumberInput(attrs={'placeholder': 'Min ₹'}),
+            'max_price':           forms.NumberInput(attrs={'placeholder': 'Max ₹'}),
+            'city':                forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
+            'state':               forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
+            'location':            forms.TextInput(attrs={'placeholder': 'Locality / Area, e.g. Model Town'}),
+            'address':             forms.TextInput(attrs={'placeholder': 'Street / House No.'}),
+            'bedrooms':            forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
+            'bathrooms':           forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
+            'area_sqft':           forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
+            'min_area':            forms.NumberInput(attrs={'placeholder': 'Min'}),
+            'max_area':            forms.NumberInput(attrs={'placeholder': 'Max'}),
+            'floor_number':        forms.TextInput(attrs={'placeholder': 'e.g. 3 or Ground'}),
+            'total_floors':        forms.NumberInput(attrs={'placeholder': 'Total floors in building'}),
+            'width_of_facing_road': forms.TextInput(attrs={'placeholder': 'e.g. 30 ft or 9 metres'}),
+            'key_highlights':      forms.Textarea(attrs={'rows': 3, 'placeholder': 'e.g. Corner unit, park-facing, recently renovated…'}),
+            'key_facilities':      forms.TextInput(attrs={'placeholder': 'e.g. 24hr Security, CCTV, Visitor Parking'}),
+            'project_name':        forms.TextInput(attrs={'placeholder': 'Builder project / society name'}),
+            'rera_id':             forms.TextInput(attrs={'placeholder': 'RERA registration number'}),
+            'total_units':         forms.NumberInput(attrs={'placeholder': 'Total units in project'}),
+            'pg_notice_period':    forms.TextInput(attrs={'placeholder': 'e.g. 30 days'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Required fields
-        required_fields = ['title', 'listing_type', 'property_category', 'property_type', 'price', 'city', 'description']
-        for field_name, field in self.fields.items():
-            field.required = field_name in required_fields
+        # Nothing is required at form level — required is enforced per step in JS
+        # Django will still validate model-level required fields on POST
+        required_fields = ['title', 'listing_type', 'property_category',
+                           'property_type', 'price', 'city', 'description']
+        for name, field in self.fields.items():
+            field.required = name in required_fields
 
-        # Category dropdown with blank prompt
+        # property_category choices
         self.fields['property_category'].choices = [
-            ('', 'Select Category'),
+            ('', '— Select —'),
             ('residential', 'Residential'),
             ('commercial', 'Commercial'),
+            ('pg', 'PG / Co-living'),
         ]
 
-        # Dynamic property_type choices based on selected category
-        category = None
-        if self.data.get('property_category'):
-            category = self.data.get('property_category')
-        elif self.instance and self.instance.pk:
-            category = self.instance.property_category
-
-        if category == 'commercial':
+        # Dynamic property_type
+        cat = (self.data.get('property_category') or
+               (self.instance.property_category if self.instance and self.instance.pk else ''))
+        if cat == 'commercial':
             self.fields['property_type'].choices = COMMERCIAL_TYPES
-        elif category == 'residential':
+        elif cat == 'residential':
             self.fields['property_type'].choices = RESIDENTIAL_TYPES
         else:
-            self.fields['property_type'].choices = [('', 'Select Category First')] + ALL_TYPES[1:]
+            self.fields['property_type'].choices = RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:]
 
-        # Pre-populate amenities from existing instance
-        if self.instance and self.instance.pk and self.instance.amenities:
-            self.initial['amenities'] = self.instance.amenities
+        # Pre-populate JSON multi-fields from instance
+        if self.instance and self.instance.pk:
+            for field in ('amenities', 'furnishing_items', 'overlooking', 'pg_common_areas'):
+                val = getattr(self.instance, field, [])
+                if val:
+                    self.initial[field] = val
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.amenities = self.cleaned_data.get('amenities', [])
+        for field in ('amenities', 'furnishing_items', 'overlooking', 'pg_common_areas'):
+            setattr(instance, field, self.cleaned_data.get(field, []))
         if commit:
             instance.save()
         return instance
@@ -114,17 +210,15 @@ class PropertyImageForm(forms.ModelForm):
         model = PropertyImage
         fields = ['image', 'caption']
         widgets = {
-            'image':   forms.FileInput(attrs={'class': 'form-input', 'accept': 'image/*'}),
-            'caption': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Optional caption'}),
+            'image':   forms.FileInput(attrs={'accept': 'image/*'}),
+            'caption': forms.TextInput(attrs={'placeholder': 'Optional caption'}),
         }
 
 
 PropertyImageFormSet = forms.inlineformset_factory(
     Property, PropertyImage,
     form=PropertyImageForm,
-    extra=3,
-    max_num=10,
-    can_delete=True
+    extra=5, max_num=15, can_delete=True
 )
 
 
@@ -135,13 +229,14 @@ class InquiryForm(forms.ModelForm):
         widgets = {
             'seeker_name':  forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Your full name'}),
             'seeker_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Phone number (optional)'}),
-            'message':      forms.Textarea(attrs={'class': 'form-input', 'rows': 4, 'placeholder': "Tell the owner about yourself and when you'd like to visit..."}),
+            'message':      forms.Textarea(attrs={'class': 'form-input', 'rows': 4,
+                            'placeholder': "Tell the owner about yourself and when you'd like to visit…"}),
         }
 
 
 class ReplyForm(forms.Form):
     message = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Write your reply...'})
+        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Write your reply…'})
     )
 
 
@@ -151,7 +246,8 @@ class SearchForm(forms.Form):
 
     q = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-input search-input', 'placeholder': 'Search by city, location or area...'})
+        widget=forms.TextInput(attrs={'class': 'form-input search-input',
+                                      'placeholder': 'Search by city, location or area…'})
     )
     listing_type = forms.ChoiceField(
         choices=LISTING_TYPE_CHOICES, required=False,
@@ -163,13 +259,18 @@ class SearchForm(forms.Form):
     )
     min_price = forms.DecimalField(
         required=False, min_value=0,
-        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Min Price ₹'})
+        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Min ₹'})
     )
     max_price = forms.DecimalField(
         required=False, min_value=0,
-        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Max Price ₹'})
+        widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Max ₹'})
     )
     bedrooms = forms.IntegerField(
         required=False, min_value=0,
         widget=forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Min Bedrooms'})
+    )
+    furnishing = forms.ChoiceField(
+        choices=[('', 'Any Furnishing')] + Property.FURNISHING_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-input'})
     )

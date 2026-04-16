@@ -1,230 +1,148 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Post Property{% endblock %}
+{% block title %}Post Property — RentalHome{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/post_propertyfree.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="pp-page">
 
-<div class="form-container">
+  <!-- ═══════════════════════════════════════
+       STEP 0 — WHO ARE YOU?
+       Shown first, hides once seller chosen
+       ═══════════════════════════════════════ -->
+  <div class="pp-screen" id="screen-seller">
+    <div class="pp-screen-inner">
+      <p class="pp-eyebrow">Free Property Listing</p>
+      <h1 class="pp-screen-title">Who are you?</h1>
+      <p class="pp-screen-sub">Tell us your role so we can show the right fields.</p>
+      <div class="seller-cards">
+        <button type="button" class="seller-card" data-seller="pg_owner">
+          <span class="sc-emoji">🏡</span>
+          <span class="sc-name">PG Owner</span>
+          <span class="sc-desc">I rent out rooms / beds in a PG or hostel</span>
+        </button>
+        <button type="button" class="seller-card" data-seller="owner">
+          <span class="sc-emoji">🔑</span>
+          <span class="sc-name">Owner</span>
+          <span class="sc-desc">I own the property and list it directly</span>
+        </button>
+        <button type="button" class="seller-card" data-seller="builder">
+          <span class="sc-emoji">🏗️</span>
+          <span class="sc-name">Builder</span>
+          <span class="sc-desc">I'm listing a new project or development</span>
+        </button>
+        <button type="button" class="seller-card" data-seller="dealer">
+          <span class="sc-emoji">🤝</span>
+          <span class="sc-name">Dealer / Agent</span>
+          <span class="sc-desc">I'm a broker or property consultant</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-<h1>Post Property</h1>
+  <!-- ═══════════════════════════════════════
+       STEP 0b — PROPERTY CATEGORY
+       Shown after seller chosen (non-PG)
+       ═══════════════════════════════════════ -->
+  <div class="pp-screen hidden" id="screen-category">
+    <div class="pp-screen-inner">
+      <button class="pp-back-pill" id="backToSeller">← Change role</button>
+      <p class="pp-eyebrow" id="catEyebrow">Owner</p>
+      <h1 class="pp-screen-title">What type of property?</h1>
+      <div class="cat-cards">
+        <button type="button" class="cat-card" data-cat="residential">
+          <span class="cc-emoji">🏠</span>
+          <span class="cc-name">Residential</span>
+          <div class="cc-chips">
+            <span>Flat / Apartment</span><span>House / Villa</span>
+            <span>Builder Floor</span><span>Plot / Land</span>
+            <span>1 RK / Studio</span><span>Farmhouse</span>
+          </div>
+        </button>
+        <button type="button" class="cat-card" data-cat="commercial">
+          <span class="cc-emoji">🏢</span>
+          <span class="cc-name">Commercial</span>
+          <div class="cc-chips">
+            <span>Office</span><span>Retail / Shop</span>
+            <span>Plot / Land</span><span>Warehouse</span>
+            <span>Studio</span><span>Showroom</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-{% endif %}
+  <!-- ═══════════════════════════════════════
+       STEP 0c — PROPERTY SUB-TYPE
+       ═══════════════════════════════════════ -->
+  <div class="pp-screen hidden" id="screen-subtype">
+    <div class="pp-screen-inner">
+      <button class="pp-back-pill" id="backToCategory">← Change category</button>
+      <p class="pp-eyebrow" id="subtypeEyebrow">Residential</p>
+      <h1 class="pp-screen-title">Which type exactly?</h1>
+      <div class="subtype-grid" id="subtypeGrid">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
 
-<form method="POST" enctype="multipart/form-data" id="propertyForm">
-{% csrf_token %}
+  <!-- ═══════════════════════════════════════
+       MAIN FORM — shown after selections
+       ═══════════════════════════════════════ -->
+  <div class="pp-form-wrap hidden" id="formWrap">
 
-<!-- PROPERTY TYPE -->
-<div class="form-section">
-<h3>Property Type</h3>
-{{ form.property_category }}
-{{ form.property_type }}
-{% for error in form.property_category.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-{% for error in form.property_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+    <!-- Progress bar -->
+    <div class="pp-progress-bar-track"><div class="pp-progress-bar-fill" id="ppProgressFill"></div></div>
 
-<!-- BEDROOMS -->
-<div class="form-section">
-<h3>Bedrooms</h3>
-{{ form.bhk }}
-{% for error in form.bhk.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+    <!-- Steps nav -->
+    <div class="pp-steps-nav" id="ppStepsNav">
+      <!-- Filled by JS based on form type -->
+    </div>
 
-<!-- CONSTRUCTION STATUS -->
-<div class="form-section">
-<h3>Construction Status</h3>
-{{ form.construction_status }}
-{% for error in form.construction_status.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+    <!-- Selection breadcrumb -->
+    <div class="pp-breadcrumb" id="ppBreadcrumb"></div>
 
-<!-- POSTED BY -->
-<div class="form-section">
-<h3>Posted By</h3>
-{{ form.posted_by }}
-{% for error in form.posted_by.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+    {% if messages %}
+    <div class="pp-alerts">
+      {% for message in messages %}
+      <div class="pp-alert pp-alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-<!-- AREA -->
-<div class="form-section">
-<h3>Area</h3>
-{{ form.min_area }}
-{{ form.max_area }}
-{{ form.area_unit }}
-{% for error in form.min_area.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-{% for error in form.max_area.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+    <form method="POST" enctype="multipart/form-data" id="propertyForm" novalidate>
+      {% csrf_token %}
+      <!-- Hidden fields set by JS from selection screens -->
+      <input type="hidden" name="seller_type"       id="hSellerType">
+      <input type="hidden" name="property_category" id="hCategory">
+      <input type="hidden" name="property_type"     id="hPropertyType">
+      <input type="hidden" name="listing_type"      id="hListingType" value="rent">
 
-<!-- LOCALITY -->
-<div class="form-section">
-<h3>Locality</h3>
-{{ form.location }}
-{% for error in form.location.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+      <div class="pp-form-body" id="ppFormBody">
+        <!-- Panels rendered by JS based on form type -->
+      </div>
 
-<!-- ADDRESS -->
-<div class="form-section">
-<h3>Address</h3>
-{{ form.address }}
-{% for error in form.address.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+      <!-- Nav buttons -->
+      <div class="pp-nav-row" id="ppNavRow">
+        <button type="button" class="pp-btn-back" id="ppBtnBack">← Back</button>
+        <button type="button" class="pp-btn-next" id="ppBtnNext">Continue →</button>
+        <button type="submit" class="pp-btn-submit hidden" id="ppBtnSubmit">
+          🚀 Submit Property
+        </button>
+      </div>
+    </form>
+  </div>
 
-<!-- PURCHASE TYPE -->
-<div class="form-section">
-<h3>Purchase Type</h3>
-{{ form.purchase_type }}
-{% for error in form.purchase_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
+</div><!-- /pp-page -->
 
-<!-- FURNISHING -->
-<div class="form-section">
-<h3>Furnishing</h3>
-{{ form.furnishing }}
-{% for error in form.furnishing.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- PROPERTY AGE -->
-<div class="form-section">
-<h3>Property Age</h3>
-{{ form.property_age }}
-{% for error in form.property_age.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- PREFERRED TENANTS -->
-<div class="form-section">
-<h3>Preferred Tenants</h3>
-{{ form.preferred_tenants }}
-{% for error in form.preferred_tenants.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- AMENITIES -->
-<div class="form-section amenities">
-<h3>Amenities</h3>
-<div class="amenities-grid">
-{% for checkbox in form.amenities %}
-<label class="amenity-item">{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
-{% endfor %}
-</div>
-{% for error in form.amenities.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- UPLOAD PHOTOS -->
-<div class="form-section">
-<h3>Upload Photos <span style="color:red;">*</span></h3>
-<input type="file" name="property_images" id="property_images" multiple accept="image/*">
-</div>
-
-<!-- UPLOAD VIDEO -->
-<div class="form-section">
-<h3>Upload Video</h3>
-<input type="file" name="property_video">
-</div>
-
-<!-- DESCRIPTION -->
-<div class="form-section">
-<h3>Property Description</h3>
-{{ form.description }}
-{% for error in form.description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- TITLE -->
-<div class="form-section">
-<h3>Title *</h3>
-{{ form.title }}
-{% for error in form.title.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- LISTING TYPE -->
-<div class="form-section">
-<h3>Listing Type *</h3>
-{{ form.listing_type }}
-{% for error in form.listing_type.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- PRICE -->
-<div class="form-section">
-<h3>Price (₹) *</h3>
-{{ form.price }}
-{% for error in form.price.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- CITY -->
-<div class="form-section">
-<h3>City *</h3>
-{{ form.city }}
-{% for error in form.city.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- STATE -->
-<div class="form-section">
-<h3>State</h3>
-{{ form.state }}
-{% for error in form.state.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
-</div>
-
-<!-- BUTTONS -->
-<div class="button-row">
-<button type="reset" class="cancel-btn">Cancel</button>
-<button type="submit" class="submit-btn">Submit Property</button>
-</div>
-
-</form>
-</div>
-
+{# ── Pass Django form errors/data to JS via data attributes (avoids JS linter errors) ── #}
+{{ form.errors|json_script:"django-form-errors" }}
+{{ form_data_json|json_script:"django-form-data" }}
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/post_propertyfree.js' %}" defer></script>
-<script>
-(function() {
-    var RESIDENTIAL = [
-        ['', 'Select Property Type'],
-        ['apartment', 'Apartment'],
-        ['house', 'House'],
-        ['villa', 'Villa'],
-        ['studio', '1 RK / Studio Apartment'],
-    ];
-    var COMMERCIAL = [
-        ['', 'Select Property Type'],
-        ['office', 'Office'],
-        ['retail', 'Retail / Shop'],
-        ['plot', 'Plot / Land'],
-        ['storage', 'Storage / Warehouse'],
-        ['work_live_studio', 'Work-Live Studio'],
-    ];
-
-    var categorySelect = document.querySelector('[name="property_category"]');
-    var typeSelect     = document.querySelector('[name="property_type"]');
-
-    if (!categorySelect || !typeSelect) return;
-
-    function updateTypeOptions(category, keepValue) {
-        var options = category === 'commercial' ? COMMERCIAL : category === 'residential' ? RESIDENTIAL : [['', 'Select Category First']];
-        var current = keepValue || typeSelect.value;
-        typeSelect.innerHTML = '';
-        options.forEach(function(opt) {
-            var el = document.createElement('option');
-            el.value = opt[0];
-            el.textContent = opt[1];
-            if (opt[0] === current) el.selected = true;
-            typeSelect.appendChild(el);
-        });
-    }
-
-    // On page load — populate based on current category value
-    updateTypeOptions(categorySelect.value, typeSelect.value);
-
-    // On category change — repopulate and clear selection
-    categorySelect.addEventListener('change', function() {
-        updateTypeOptions(this.value, '');
-    });
-})();
-</script>
 {% endblock %}

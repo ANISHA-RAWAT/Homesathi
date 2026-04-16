@@ -1,0 +1,208 @@
+/* ============================================================
+   PROPERTY DETAIL — Additional styles for new fields
+   Add these to your existing properties.css / detail CSS file
+   ============================================================ */
+
+/* ── BADGE ROW ────────────────────────────────────────────────── */
+.detail-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.detail-type-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: #E5D7C4;
+  color: #354024;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.detail-cat-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.detail-vastu-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: #fef9c3;
+  color: #854d0e;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.detail-rented-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: line-through;
+}
+
+/* ── GALLERY SELLER BADGE ─────────────────────────────────────── */
+.gallery-seller-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(53,64,36,0.85);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+}
+
+/* ── ADDRESS ──────────────────────────────────────────────────── */
+.detail-address {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── DETAIL INFO GRID (2-column table replacement) ────────────── */
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.di-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.di-row:nth-child(even) { border-right: none; }
+
+.di-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.di-val {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.di-yes { color: #15803d; }
+
+/* ── BULLET LISTS ────────────────────────────────────────────── */
+.detail-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.detail-bullet-list li::before {
+  content: '•';
+  color: #354024;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.detail-bullet-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+/* ── TAGS (overlooking) ──────────────────────────────────────── */
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 0.83rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ── FURNISHING CHIPS ────────────────────────────────────────── */
+.furnishing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.furnishing-chip {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 0.83rem;
+  color: #15803d;
+  font-weight: 500;
+}
+
+/* ── PRIVACY NOTICE ──────────────────────────────────────────── */
+.privacy-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #f8faff;
+  border-color: #dbeafe;
+}
+
+.privacy-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+.privacy-notice h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.privacy-notice p {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .detail-info-grid     { grid-template-columns: 1fr; }
+  .di-row               { border-right: none; }
+  .detail-bullet-two-col{ grid-template-columns: 1fr; }
+}

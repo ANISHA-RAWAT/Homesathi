@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseForbidden
+import json
 
 from .models import Property, Inquiry, InquiryReply
 from .forms import PropertyForm, PropertyImageFormSet, InquiryForm, ReplyForm, SearchForm
@@ -23,38 +24,31 @@ def property_search(request):
     form = SearchForm(request.GET)
     properties = Property.objects.filter(status='active')
 
-    # Read raw GET params (works whether or not SearchForm includes all fields)
-    q            = request.GET.get('q', '').strip()
-    listing_type = request.GET.get('listing_type', '').strip()
+    q             = request.GET.get('q', '').strip()
+    listing_type  = request.GET.get('listing_type', '').strip()
     property_type = request.GET.get('property_type', '').strip()
 
-    # City / state search — searches city AND state so "Punjab" or "Ludhiana" both work
     if q:
         properties = properties.filter(
-            Q(city__icontains=q) |
-            Q(state__icontains=q) |
-            Q(location__icontains=q) |
-            Q(title__icontains=q)
+            Q(city__icontains=q) | Q(state__icontains=q) |
+            Q(location__icontains=q) | Q(title__icontains=q)
         )
 
     if listing_type:
         properties = properties.filter(listing_type=listing_type)
-
     if property_type:
         properties = properties.filter(property_type=property_type)
 
-    # Extra filters from SearchForm if valid
     if form.is_valid():
-        min_price = form.cleaned_data.get('min_price')
-        max_price = form.cleaned_data.get('max_price')
-        bedrooms  = form.cleaned_data.get('bedrooms')
-
-        if min_price is not None:
-            properties = properties.filter(price__gte=min_price)
-        if max_price is not None:
-            properties = properties.filter(price__lte=max_price)
-        if bedrooms is not None:
-            properties = properties.filter(bedrooms__gte=bedrooms)
+        d = form.cleaned_data
+        if d.get('min_price') is not None:
+            properties = properties.filter(price__gte=d['min_price'])
+        if d.get('max_price') is not None:
+            properties = properties.filter(price__lte=d['max_price'])
+        if d.get('bedrooms') is not None:
+            properties = properties.filter(bedrooms__gte=d['bedrooms'])
+        if d.get('furnishing'):
+            properties = properties.filter(furnishing=d['furnishing'])
 
     total = properties.count()
     return render(request, 'properties/property_list.html', {
@@ -78,11 +72,10 @@ def property_detail(request, pk):
             inquiry.property = property_obj
             if request.user.is_authenticated:
                 inquiry.buyer = request.user
-                inquiry.seeker_name = inquiry.seeker_name or request.user.full_name
+                if not inquiry.seeker_name:
+                    inquiry.seeker_name = request.user.full_name
             inquiry.save()
-
             _notify_seller_new_inquiry(inquiry, property_obj)
-
             messages.success(request, 'Your message has been sent to the owner!')
             return redirect('inquiry_thread', pk=inquiry.pk)
 
@@ -97,32 +90,17 @@ def _notify_seller_new_inquiry(inquiry, property_obj):
     from django.core.mail import send_mail
     seller_email = property_obj.owner.email
     subject = f"New inquiry for your property: {property_obj.title}"
-    message = f"""
-Hello {property_obj.owner.full_name},
-
-You have a new inquiry on your property "{property_obj.title}".
-
-From: {inquiry.seeker_name}
-Phone: {inquiry.seeker_phone or 'Not provided'}
-
-Message:
-{inquiry.message}
-
----
-To reply, log in to your account and visit your inbox:
-(Do NOT reply to this email — replies go through the platform to protect both parties)
-
-Best regards,
-{getattr(settings, 'SITE_NAME', 'HomeSathi')} Team
-"""
+    message = (
+        f"Hello {property_obj.owner.full_name},\n\n"
+        f"You have a new inquiry on \"{property_obj.title}\".\n\n"
+        f"From: {inquiry.seeker_name}\n"
+        f"Phone: {inquiry.seeker_phone or 'Not provided'}\n\n"
+        f"Message:\n{inquiry.message}\n\n"
+        f"---\nLog in to reply via the platform (do NOT reply to this email).\n\n"
+        f"Best,\n{getattr(settings, 'SITE_NAME', 'HomeSathi')} Team"
+    )
     try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[seller_email],
-            fail_silently=True,
-        )
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [seller_email], fail_silently=True)
     except Exception:
         pass
 
@@ -132,11 +110,9 @@ def inbox(request):
     seller_inquiries = Inquiry.objects.filter(
         property__owner=request.user
     ).select_related('property', 'buyer')
-
     buyer_inquiries = Inquiry.objects.filter(
         buyer=request.user
     ).select_related('property', 'property__owner')
-
     return render(request, 'properties/inbox.html', {
         'seller_inquiries': seller_inquiries,
         'buyer_inquiries': buyer_inquiries,
@@ -147,7 +123,6 @@ def inbox(request):
 def inquiry_thread(request, pk):
     inquiry = get_object_or_404(Inquiry, pk=pk)
     user = request.user
-
     is_seller = (inquiry.property.owner == user)
     is_buyer  = (inquiry.buyer == user)
 
@@ -169,24 +144,18 @@ def inquiry_thread(request, pk):
         if reply_form.is_valid():
             role = 'seller' if is_seller else 'buyer'
             InquiryReply.objects.create(
-                inquiry=inquiry,
-                sender=user,
-                sender_role=role,
-                message=reply_form.cleaned_data['message']
+                inquiry=inquiry, sender=user,
+                sender_role=role, message=reply_form.cleaned_data['message']
             )
             inquiry.status = 'replied'
             inquiry.save(update_fields=['status', 'updated_at'])
-
             _notify_reply(inquiry, role)
-
             messages.success(request, 'Reply sent!')
             return redirect('inquiry_thread', pk=pk)
 
-    replies = inquiry.replies.all()
-
     return render(request, 'properties/inquiry_thread.html', {
         'inquiry': inquiry,
-        'replies': replies,
+        'replies': inquiry.replies.all(),
         'reply_form': reply_form,
         'is_seller': is_seller,
         'is_buyer': is_buyer,
@@ -195,61 +164,95 @@ def inquiry_thread(request, pk):
 
 def _notify_reply(inquiry, sender_role):
     from django.core.mail import send_mail
-
     if sender_role == 'seller':
-        if inquiry.buyer:
-            recipient_email = inquiry.buyer.email
-            recipient_name  = inquiry.seeker_name
-        else:
+        if not inquiry.buyer:
             return
-        subject = f"The owner replied to your inquiry about: {inquiry.property.title}"
-        body    = f"Hello {recipient_name},\n\nThe property owner has replied to your inquiry.\n\nLog in to read their reply and respond.\n\nDo NOT reply to this email — use the platform."
+        recipient_email = inquiry.buyer.email
+        recipient_name  = inquiry.seeker_name
+        subject = f"Owner replied to your inquiry: {inquiry.property.title}"
+        body    = f"Hello {recipient_name},\n\nThe owner replied. Log in to read and respond."
     else:
         recipient_email = inquiry.property.owner.email
         recipient_name  = inquiry.property.owner.full_name
-        subject = f"New reply on your inquiry: {inquiry.property.title}"
-        body    = f"Hello {recipient_name},\n\nThe buyer has replied to the inquiry on your property.\n\nLog in to read their reply.\n\nDo NOT reply to this email — use the platform."
-
+        subject = f"New reply on: {inquiry.property.title}"
+        body    = f"Hello {recipient_name},\n\nThe buyer replied. Log in to read."
     try:
-        send_mail(
-            subject=subject,
-            message=body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[recipient_email],
-            fail_silently=True,
-        )
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [recipient_email], fail_silently=True)
     except Exception:
         pass
 
 
+def _build_form_data_json(form):
+    """
+    Serialize form field values to a plain dict so the template can pass
+    them to JavaScript via Django's json_script filter — no inline Django
+    tags inside <script> blocks, no JS linter errors.
+    """
+    data = {}
+    for field in form:
+        val = field.value()
+        if val is None:
+            data[field.html_name] = ''
+        else:
+            data[field.html_name] = str(val)
+    return json.dumps(data)
+
+
 @login_required
 def post_property_free(request):
-    from .forms import PropertyForm
     if request.method == 'POST':
         form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
             property_obj = form.save(commit=False)
             property_obj.owner  = request.user
             property_obj.status = 'active'
+
+            # Sync listing_type from the choice radio (named listing_type_choice in template)
+            listing_type_choice = request.POST.get('listing_type_choice', '')
+            if listing_type_choice:
+                property_obj.listing_type = listing_type_choice
+
+            # Sync furnishing from chip selection
+            furnishing_status = request.POST.get('furnishing_status', '')
+            if furnishing_status:
+                property_obj.furnishing   = furnishing_status
+                property_obj.is_furnished = (furnishing_status == 'furnished')
+
+            # PG for field
+            pg_for = request.POST.get('pg_for', '')
+            if pg_for:
+                property_obj.pg_for = pg_for
+
             property_obj.save()
 
+            # Save images (multiple)
             images = request.FILES.getlist('property_images')
             for i, image in enumerate(images):
                 from .models import PropertyImage
                 PropertyImage.objects.create(
                     property=property_obj,
                     image=image,
-                    is_primary=(i == 0)
+                    is_primary=(i == 0),
+                    order=i,
                 )
 
             messages.success(request, 'Your property has been listed successfully!')
-            return redirect('my_properties')
+            return redirect('property_detail', pk=property_obj.pk)
         else:
+            # Form invalid — re-render with errors.
+            # Build form_data_json so JS can restore field values after reload.
             messages.error(request, 'Please fix the errors below.')
+            return render(request, 'properties/post_propertyfree.html', {
+                'form': form,
+                'form_data_json': _build_form_data_json(form),
+            })
     else:
         form = PropertyForm()
 
-    return render(request, 'properties/post_propertyfree.html', {'form': form})
+    return render(request, 'properties/post_propertyfree.html', {
+        'form': form,
+        'form_data_json': '{}',   # empty on fresh GET — JS restoreOnError will be a no-op
+    })
 
 
 @login_required
@@ -267,13 +270,26 @@ def edit_property(request, pk):
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
-            messages.success(request, 'Property updated successfully!')
+            messages.success(request, 'Property updated!')
             return redirect('property_detail', pk=property_obj.pk)
+        else:
+            return render(request, 'properties/post_propertyfree.html', {
+                'form': form,
+                'formset': formset,
+                'editing': True,
+                'property': property_obj,
+                'form_data_json': _build_form_data_json(form),
+            })
     else:
         form    = PropertyForm(instance=property_obj)
         formset = PropertyImageFormSet(instance=property_obj)
+
     return render(request, 'properties/post_propertyfree.html', {
-        'form': form, 'formset': formset, 'editing': True, 'property': property_obj,
+        'form': form,
+        'formset': formset,
+        'editing': True,
+        'property': property_obj,
+        'form_data_json': _build_form_data_json(form),
     })
 
 
@@ -287,97 +303,66 @@ def delete_property(request, pk):
 
 
 def mark_rented(request, pk):
-    prop = get_object_or_404(Property, pk=pk)
+    prop = get_object_or_404(Property, pk=pk, owner=request.user)
     prop.is_rented = True
+    prop.status = 'sold'
     prop.save()
     return redirect('my_properties')
 
 
-# ── REVIEWS ────────────────────────────────────────────────────
+# ── REVIEWS ────────────────────────────────────────────────────────────────
 from django.db.models import Avg, Count
 from .models import Review
 
 
 def _build_bar_and_stars(star_counts, max_count, avg):
-    """Helper: build bar_data list and avg_stars list."""
     labels = {5: 'FIVE', 4: 'FOUR', 3: 'THREE', 2: 'TWO', 1: 'ONE'}
     bar_data = []
     for star in [5, 4, 3, 2, 1]:
         count = star_counts[star]
         width = int(round(count / max_count * 100)) if max_count else 0
-        bar_data.append({
-            'star': star,
-            'label': labels[star],
-            'count': count,
-            'width': width,
-        })
+        bar_data.append({'star': star, 'label': labels[star], 'count': count, 'width': width})
     avg_rounded = round(avg)
     avg_stars = [i <= avg_rounded for i in range(1, 6)]
     return bar_data, avg_stars
 
 
 def reviews_page(request):
-    approved = Review.objects.filter(is_approved=True)
-
-    # Rating stats
-    stats = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
-    total = approved.count()
-    avg   = approved.aggregate(avg=Avg('rating'))['avg'] or 0
-
-    # Build count per star 1–5
+    approved    = Review.objects.filter(is_approved=True)
+    stats       = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
+    total       = approved.count()
+    avg         = approved.aggregate(avg=Avg('rating'))['avg'] or 0
     star_counts = {i: 0 for i in range(1, 6)}
     for s in stats:
         star_counts[s['rating']] = s['count']
     max_count = max(star_counts.values()) if total else 1
 
-    # ── POST: validate and save, then redirect (PRG pattern) ──
     if request.method == 'POST':
         name    = request.POST.get('name', '').strip()
         email   = request.POST.get('email', '').strip()
         rating  = request.POST.get('rating', '').strip()
         message = request.POST.get('message', '').strip()
-
         error = None
         if not name or not email or not rating or not message:
             error = "All fields are required."
         elif not rating.isdigit() or not (1 <= int(rating) <= 5):
             error = "Please select a valid star rating (1–5)."
-
         if error:
-            # Re-render with validation error (keep user's input via request.POST)
             bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
             return render(request, 'properties/reviews.html', {
-                'approved_reviews': approved,
-                'total':       total,
+                'approved_reviews': approved, 'total': total,
                 'avg_display': round(avg, 1) if avg else 0,
-                'bar_data':    bar_data,
-                'avg_stars':   avg_stars,
-                'error':       error,
-                'success':     False,
+                'bar_data': bar_data, 'avg_stars': avg_stars,
+                'error': error, 'success': False,
             })
-
-        # Valid submission — save and redirect so refresh doesn't resubmit
-        Review.objects.create(
-            name=name,
-            email=email,
-            rating=int(rating),
-            message=message,
-            is_approved=False,  # awaits admin approval
-        )
+        Review.objects.create(name=name, email=email, rating=int(rating), message=message, is_approved=False)
         return redirect(request.path + '?submitted=1')
 
-    # ── GET ──
-    # ?submitted=1 is set by the redirect above so the success banner shows once
     success = request.GET.get('submitted') == '1'
-
     bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
-
     return render(request, 'properties/reviews.html', {
-        'approved_reviews': approved,
-        'total':       total,
+        'approved_reviews': approved, 'total': total,
         'avg_display': round(avg, 1) if avg else 0,
-        'bar_data':    bar_data,
-        'avg_stars':   avg_stars,
-        'error':       None,
-        'success':     success,
+        'bar_data': bar_data, 'avg_stars': avg_stars,
+        'error': None, 'success': success,
     })

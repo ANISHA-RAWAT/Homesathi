@@ -4,141 +4,322 @@
 
 {% block content %}
 <div class="detail-page">
-    <div class="container">
-        <nav class="breadcrumb">
-            <a href="{% url 'home' %}">Home</a><span>/</span>
-            <a href="{% url 'property_search' %}">Search</a><span>/</span>
-            <span>{{ property.title|truncatechars:40 }}</span>
-        </nav>
-        <div class="detail-layout">
-            <div class="detail-main">
-                <div class="gallery">
-                    {% if images %}
-                        <div class="gallery-main" id="mainImage">
-                            <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="mainImg" class="gallery-main-img">
-                            <span class="gallery-badge badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
-                            <span class="gallery-views">👁 {{ property.view_count }} views</span>
-                        </div>
-                        {% if images|length > 1 %}
-                        <div class="gallery-thumbs">
-                            {% for img in images %}
-                            <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
-                                 class="gallery-thumb {% if forloop.first %}active{% endif %}"
-                                 onclick="switchImage('{{ img.image.url }}', this)">
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="gallery-placeholder">
-                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21 15 16 10 5 21"/>
-                            </svg>
-                            <p>No photos uploaded</p>
-                        </div>
-                    {% endif %}
-                </div>
+  <div class="container">
 
-                <div class="detail-header">
-                    <div>
-                        <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
-                        <h1 class="detail-title">{{ property.title }}</h1>
-                        <div class="detail-location">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                            </svg>
-                            {{ property.location }}, {{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}
-                        </div>
-                    </div>
-                    <div class="detail-price-block">
-                        <div class="detail-price">{{ property.formatted_price }}</div>
-                        {% if property.listing_type == 'rent' %}<div class="detail-price-note">per month</div>{% endif %}
-                    </div>
-                </div>
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+      <a href="{% url 'home' %}">Home</a><span>/</span>
+      <a href="{% url 'property_search' %}">Search</a><span>/</span>
+      <span>{{ property.title|truncatechars:40 }}</span>
+    </nav>
 
-                <div class="detail-features">
-                    {% if property.bedrooms %}<div class="feature-item"><span class="feature-icon">🛏</span><span class="feature-val">{{ property.bedrooms }}</span><span class="feature-label">Bedrooms</span></div>{% endif %}
-                    {% if property.bathrooms %}<div class="feature-item"><span class="feature-icon">🚿</span><span class="feature-val">{{ property.bathrooms }}</span><span class="feature-label">Bathrooms</span></div>{% endif %}
-                    {% if property.area_sqft %}<div class="feature-item"><span class="feature-icon">📐</span><span class="feature-val">{{ property.area_sqft }}</span><span class="feature-label">Sq. Ft.</span></div>{% endif %}
-                    <div class="feature-item">
-                        <span class="feature-icon">{% if property.is_furnished %}✅{% else %}🪑{% endif %}</span>
-                        <span class="feature-val">{% if property.is_furnished %}Yes{% else %}No{% endif %}</span>
-                        <span class="feature-label">Furnished</span>
-                    </div>
-                </div>
+    <div class="detail-layout">
 
-                <div class="detail-section">
-                    <h2>About This Property</h2>
-                    <p class="detail-description">{{ property.description }}</p>
-                </div>
+      <!-- ════════════════════════════════════
+           LEFT / MAIN COLUMN
+           ════════════════════════════════════ -->
+      <div class="detail-main">
 
-                <div class="detail-section privacy-notice">
-                    <div class="privacy-icon">🔒</div>
-                    <div>
-                        <h3>Privacy Protected</h3>
-                        <p>Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email address.</p>
-                    </div>
-                </div>
+        <!-- GALLERY -->
+        <div class="gallery">
+          {% if images %}
+            <div class="gallery-main" id="mainImage">
+              <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="mainImg" class="gallery-main-img">
+              <span class="gallery-badge badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
+              <span class="gallery-views">👁 {{ property.view_count }} views</span>
+              {% if property.seller_type %}
+              <span class="gallery-seller-badge">{{ property.get_seller_type_display }}</span>
+              {% endif %}
             </div>
-
-            <aside class="detail-sidebar">
-                <div class="contact-card">
-                    <div class="contact-card-header">
-                        <div class="owner-avatar">{{ property.owner.email|slice:":1"|upper }}</div>
-                        <div>
-                            <div class="owner-name">{{ property.owner.full_name }}</div>
-                            <div class="owner-label">Property Owner</div>
-                        </div>
-                        <span class="privacy-badge">🔒 Private</span>
-                    </div>
-                    <p class="contact-intro">Interested? Send a message — their contact info stays private.</p>
-                    <form method="post" class="inquiry-form" id="inquiryForm">
-                        {% csrf_token %}
-                        {% for field in inquiry_form %}
-                        <div class="form-group">
-                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
-                            {{ field }}
-                            {% if field.errors %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}{% endif %}
-                        </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-primary btn-full btn-connect">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                            Connect with Owner
-                        </button>
-                        <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
-                    </form>
-                </div>
-
-                <div class="quick-info-card">
-                    <h4>Quick Info</h4>
-                    <div class="quick-info-row"><span>Listed</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
-                    <div class="quick-info-row"><span>Type</span><span>{{ property.get_listing_type_display }}</span></div>
-                    <div class="quick-info-row"><span>Views</span><span>{{ property.view_count }}</span></div>
-                    {% if user == property.owner %}
-                    <div class="owner-actions">
-                        <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline">Edit Listing</a>
-                        <form method="post" action="{% url 'delete_property' property.pk %}" onsubmit="return confirm('Delete this listing?')">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
-            </aside>
+            {% if images|length > 1 %}
+            <div class="gallery-thumbs">
+              {% for img in images %}
+              <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
+                   class="gallery-thumb {% if forloop.first %}active{% endif %}"
+                   onclick="switchImage('{{ img.image.url }}', this)">
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="gallery-placeholder">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No photos uploaded</p>
+            </div>
+          {% endif %}
         </div>
-    </div>
+
+        <!-- HEADER: Title + Price -->
+        <div class="detail-header">
+          <div>
+            <div class="detail-badges-row">
+              <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
+              {% if property.property_category %}
+              <span class="detail-cat-badge">{{ property.get_property_category_display }}</span>
+              {% endif %}
+              {% if property.vastu_compliant %}
+              <span class="detail-vastu-badge">🧿 Vastu</span>
+              {% endif %}
+              {% if property.is_rented %}
+              <span class="detail-rented-badge">Rented/Sold</span>
+              {% endif %}
+            </div>
+            <h1 class="detail-title">{{ property.title }}</h1>
+            <div class="detail-location">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              {{ property.location }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}
+            </div>
+            {% if property.address %}<div class="detail-address">📍 {{ property.address }}</div>{% endif %}
+          </div>
+          <div class="detail-price-block">
+            <div class="detail-price">{{ property.formatted_price }}</div>
+            {% if property.listing_type == 'rent' %}<div class="detail-price-note">per month</div>{% endif %}
+            {% if property.listing_type == 'pg' %}<div class="detail-price-note">per person / bed</div>{% endif %}
+          </div>
+        </div>
+
+        <!-- KEY FEATURES STRIP -->
+        <div class="detail-features">
+          {% if property.bhk %}<div class="feature-item"><span class="feature-icon">🏠</span><span class="feature-val">{{ property.get_bhk_display }}</span><span class="feature-label">BHK</span></div>{% endif %}
+          {% if property.bedrooms %}<div class="feature-item"><span class="feature-icon">🛏</span><span class="feature-val">{{ property.bedrooms }}</span><span class="feature-label">Bedrooms</span></div>{% endif %}
+          {% if property.bathrooms %}<div class="feature-item"><span class="feature-icon">🚿</span><span class="feature-val">{{ property.bathrooms }}</span><span class="feature-label">Bathrooms</span></div>{% endif %}
+          {% if property.area_sqft %}<div class="feature-item"><span class="feature-icon">📐</span><span class="feature-val">{{ property.area_sqft }}</span><span class="feature-label">Sq.Ft</span></div>{% endif %}
+          {% if property.furnishing %}
+          <div class="feature-item">
+            <span class="feature-icon">🛋</span>
+            <span class="feature-val">{{ property.get_furnishing_display }}</span>
+            <span class="feature-label">Furnishing</span>
+          </div>
+          {% elif property.is_furnished %}
+          <div class="feature-item"><span class="feature-icon">✅</span><span class="feature-val">Yes</span><span class="feature-label">Furnished</span></div>
+          {% endif %}
+          {% if property.floor_number %}<div class="feature-item"><span class="feature-icon">🏢</span><span class="feature-val">{{ property.floor_number }}{% if property.total_floors %}/{{ property.total_floors }}{% endif %}</span><span class="feature-label">Floor</span></div>{% endif %}
+          {% if property.construction_status %}<div class="feature-item"><span class="feature-icon">🏗</span><span class="feature-val">{{ property.get_construction_status_display }}</span><span class="feature-label">Status</span></div>{% endif %}
+        </div>
+
+        <!-- ABOUT -->
+        <div class="detail-section">
+          <h2>About This Property</h2>
+          <p class="detail-description">{{ property.description }}</p>
+        </div>
+
+        <!-- KEY HIGHLIGHTS -->
+        {% if property.key_highlights %}
+        <div class="detail-section">
+          <h2>⭐ Why You Should Consider This Property</h2>
+          <p class="detail-description">{{ property.key_highlights }}</p>
+        </div>
+        {% endif %}
+
+        <!-- KEY FACILITIES -->
+        {% if property.key_facilities_list %}
+        <div class="detail-section">
+          <h2>🏆 Key Facilities</h2>
+          <ul class="detail-bullet-list">
+            {% for fac in property.key_facilities_list %}
+            <li>{{ fac }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- PROPERTY DETAILS TABLE -->
+        <div class="detail-section">
+          <h2>📋 Property Details</h2>
+          <div class="detail-info-grid">
+
+            {% if property.listing_type %}
+            <div class="di-row"><span class="di-label">Listing Type</span><span class="di-val">{{ property.get_listing_type_display }}</span></div>
+            {% endif %}
+            {% if property.property_category %}
+            <div class="di-row"><span class="di-label">Category</span><span class="di-val">{{ property.get_property_category_display }}</span></div>
+            {% endif %}
+            {% if property.seller_type %}
+            <div class="di-row"><span class="di-label">Posted By</span><span class="di-val">{{ property.get_seller_type_display }}</span></div>
+            {% endif %}
+            {% if property.construction_status %}
+            <div class="di-row"><span class="di-label">Construction Status</span><span class="di-val">{{ property.get_construction_status_display }}</span></div>
+            {% endif %}
+            {% if property.property_age %}
+            <div class="di-row"><span class="di-label">Property Age</span><span class="di-val">{{ property.get_property_age_display }}</span></div>
+            {% endif %}
+            {% if property.transaction_type %}
+            <div class="di-row"><span class="di-label">Transaction Type</span><span class="di-val">{{ property.get_transaction_type_display }}</span></div>
+            {% endif %}
+            {% if property.property_ownership %}
+            <div class="di-row"><span class="di-label">Ownership</span><span class="di-val">{{ property.get_property_ownership_display }}</span></div>
+            {% endif %}
+            {% if property.facing %}
+            <div class="di-row"><span class="di-label">Facing</span><span class="di-val">{{ property.get_facing_display }}</span></div>
+            {% endif %}
+            {% if property.flooring %}
+            <div class="di-row"><span class="di-label">Flooring</span><span class="di-val">{{ property.get_flooring_display }}</span></div>
+            {% endif %}
+            {% if property.floor_number %}
+            <div class="di-row"><span class="di-label">Floor</span><span class="di-val">{{ property.floor_number }}{% if property.total_floors %} of {{ property.total_floors }}{% endif %}</span></div>
+            {% endif %}
+            {% if property.width_of_facing_road %}
+            <div class="di-row"><span class="di-label">Width of Road</span><span class="di-val">{{ property.width_of_facing_road }}</span></div>
+            {% endif %}
+            {% if property.water_source %}
+            <div class="di-row"><span class="di-label">Water Source</span><span class="di-val">{{ property.get_water_source_display }}</span></div>
+            {% endif %}
+            {% if property.vastu_compliant %}
+            <div class="di-row"><span class="di-label">Vastu Compliant</span><span class="di-val di-yes">✅ Yes</span></div>
+            {% endif %}
+            {% if property.preferred_tenants %}
+            <div class="di-row"><span class="di-label">Preferred Tenants</span><span class="di-val">{{ property.get_preferred_tenants_display }}</span></div>
+            {% endif %}
+            {% if property.project_name %}
+            <div class="di-row"><span class="di-label">Project / Society</span><span class="di-val">{{ property.project_name }}</span></div>
+            {% endif %}
+            {% if property.rera_id %}
+            <div class="di-row"><span class="di-label">RERA ID</span><span class="di-val">{{ property.rera_id }}</span></div>
+            {% endif %}
+            {% if property.min_area or property.max_area %}
+            <div class="di-row"><span class="di-label">Area Range</span><span class="di-val">{% if property.min_area %}{{ property.min_area }}{% endif %}{% if property.max_area %} – {{ property.max_area }}{% endif %} {{ property.get_area_unit_display }}</span></div>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- OVERLOOKING -->
+        {% if property.overlooking %}
+        <div class="detail-section">
+          <h2>🌅 Overlooking</h2>
+          <div class="detail-tags">
+            {% for item in property.overlooking %}
+            <span class="detail-tag">{{ item|title }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- AMENITIES -->
+        {% if property.amenities %}
+        <div class="detail-section">
+          <h2>🏛️ Amenities</h2>
+          <ul class="detail-bullet-list detail-bullet-two-col">
+            {% for amenity in property.amenities %}
+            <li>{{ amenity|title }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- PG AMENITIES -->
+        {% if property.pg_common_areas %}
+        <div class="detail-section">
+          <h2>🏠 PG Facilities</h2>
+          <ul class="detail-bullet-list detail-bullet-two-col">
+            {% for item in property.pg_common_areas %}
+            <li>{{ item|title }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- FURNISHING ITEMS -->
+        {% if property.furnishing_items_display %}
+        <div class="detail-section">
+          <h2>🛋️ Furnishing Details</h2>
+          <div class="furnishing-chips">
+            {% for item in property.furnishing_items_display %}
+            <span class="furnishing-chip">✓ {{ item }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- PRIVACY NOTICE -->
+        <div class="detail-section privacy-notice">
+          <div class="privacy-icon">🔒</div>
+          <div>
+            <h3>Privacy Protected</h3>
+            <p>Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email.</p>
+          </div>
+        </div>
+
+      </div><!-- /detail-main -->
+
+      <!-- ════════════════════════════════════
+           RIGHT SIDEBAR
+           ════════════════════════════════════ -->
+      <aside class="detail-sidebar">
+
+        <!-- CONTACT CARD -->
+        <div class="contact-card">
+          <div class="contact-card-header">
+            <div class="owner-avatar">{{ property.owner.email|slice:":1"|upper }}</div>
+            <div>
+              <div class="owner-name">{{ property.owner.full_name }}</div>
+              <div class="owner-label">
+                {% if property.seller_type %}{{ property.get_seller_type_display }}{% else %}Property Owner{% endif %}
+              </div>
+            </div>
+            <span class="privacy-badge">🔒 Private</span>
+          </div>
+          <p class="contact-intro">Interested? Send a message — their contact info stays private.</p>
+          <form method="post" class="inquiry-form" id="inquiryForm">
+            {% csrf_token %}
+            {% for field in inquiry_form %}
+            <div class="form-group">
+              <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+              {{ field }}
+              {% if field.errors %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-full btn-connect">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Connect with Owner
+            </button>
+            <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
+          </form>
+        </div>
+
+        <!-- QUICK INFO CARD -->
+        <div class="quick-info-card">
+          <h4>Quick Info</h4>
+          <div class="quick-info-row"><span>Listed</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
+          <div class="quick-info-row"><span>Type</span><span>{{ property.get_listing_type_display }}</span></div>
+          <div class="quick-info-row"><span>Views</span><span>{{ property.view_count }}</span></div>
+          {% if property.pg_for %}
+          <div class="quick-info-row"><span>PG For</span><span>{{ property.get_pg_for_display }}</span></div>
+          {% endif %}
+          {% if property.pg_notice_period %}
+          <div class="quick-info-row"><span>Notice Period</span><span>{{ property.pg_notice_period }}</span></div>
+          {% endif %}
+          {% if user == property.owner %}
+          <div class="owner-actions">
+            <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline">Edit Listing</a>
+            <form method="post" action="{% url 'delete_property' property.pk %}" onsubmit="return confirm('Delete this listing?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+      </aside>
+    </div><!-- /detail-layout -->
+  </div><!-- /container -->
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 function switchImage(src, thumb) {
-    document.getElementById('mainImg').src = src;
-    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-    thumb.classList.add('active');
+  document.getElementById('mainImg').src = src;
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
 }
 </script>
 {% endblock %}

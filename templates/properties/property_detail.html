@@ -2,6 +2,476 @@
 {% load static %}
 {% block title %}{{ property.title }} — RentalHome{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── APARTMENTS.COM STYLE GALLERY ── */
+.ap-gallery {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.ap-gallery-main {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+}
+
+.ap-gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+/* GRID OVERLAY (bottom-right: up to 4 small thumbs) */
+.ap-gallery-grid {
+    position: absolute;
+    top: 0; right: 0;
+    height: 100%;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 3px 3px 3px 3px;
+}
+
+.ap-grid-thumb {
+    flex: 1;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+}
+
+.ap-grid-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.ap-grid-thumb:hover img { transform: scale(1.05); }
+
+/* +N more overlay on last thumb */
+.ap-grid-more {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* NAV ARROWS */
+.ap-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    font-size: 1.1rem;
+    color: #1a1a2e;
+}
+.ap-arrow:hover { background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+.ap-arrow-prev { left: 12px; }
+.ap-arrow-next { right: {% if images|length > 1 %}240px{% else %}12px{% endif %}; }
+
+/* BADGES ON GALLERY */
+.ap-badge-row {
+    position: absolute;
+    top: 14px; left: 14px;
+    display: flex; gap: 8px; z-index: 5;
+}
+.ap-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: white;
+}
+.ap-badge-rent { background: #00A9FF; }
+.ap-badge-sell { background: #2d6a4f; }
+.ap-badge-pg   { background: #7c3aed; }
+.ap-badge-vastu { background: #d97706; }
+.ap-badge-rented { background: #6b7280; }
+
+/* BOTTOM BAR */
+.ap-gallery-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 20px 16px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 5;
+}
+
+.ap-photo-count {
+    color: white;
+    font-size: 0.85rem;
+    display: flex; align-items: center; gap: 6px;
+}
+
+.ap-view-all-btn {
+    background: white;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ap-view-all-btn:hover { background: #f0f9ff; color: #00A9FF; }
+
+/* VIDEO BUTTON */
+.ap-video-btn {
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+}
+.ap-video-btn:hover { background: rgba(0,0,0,0.8); }
+
+/* LIGHTBOX */
+.ap-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.ap-lightbox.open { display: flex; }
+
+.ap-lightbox-img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.ap-lightbox-close {
+    position: absolute;
+    top: 20px; right: 24px;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+}
+
+.ap-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.ap-lightbox-nav:hover { background: rgba(255,255,255,0.2); }
+.ap-lightbox-prev { left: 20px; }
+.ap-lightbox-next { right: 20px; }
+
+.ap-lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+}
+
+/* THUMBNAIL STRIP IN LIGHTBOX */
+.ap-lightbox-strip {
+    position: absolute;
+    bottom: 50px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    max-width: 80vw;
+    padding: 4px;
+}
+.ap-lb-strip-thumb {
+    width: 64px; height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.5;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+.ap-lb-strip-thumb.active { opacity: 1; border-color: white; }
+
+/* VIDEO MODAL */
+.ap-video-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+.ap-video-modal.open { display: flex; }
+.ap-video-modal video {
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 10px;
+}
+.ap-video-modal-close {
+    position: absolute;
+    top: 20px; right: 24px;
+    color: white; font-size: 2rem;
+    background: none; border: none; cursor: pointer;
+}
+
+/* ── DETAIL PAGE LAYOUT ── */
+.detail-page { padding: 40px 0 80px; background: #f8f9fb; }
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+    align-items: start;
+}
+
+.detail-main { min-width: 0; }
+
+/* PRICE + TITLE CARD */
+.detail-title-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+.detail-badges-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+}
+
+.detail-type-badge {
+    padding: 3px 10px; border-radius: 99px;
+    background: #f0f9ff; color: #00A9FF;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+}
+.detail-cat-badge {
+    padding: 3px 10px; border-radius: 99px;
+    background: #f3f4f6; color: #6b7280;
+    font-size: 0.75rem; font-weight: 600;
+}
+.detail-vastu-badge {
+    padding: 3px 10px; border-radius: 99px;
+    background: #fef3c7; color: #d97706;
+    font-size: 0.75rem; font-weight: 700;
+}
+.detail-rented-badge {
+    padding: 3px 10px; border-radius: 99px;
+    background: #f3f4f6; color: #6b7280;
+    font-size: 0.75rem; font-weight: 700;
+}
+
+.detail-title {
+    font-family: var(--font-display);
+    font-size: 1.7rem; color: #1a1a2e; margin-bottom: 8px;
+}
+
+.detail-location {
+    display: flex; align-items: center; gap: 6px;
+    color: #6b7280; font-size: 0.9rem; margin-bottom: 4px;
+}
+.detail-address { font-size: 0.85rem; color: #6b7280; margin-top: 4px; }
+
+.detail-price-block { margin-top: 16px; }
+.detail-price { font-size: 2rem; font-weight: 800; color: #1a1a2e; }
+.detail-price-note { font-size: 0.85rem; color: #6b7280; }
+
+/* KEY FEATURES STRIP */
+.detail-features {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+}
+
+.feature-item {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 16px;
+    background: #f8f9fb;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    min-width: 80px; text-align: center;
+}
+.feature-icon { font-size: 1.3rem; margin-bottom: 3px; }
+.feature-val  { font-weight: 700; font-size: 0.95rem; color: #1a1a2e; }
+.feature-label{ font-size: 0.72rem; color: #6b7280; }
+
+/* DETAIL SECTIONS */
+.detail-section {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+}
+
+.detail-section h2 {
+    font-size: 1.1rem; font-weight: 700;
+    color: #1a1a2e; margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-description { color: #6b7280; line-height: 1.8; }
+
+/* PROPERTY INFO GRID */
+.detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.di-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.875rem;
+}
+.di-row:last-child { border-bottom: none; }
+.di-label { color: #6b7280; }
+.di-val   { font-weight: 600; color: #1a1a2e; text-align: right; }
+.di-yes   { color: #2d6a4f; }
+
+/* DETAIL TAGS & CHIPS */
+.detail-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.detail-tag {
+    background: #f0f9ff; color: #00A9FF;
+    border: 1px solid #A0E9FF;
+    border-radius: 99px; padding: 5px 14px; font-size: 0.82rem; font-weight: 500;
+}
+
+.detail-bullet-list {
+    list-style: none; padding: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.detail-bullet-list li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.875rem; color: #374151;
+}
+.detail-bullet-list li::before { content: '✓'; color: #00A9FF; font-weight: 700; }
+
+.furnishing-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.furnishing-chip {
+    background: #f0fdf4; color: #2d6a4f;
+    border: 1px solid #bbf7d0;
+    border-radius: 99px; padding: 5px 12px; font-size: 0.82rem;
+}
+
+/* PRIVACY NOTICE */
+.privacy-notice {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: #f0f9ff; border: 1px solid #A0E9FF;
+    border-radius: var(--radius); padding: 16px;
+}
+.privacy-icon { font-size: 1.4rem; }
+
+/* SIDEBAR */
+.detail-sidebar { position: sticky; top: calc(var(--navbar-h) + 16px); }
+
+.contact-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.contact-card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.owner-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #00A9FF; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
+}
+.owner-name  { font-weight: 700; font-size: 0.95rem; color: #1a1a2e; }
+.owner-label { font-size: 0.75rem; color: #6b7280; }
+.privacy-badge {
+    margin-left: auto; font-size: 0.72rem;
+    color: #00A9FF; background: #f0f9ff;
+    padding: 3px 8px; border-radius: 99px; border: 1px solid #A0E9FF;
+}
+
+.contact-intro { font-size: 0.85rem; color: #6b7280; margin-bottom: 16px; line-height: 1.6; }
+.btn-connect   { margin-top: 8px; }
+.form-privacy-note { font-size: 0.75rem; color: #9ca3af; text-align: center; margin-top: 10px; }
+
+.quick-info-card {
+    background: white; border: 1px solid #e5e7eb;
+    border-radius: var(--radius); padding: 20px;
+}
+.quick-info-card h4 { font-size: 0.9rem; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+.quick-info-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6; color: #6b7280;
+}
+.quick-info-row:last-child { border-bottom: none; }
+.quick-info-row span:last-child { font-weight: 600; color: #1a1a2e; }
+.owner-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+/* BREADCRUMB */
+.breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;
+}
+.breadcrumb a:hover { color: #00A9FF; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .detail-layout { grid-template-columns: 1fr; }
+    .detail-sidebar { position: static; }
+    .ap-gallery-main { height: 300px; }
+    .ap-gallery-grid { display: none; }
+    .ap-arrow-next { right: 12px; }
+    .detail-info-grid { grid-template-columns: 1fr; }
+    .detail-bullet-list { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="detail-page">
   <div class="container">
@@ -13,68 +483,117 @@
       <span>{{ property.title|truncatechars:40 }}</span>
     </nav>
 
-    <div class="detail-layout">
+    <!-- ══════════════════════════════════════════
+         APARTMENTS.COM STYLE GALLERY
+         ══════════════════════════════════════════ -->
+    {% if images %}
+    <div class="ap-gallery">
+      <!-- MAIN IMAGE -->
+      <div class="ap-gallery-main" id="apMainWrap">
+        <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="apMainImg">
 
-      <!-- ════════════════════════════════════
-           LEFT / MAIN COLUMN
-           ════════════════════════════════════ -->
-      <div class="detail-main">
-
-        <!-- GALLERY -->
-        <div class="gallery">
-          {% if images %}
-            <div class="gallery-main" id="mainImage">
-              <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="mainImg" class="gallery-main-img">
-              <span class="gallery-badge badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
-              <span class="gallery-views">👁 {{ property.view_count }} views</span>
-              {% if property.seller_type %}
-              <span class="gallery-seller-badge">{{ property.get_seller_type_display }}</span>
-              {% endif %}
-            </div>
-            {% if images|length > 1 %}
-            <div class="gallery-thumbs">
-              {% for img in images %}
-              <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
-                   class="gallery-thumb {% if forloop.first %}active{% endif %}"
-                   onclick="switchImage('{{ img.image.url }}', this)">
-              {% endfor %}
-            </div>
-            {% endif %}
-          {% else %}
-            <div class="gallery-placeholder">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              <p>No photos uploaded</p>
-            </div>
-          {% endif %}
+        <!-- BADGES -->
+        <div class="ap-badge-row">
+          <span class="ap-badge ap-badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
+          {% if property.vastu_compliant %}<span class="ap-badge ap-badge-vastu">🧿 Vastu</span>{% endif %}
+          {% if property.is_rented %}<span class="ap-badge ap-badge-rented">Rented/Sold</span>{% endif %}
         </div>
 
-        <!-- HEADER: Title + Price -->
-        <div class="detail-header">
-          <div>
-            <div class="detail-badges-row">
-              <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
-              {% if property.property_category %}
-              <span class="detail-cat-badge">{{ property.get_property_category_display }}</span>
-              {% endif %}
-              {% if property.vastu_compliant %}
-              <span class="detail-vastu-badge">🧿 Vastu</span>
-              {% endif %}
-              {% if property.is_rented %}
-              <span class="detail-rented-badge">Rented/Sold</span>
-              {% endif %}
-            </div>
-            <h1 class="detail-title">{{ property.title }}</h1>
-            <div class="detail-location">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              {{ property.location }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}
-            </div>
-            {% if property.address %}<div class="detail-address">📍 {{ property.address }}</div>{% endif %}
+        <!-- NAV ARROWS -->
+        {% if images|length > 1 %}
+        <button class="ap-arrow ap-arrow-prev" onclick="apNav(-1)">&#8249;</button>
+        <button class="ap-arrow ap-arrow-next" onclick="apNav(1)">&#8250;</button>
+        {% endif %}
+
+        <!-- BOTTOM BAR -->
+        <div class="ap-gallery-bar">
+          <span class="ap-photo-count">📷 <span id="apCounter">1</span> / {{ images|length }}</span>
+          <div style="display:flex;gap:8px;">
+            {% if property.property_video %}
+            <button class="ap-video-btn" onclick="openVideo()">▶ Watch Video</button>
+            {% endif %}
+            <button class="ap-view-all-btn" onclick="openLightbox(0)">View All Photos</button>
           </div>
+        </div>
+      </div>
+
+      <!-- GRID THUMBS (right side, max 4) -->
+      {% if images|length > 1 %}
+      <div class="ap-gallery-grid">
+        {% for img in images %}
+          {% if forloop.counter > 1 and forloop.counter <= 5 %}
+          <div class="ap-grid-thumb" onclick="apGoTo({{ forloop.counter0 }})">
+            <img src="{{ img.image.url }}" alt="">
+            {% if forloop.counter == 5 and images|length > 5 %}
+            <div class="ap-grid-more">+{{ images|length|add:"-5" }} more</div>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% else %}
+    <!-- NO PHOTOS -->
+    <div style="height:300px;background:#f3f4f6;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9ca3af;margin-bottom:24px;gap:12px;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <p>No photos uploaded</p>
+    </div>
+    {% endif %}
+
+    <!-- ══════════════════════════════════════════
+         LIGHTBOX
+         ══════════════════════════════════════════ -->
+    <div class="ap-lightbox" id="apLightbox">
+      <button class="ap-lightbox-close" onclick="closeLightbox()">×</button>
+      <button class="ap-lightbox-nav ap-lightbox-prev" onclick="lbNav(-1)">&#8249;</button>
+      <img src="" alt="" class="ap-lightbox-img" id="apLbImg">
+      <button class="ap-lightbox-nav ap-lightbox-next" onclick="lbNav(1)">&#8250;</button>
+      <div class="ap-lightbox-strip" id="apLbStrip">
+        {% for img in images %}
+        <img src="{{ img.image.url }}" class="ap-lb-strip-thumb {% if forloop.first %}active{% endif %}" onclick="lbGoTo({{ forloop.counter0 }})" alt="">
+        {% endfor %}
+      </div>
+      <span class="ap-lightbox-counter" id="apLbCounter"></span>
+    </div>
+
+    <!-- VIDEO MODAL -->
+    {% if property.property_video %}
+    <div class="ap-video-modal" id="apVideoModal">
+      <button class="ap-video-modal-close" onclick="closeVideo()">×</button>
+      <video controls id="apVideoPlayer">
+        <source src="{{ property.property_video.url }}" type="video/mp4">
+      </video>
+    </div>
+    {% endif %}
+
+    <!-- ══════════════════════════════════════════
+         MAIN LAYOUT
+         ══════════════════════════════════════════ -->
+    <div class="detail-layout">
+
+      <!-- LEFT COLUMN -->
+      <div class="detail-main">
+
+        <!-- TITLE + PRICE CARD -->
+        <div class="detail-title-card">
+          <div class="detail-badges-row">
+            <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
+            {% if property.property_category %}<span class="detail-cat-badge">{{ property.get_property_category_display }}</span>{% endif %}
+            {% if property.vastu_compliant %}<span class="detail-vastu-badge">🧿 Vastu Compliant</span>{% endif %}
+            {% if property.is_rented %}<span class="detail-rented-badge">Rented / Sold</span>{% endif %}
+          </div>
+          <h1 class="detail-title">{{ property.title }}</h1>
+          <div class="detail-location">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ property.location }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}
+          </div>
+          {% if property.address %}<div class="detail-address">📍 {{ property.address }}</div>{% endif %}
           <div class="detail-price-block">
             <div class="detail-price">{{ property.formatted_price }}</div>
             {% if property.listing_type == 'rent' %}<div class="detail-price-note">per month</div>{% endif %}
@@ -88,17 +607,11 @@
           {% if property.bedrooms %}<div class="feature-item"><span class="feature-icon">🛏</span><span class="feature-val">{{ property.bedrooms }}</span><span class="feature-label">Bedrooms</span></div>{% endif %}
           {% if property.bathrooms %}<div class="feature-item"><span class="feature-icon">🚿</span><span class="feature-val">{{ property.bathrooms }}</span><span class="feature-label">Bathrooms</span></div>{% endif %}
           {% if property.area_sqft %}<div class="feature-item"><span class="feature-icon">📐</span><span class="feature-val">{{ property.area_sqft }}</span><span class="feature-label">Sq.Ft</span></div>{% endif %}
-          {% if property.furnishing %}
-          <div class="feature-item">
-            <span class="feature-icon">🛋</span>
-            <span class="feature-val">{{ property.get_furnishing_display }}</span>
-            <span class="feature-label">Furnishing</span>
-          </div>
-          {% elif property.is_furnished %}
-          <div class="feature-item"><span class="feature-icon">✅</span><span class="feature-val">Yes</span><span class="feature-label">Furnished</span></div>
-          {% endif %}
+          {% if property.furnishing %}<div class="feature-item"><span class="feature-icon">🛋</span><span class="feature-val">{{ property.get_furnishing_display }}</span><span class="feature-label">Furnishing</span></div>
+          {% elif property.is_furnished %}<div class="feature-item"><span class="feature-icon">✅</span><span class="feature-val">Yes</span><span class="feature-label">Furnished</span></div>{% endif %}
           {% if property.floor_number %}<div class="feature-item"><span class="feature-icon">🏢</span><span class="feature-val">{{ property.floor_number }}{% if property.total_floors %}/{{ property.total_floors }}{% endif %}</span><span class="feature-label">Floor</span></div>{% endif %}
           {% if property.construction_status %}<div class="feature-item"><span class="feature-icon">🏗</span><span class="feature-val">{{ property.get_construction_status_display }}</span><span class="feature-label">Status</span></div>{% endif %}
+          {% if property.facing %}<div class="feature-item"><span class="feature-icon">🧭</span><span class="feature-val">{{ property.get_facing_display }}</span><span class="feature-label">Facing</span></div>{% endif %}
         </div>
 
         <!-- ABOUT -->
@@ -110,7 +623,7 @@
         <!-- KEY HIGHLIGHTS -->
         {% if property.key_highlights %}
         <div class="detail-section">
-          <h2>⭐ Why You Should Consider This Property</h2>
+          <h2>⭐ Why You Should Consider This</h2>
           <p class="detail-description">{{ property.key_highlights }}</p>
         </div>
         {% endif %}
@@ -120,9 +633,7 @@
         <div class="detail-section">
           <h2>🏆 Key Facilities</h2>
           <ul class="detail-bullet-list">
-            {% for fac in property.key_facilities_list %}
-            <li>{{ fac }}</li>
-            {% endfor %}
+            {% for fac in property.key_facilities_list %}<li>{{ fac }}</li>{% endfor %}
           </ul>
         </div>
         {% endif %}
@@ -131,59 +642,22 @@
         <div class="detail-section">
           <h2>📋 Property Details</h2>
           <div class="detail-info-grid">
-
-            {% if property.listing_type %}
-            <div class="di-row"><span class="di-label">Listing Type</span><span class="di-val">{{ property.get_listing_type_display }}</span></div>
-            {% endif %}
-            {% if property.property_category %}
-            <div class="di-row"><span class="di-label">Category</span><span class="di-val">{{ property.get_property_category_display }}</span></div>
-            {% endif %}
-            {% if property.seller_type %}
-            <div class="di-row"><span class="di-label">Posted By</span><span class="di-val">{{ property.get_seller_type_display }}</span></div>
-            {% endif %}
-            {% if property.construction_status %}
-            <div class="di-row"><span class="di-label">Construction Status</span><span class="di-val">{{ property.get_construction_status_display }}</span></div>
-            {% endif %}
-            {% if property.property_age %}
-            <div class="di-row"><span class="di-label">Property Age</span><span class="di-val">{{ property.get_property_age_display }}</span></div>
-            {% endif %}
-            {% if property.transaction_type %}
-            <div class="di-row"><span class="di-label">Transaction Type</span><span class="di-val">{{ property.get_transaction_type_display }}</span></div>
-            {% endif %}
-            {% if property.property_ownership %}
-            <div class="di-row"><span class="di-label">Ownership</span><span class="di-val">{{ property.get_property_ownership_display }}</span></div>
-            {% endif %}
-            {% if property.facing %}
-            <div class="di-row"><span class="di-label">Facing</span><span class="di-val">{{ property.get_facing_display }}</span></div>
-            {% endif %}
-            {% if property.flooring %}
-            <div class="di-row"><span class="di-label">Flooring</span><span class="di-val">{{ property.get_flooring_display }}</span></div>
-            {% endif %}
-            {% if property.floor_number %}
-            <div class="di-row"><span class="di-label">Floor</span><span class="di-val">{{ property.floor_number }}{% if property.total_floors %} of {{ property.total_floors }}{% endif %}</span></div>
-            {% endif %}
-            {% if property.width_of_facing_road %}
-            <div class="di-row"><span class="di-label">Width of Road</span><span class="di-val">{{ property.width_of_facing_road }}</span></div>
-            {% endif %}
-            {% if property.water_source %}
-            <div class="di-row"><span class="di-label">Water Source</span><span class="di-val">{{ property.get_water_source_display }}</span></div>
-            {% endif %}
-            {% if property.vastu_compliant %}
-            <div class="di-row"><span class="di-label">Vastu Compliant</span><span class="di-val di-yes">✅ Yes</span></div>
-            {% endif %}
-            {% if property.preferred_tenants %}
-            <div class="di-row"><span class="di-label">Preferred Tenants</span><span class="di-val">{{ property.get_preferred_tenants_display }}</span></div>
-            {% endif %}
-            {% if property.project_name %}
-            <div class="di-row"><span class="di-label">Project / Society</span><span class="di-val">{{ property.project_name }}</span></div>
-            {% endif %}
-            {% if property.rera_id %}
-            <div class="di-row"><span class="di-label">RERA ID</span><span class="di-val">{{ property.rera_id }}</span></div>
-            {% endif %}
-            {% if property.min_area or property.max_area %}
-            <div class="di-row"><span class="di-label">Area Range</span><span class="di-val">{% if property.min_area %}{{ property.min_area }}{% endif %}{% if property.max_area %} – {{ property.max_area }}{% endif %} {{ property.get_area_unit_display }}</span></div>
-            {% endif %}
-
+            {% if property.listing_type %}<div class="di-row"><span class="di-label">Listing Type</span><span class="di-val">{{ property.get_listing_type_display }}</span></div>{% endif %}
+            {% if property.property_category %}<div class="di-row"><span class="di-label">Category</span><span class="di-val">{{ property.get_property_category_display }}</span></div>{% endif %}
+            {% if property.seller_type %}<div class="di-row"><span class="di-label">Posted By</span><span class="di-val">{{ property.get_seller_type_display }}</span></div>{% endif %}
+            {% if property.construction_status %}<div class="di-row"><span class="di-label">Construction Status</span><span class="di-val">{{ property.get_construction_status_display }}</span></div>{% endif %}
+            {% if property.property_age %}<div class="di-row"><span class="di-label">Property Age</span><span class="di-val">{{ property.get_property_age_display }}</span></div>{% endif %}
+            {% if property.transaction_type %}<div class="di-row"><span class="di-label">Transaction Type</span><span class="di-val">{{ property.get_transaction_type_display }}</span></div>{% endif %}
+            {% if property.property_ownership %}<div class="di-row"><span class="di-label">Ownership</span><span class="di-val">{{ property.get_property_ownership_display }}</span></div>{% endif %}
+            {% if property.facing %}<div class="di-row"><span class="di-label">Facing</span><span class="di-val">{{ property.get_facing_display }}</span></div>{% endif %}
+            {% if property.flooring %}<div class="di-row"><span class="di-label">Flooring</span><span class="di-val">{{ property.get_flooring_display }}</span></div>{% endif %}
+            {% if property.floor_number %}<div class="di-row"><span class="di-label">Floor</span><span class="di-val">{{ property.floor_number }}{% if property.total_floors %} of {{ property.total_floors }}{% endif %}</span></div>{% endif %}
+            {% if property.width_of_facing_road %}<div class="di-row"><span class="di-label">Road Width</span><span class="di-val">{{ property.width_of_facing_road }}</span></div>{% endif %}
+            {% if property.water_source %}<div class="di-row"><span class="di-label">Water Source</span><span class="di-val">{{ property.get_water_source_display }}</span></div>{% endif %}
+            {% if property.vastu_compliant %}<div class="di-row"><span class="di-label">Vastu Compliant</span><span class="di-val di-yes">✅ Yes</span></div>{% endif %}
+            {% if property.preferred_tenants %}<div class="di-row"><span class="di-label">Preferred Tenants</span><span class="di-val">{{ property.get_preferred_tenants_display }}</span></div>{% endif %}
+            {% if property.project_name %}<div class="di-row"><span class="di-label">Project / Society</span><span class="di-val">{{ property.project_name }}</span></div>{% endif %}
+            {% if property.rera_id %}<div class="di-row"><span class="di-label">RERA ID</span><span class="di-val">{{ property.rera_id }}</span></div>{% endif %}
           </div>
         </div>
 
@@ -192,9 +666,7 @@
         <div class="detail-section">
           <h2>🌅 Overlooking</h2>
           <div class="detail-tags">
-            {% for item in property.overlooking %}
-            <span class="detail-tag">{{ item|title }}</span>
-            {% endfor %}
+            {% for item in property.overlooking %}<span class="detail-tag">{{ item|title }}</span>{% endfor %}
           </div>
         </div>
         {% endif %}
@@ -203,10 +675,8 @@
         {% if property.amenities %}
         <div class="detail-section">
           <h2>🏛️ Amenities</h2>
-          <ul class="detail-bullet-list detail-bullet-two-col">
-            {% for amenity in property.amenities %}
-            <li>{{ amenity|title }}</li>
-            {% endfor %}
+          <ul class="detail-bullet-list">
+            {% for a in property.amenities %}<li>{{ a|title }}</li>{% endfor %}
           </ul>
         </div>
         {% endif %}
@@ -215,10 +685,8 @@
         {% if property.pg_common_areas %}
         <div class="detail-section">
           <h2>🏠 PG Facilities</h2>
-          <ul class="detail-bullet-list detail-bullet-two-col">
-            {% for item in property.pg_common_areas %}
-            <li>{{ item|title }}</li>
-            {% endfor %}
+          <ul class="detail-bullet-list">
+            {% for item in property.pg_common_areas %}<li>{{ item|title }}</li>{% endfor %}
           </ul>
         </div>
         {% endif %}
@@ -226,11 +694,9 @@
         <!-- FURNISHING ITEMS -->
         {% if property.furnishing_items_display %}
         <div class="detail-section">
-          <h2>🛋️ Furnishing Details</h2>
+          <h2>🛋️ What's Included</h2>
           <div class="furnishing-chips">
-            {% for item in property.furnishing_items_display %}
-            <span class="furnishing-chip">✓ {{ item }}</span>
-            {% endfor %}
+            {% for item in property.furnishing_items_display %}<span class="furnishing-chip">✓ {{ item }}</span>{% endfor %}
           </div>
         </div>
         {% endif %}
@@ -239,27 +705,22 @@
         <div class="detail-section privacy-notice">
           <div class="privacy-icon">🔒</div>
           <div>
-            <h3>Privacy Protected</h3>
-            <p>Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email.</p>
+            <h3 style="margin-bottom:4px;font-size:0.95rem;">Privacy Protected</h3>
+            <p style="font-size:0.85rem;color:#6b7280;">Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email.</p>
           </div>
         </div>
 
       </div><!-- /detail-main -->
 
-      <!-- ════════════════════════════════════
-           RIGHT SIDEBAR
-           ════════════════════════════════════ -->
+      <!-- RIGHT SIDEBAR -->
       <aside class="detail-sidebar">
 
-        <!-- CONTACT CARD -->
         <div class="contact-card">
           <div class="contact-card-header">
             <div class="owner-avatar">{{ property.owner.email|slice:":1"|upper }}</div>
             <div>
               <div class="owner-name">{{ property.owner.full_name }}</div>
-              <div class="owner-label">
-                {% if property.seller_type %}{{ property.get_seller_type_display }}{% else %}Property Owner{% endif %}
-              </div>
+              <div class="owner-label">{% if property.seller_type %}{{ property.get_seller_type_display }}{% else %}Property Owner{% endif %}</div>
             </div>
             <span class="privacy-badge">🔒 Private</span>
           </div>
@@ -273,29 +734,20 @@
               {% if field.errors %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}{% endif %}
             </div>
             {% endfor %}
-            <button type="submit" class="btn btn-primary btn-full btn-connect">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-              Connect with Owner
+            <button type="submit" class="btn btn-primary btn-full btn-connect" style="margin-top:8px;">
+              📩 Connect with Owner
             </button>
             <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
           </form>
         </div>
 
-        <!-- QUICK INFO CARD -->
         <div class="quick-info-card">
           <h4>Quick Info</h4>
           <div class="quick-info-row"><span>Listed</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
           <div class="quick-info-row"><span>Type</span><span>{{ property.get_listing_type_display }}</span></div>
           <div class="quick-info-row"><span>Views</span><span>{{ property.view_count }}</span></div>
-          {% if property.pg_for %}
-          <div class="quick-info-row"><span>PG For</span><span>{{ property.get_pg_for_display }}</span></div>
-          {% endif %}
-          {% if property.pg_notice_period %}
-          <div class="quick-info-row"><span>Notice Period</span><span>{{ property.pg_notice_period }}</span></div>
-          {% endif %}
+          {% if property.pg_for %}<div class="quick-info-row"><span>PG For</span><span>{{ property.get_pg_for_display }}</span></div>{% endif %}
+          {% if property.pg_notice_period %}<div class="quick-info-row"><span>Notice Period</span><span>{{ property.pg_notice_period }}</span></div>{% endif %}
           {% if user == property.owner %}
           <div class="owner-actions">
             <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline">Edit Listing</a>
@@ -308,18 +760,82 @@
         </div>
 
       </aside>
-    </div><!-- /detail-layout -->
-  </div><!-- /container -->
+    </div>
+  </div>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
+<!-- GALLERY & LIGHTBOX JS -->
 <script>
-function switchImage(src, thumb) {
-  document.getElementById('mainImg').src = src;
-  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-  thumb.classList.add('active');
-}
+(function(){
+  var images = [{% for img in images %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+  var current = 0;
+
+  function apGoTo(n) {
+    current = (n + images.length) % images.length;
+    document.getElementById('apMainImg').src = images[current];
+    document.getElementById('apCounter').textContent = current + 1;
+  }
+
+  window.apGoTo = apGoTo;
+  window.apNav  = function(dir){ apGoTo(current + dir); };
+
+  // LIGHTBOX
+  var lbCurrent = 0;
+  window.openLightbox = function(n){
+    lbCurrent = n || 0;
+    lbUpdate();
+    document.getElementById('apLightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeLightbox = function(){
+    document.getElementById('apLightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.lbNav = function(dir){ lbGoTo(lbCurrent + dir); };
+  window.lbGoTo = function(n){
+    lbCurrent = (n + images.length) % images.length;
+    lbUpdate();
+  };
+  function lbUpdate(){
+    document.getElementById('apLbImg').src = images[lbCurrent];
+    document.getElementById('apLbCounter').textContent = (lbCurrent+1) + ' / ' + images.length;
+    document.querySelectorAll('.ap-lb-strip-thumb').forEach(function(t,i){
+      t.classList.toggle('active', i===lbCurrent);
+    });
+  }
+  // Close on backdrop click
+  document.getElementById('apLightbox').addEventListener('click', function(e){
+    if(e.target === this) window.closeLightbox();
+  });
+  // Keyboard nav
+  document.addEventListener('keydown', function(e){
+    var lb = document.getElementById('apLightbox');
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'ArrowRight') window.lbNav(1);
+    if (e.key === 'ArrowLeft')  window.lbNav(-1);
+    if (e.key === 'Escape')     window.closeLightbox();
+  });
+
+  // VIDEO MODAL
+  window.openVideo = function(){
+    document.getElementById('apVideoModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeVideo = function(){
+    var modal = document.getElementById('apVideoModal');
+    if (modal) {
+      modal.classList.remove('open');
+      var player = document.getElementById('apVideoPlayer');
+      if (player) player.pause();
+    }
+    document.body.style.overflow = '';
+  };
+  var videoModal = document.getElementById('apVideoModal');
+  if (videoModal) {
+    videoModal.addEventListener('click', function(e){
+      if(e.target === this) window.closeVideo();
+    });
+  }
+})();
 </script>
 {% endblock %}

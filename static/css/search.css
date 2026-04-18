@@ -129,3 +129,79 @@
 }
 
 .property-card.rented { opacity: 0.7; }
+
+/* TENANT-FIRST HERO */
+.search-hero {
+    background: #ffffff;
+    padding: 120px 0 40px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.search-hero h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+}
+
+.search-hero-sub {
+    color: #6b7280;
+    font-size: 1rem;
+    margin-bottom: 28px;
+}
+
+/* INTENT BAR */
+.intent-bar {
+    display: inline-flex;
+    gap: 0;
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.intent-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.intent-btn:hover { color: #00A9FF; background: white; }
+.intent-btn.active { background: white; color: #00A9FF; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+/* CARD TYPE ROW */
+.card-type-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.card-seller-tag {
+    font-size: 0.72rem;
+    background: #f0f9ff;
+    color: #00A9FF;
+    border: 1px solid #A0E9FF;
+    border-radius: 99px;
+    padding: 2px 8px;
+    font-weight: 600;
+}
+
+/* RENTED OVERLAY */
+.card-rented-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    text-align: center;
+    padding: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}

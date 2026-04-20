@@ -11,12 +11,69 @@ from .forms import PropertyForm, PropertyImageFormSet, InquiryForm, ReplyForm, S
 
 
 def home(request):
-    featured_count = getattr(settings, 'FEATURED_PROPERTIES_COUNT', 5)
-    featured = Property.objects.filter(status='active').order_by('-view_count')[:featured_count]
-    search_form = SearchForm()
+    from django.db.models import Count, Avg
+    active = Property.objects.filter(status='active')
+
+    featured_properties  = active.order_by('-view_count')[:8]
+    rent_props           = active.filter(listing_type='rent').order_by('-created_at')[:8]
+    sale_props           = active.filter(listing_type='sell').order_by('-created_at')[:8]
+    apartments           = active.filter(property_type='apartment').order_by('-created_at')[:8]
+    villas               = active.filter(property_type='villa').order_by('-created_at')[:8]
+    new_launches         = active.filter(listing_type='sell').order_by('-created_at')[:8]
+
+    # BHK sections
+    bhk1 = active.filter(bedrooms=1).order_by('-created_at')[:8]
+    bhk2 = active.filter(bedrooms=2).order_by('-created_at')[:8]
+    bhk3 = active.filter(bedrooms__gte=3).order_by('-created_at')[:8]
+
+    # Budget segments (in rupees)
+    affordable = active.filter(price__lte=5000000).order_by('price')[:8]        # up to 50L
+    mid_segment = active.filter(price__gt=5000000, price__lte=15000000).order_by('price')[:8]  # 50L-1.5Cr
+    luxury      = active.filter(price__gt=15000000).order_by('-price')[:8]      # 1.5Cr+
+
+    # High demand = most viewed
+    high_demand = active.order_by('-view_count')[:8]
+
+    # Top gainer cities: cities with most listings
+    top_cities_qs = (
+        active.values('city')
+        .annotate(count=Count('id'), avg_price=Avg('price'))
+        .order_by('-count')[:6]
+    )
+    top_cities = [
+        {
+            'city': c['city'],
+            'count': c['count'],
+            'avg_price': int(c['avg_price'] or 0),
+            'avg_price_display': (
+                f"₹{c['avg_price']/10000000:.1f} Cr" if (c['avg_price'] or 0) >= 10000000
+                else f"₹{c['avg_price']/100000:.1f} L" if (c['avg_price'] or 0) >= 100000
+                else f"₹{int(c['avg_price'] or 0):,}"
+            ),
+            'bar_width': 0,  # filled below
+        }
+        for c in top_cities_qs
+    ]
+    max_count = max((c['count'] for c in top_cities), default=1)
+    for c in top_cities:
+        c['bar_width'] = int(c['count'] / max_count * 100)
+
     return render(request, 'properties/home.html', {
-        'featured_properties': featured,
-        'search_form': search_form,
+        'featured_properties': featured_properties,
+        'rent_props':          rent_props,
+        'sale_props':          sale_props,
+        'apartments':          apartments,
+        'villas':              villas,
+        'new_launches':        new_launches,
+        'bhk1':                bhk1,
+        'bhk2':                bhk2,
+        'bhk3':                bhk3,
+        'affordable':          affordable,
+        'mid_segment':         mid_segment,
+        'luxury':              luxury,
+        'bhk_map': [('bhk1', bhk1), ('bhk2', bhk2), ('bhk3', bhk3)],
+        'high_demand':         high_demand,
+        'top_cities':          top_cities,
     })
 
 
@@ -366,3 +423,5 @@ def reviews_page(request):
         'bar_data': bar_data, 'avg_stars': avg_stars,
         'error': None, 'success': success,
     })
+def budget(request):
+    return render(request, 'properties/budget.html')

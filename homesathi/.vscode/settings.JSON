@@ -1,0 +1,10 @@
+{
+    "html.validate.styles": false,
+    "css.validate": true,
+    "files.associations": {
+        "*.html": "django-html"
+    },
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    }
+}

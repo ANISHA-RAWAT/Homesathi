@@ -4,57 +4,104 @@
 
 {% block content %}
 
-<!-- HERO -->
-<section class="hero">
-    <div class="container hero-content">
-        <h1 class="hero-title">Find Your <span class="text-accent">Perfect</span> Home</h1>
-        <p class="hero-subtitle">Search thousands of properties for rent and sale. Your privacy is our priority — owner details stay hidden until you're ready to connect.</p>
-        <form class="hero-search-form" action="{% url 'property_search' %}" method="get">
-            <div class="hero-search-bar">
-                <div class="search-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                </div>
-                <input type="text" name="q" class="hero-search-input" placeholder="Enter city or state...">
-                <select name="listing_type" class="hero-search-select">
+<!-- ═══════════════════════════════════════════
+     HERO SLIDER
+═══════════════════════════════════════════ -->
+<section class="hs-hero-slider">
+    <div class="hs-slider-track" id="heroTrack">
+
+        <!-- Slide 1 -->
+        <div class="hs-slide" style="background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.3)), url('/static/images/hero-house.jpeg') center/cover no-repeat;">
+            <div class="hs-slide-content">
+                <span class="hs-slide-tag">🏡 Premium Listings</span>
+                <h1>Find Your <span class="hs-accent">Perfect</span> Home</h1>
+                <p>Search thousands of verified properties for rent &amp; sale across India.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="hs-slide" style="background: linear-gradient(rgba(0,90,160,0.7),rgba(0,50,100,0.5)), url('/static/images/hero-house.jpeg') center 30%/cover no-repeat;">
+            <div class="hs-slide-content">
+                <span class="hs-slide-tag">🏢 Apartments</span>
+                <h1>Modern <span class="hs-accent">Apartments</span> Await</h1>
+                <p>From cozy studios to spacious 4BHKs — find your ideal apartment today.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="hs-slide" style="background: linear-gradient(rgba(20,80,20,0.65),rgba(0,40,0,0.4)), url('/static/images/hero-house.jpeg') center 60%/cover no-repeat;">
+            <div class="hs-slide-content">
+                <span class="hs-slide-tag">🌿 Villas &amp; Bungalows</span>
+                <h1>Luxury <span class="hs-accent">Villas</span> &amp; More</h1>
+                <p>Exclusive villas and independent houses in prime locations.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="hs-slide" style="background: linear-gradient(rgba(100,0,60,0.65),rgba(50,0,30,0.4)), url('/static/images/hero-house.jpeg') center 80%/cover no-repeat;">
+            <div class="hs-slide-content">
+                <span class="hs-slide-tag">💼 Commercial Spaces</span>
+                <h1>Grow Your <span class="hs-accent">Business</span> Here</h1>
+                <p>Offices, retail shops and warehouses in top commercial hubs.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="hs-slide" style="background: linear-gradient(rgba(0,80,130,0.7),rgba(0,40,80,0.45)), url('/static/images/hero-house.jpeg') center top/cover no-repeat;">
+            <div class="hs-slide-content">
+                <span class="hs-slide-tag">🔑 Ready to Move</span>
+                <h1>Move In <span class="hs-accent">Immediately</span></h1>
+                <p>Ready-to-move properties — no waiting, just living.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search bar (pinned over slider) -->
+    <div class="hs-hero-search-wrap">
+        <form class="hs-hero-search-form" action="{% url 'property_search' %}" method="get">
+            <div class="hs-search-inner">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" name="q" placeholder="Enter city, locality or property type..." class="hs-search-input">
+                <select name="listing_type" class="hs-search-select">
                     <option value="">All</option>
                     <option value="rent">Rent</option>
-                    <option value="sell">Sale</option>
+                    <option value="sell">Buy</option>
                 </select>
-                <button type="submit" class="btn btn-primary hero-search-btn">Search</button>
+                <button type="submit" class="hs-search-btn">Search</button>
             </div>
         </form>
-        <div class="hero-stats">
-            <div class="stat"><span class="stat-num">2K+</span><span class="stat-label">Properties</span></div>
-            <div class="stat-divider"></div>
-            <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Cities</span></div>
-            <div class="stat-divider"></div>
-            <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Privacy</span></div>
+        <div class="hs-hero-stats">
+            <div class="hs-stat"><span class="hs-stat-n">2K+</span><span class="hs-stat-l">Properties</span></div>
+            <div class="hs-stat-div"></div>
+            <div class="hs-stat"><span class="hs-stat-n">500+</span><span class="hs-stat-l">Cities</span></div>
+            <div class="hs-stat-div"></div>
+            <div class="hs-stat"><span class="hs-stat-n">100%</span><span class="hs-stat-l">Privacy</span></div>
         </div>
     </div>
+
+    <!-- Slider controls -->
+    <button class="hs-slide-prev" id="slidePrev" aria-label="Previous slide">&#8249;</button>
+    <button class="hs-slide-next" id="slideNext" aria-label="Next slide">&#8250;</button>
+    <div class="hs-slide-dots" id="slideDots"></div>
 </section>
 
-<!-- QUICK FILTER TABS -->
-<section class="quick-filters">
+<!-- QUICK FILTER CHIPS -->
+<section class="hs-chips-bar">
     <div class="container">
-        <div class="filter-chips">
-            <a href="{% url 'property_search' %}?listing_type=rent" class="chip">For Rent</a>
-            <a href="{% url 'property_search' %}?listing_type=sell" class="chip">For Sale</a>
-            <a href="{% url 'property_search' %}?property_type=apartment" class="chip">Apartments</a>
-            <a href="{% url 'property_search' %}?property_type=villa" class="chip">Villas</a>
-            <a href="{% url 'property_search' %}?property_type=studio" class="chip">Studios</a>
-            <a href="{% url 'property_search' %}?property_type=commercial" class="chip">Commercial</a>
-            <a href="{% url 'property_search' %}?construction_status=new_launch" class="chip">New Launch</a>
-            <a href="{% url 'property_search' %}?construction_status=ready_to_move" class="chip">Ready to Move</a>
+        <div class="hs-chips">
+            <a href="{% url 'property_search' %}?listing_type=rent" class="hs-chip">For Rent</a>
+            <a href="{% url 'property_search' %}?listing_type=sell" class="hs-chip">For Sale</a>
+            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-chip">Apartments</a>
+            <a href="{% url 'property_search' %}?property_type=villa" class="hs-chip">Villas</a>
+            <a href="{% url 'property_search' %}?property_type=studio" class="hs-chip">Studios</a>
+            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-chip">Commercial</a>
         </div>
     </div>
 </section>
 
-<!-- MACRO: reusable card block (inlined — no include needed) -->
-{% comment %}Card HTML is repeated in each section below{% endcomment %}
-
-<!-- FEATURED -->
+<!-- ═══════════════════════════════════════════
+     FEATURED PROPERTIES
+═══════════════════════════════════════════ -->
 {% if featured_properties %}
 <section class="scroll-section">
     <div class="container">
@@ -63,261 +110,246 @@
             <a href="{% url 'property_search' %}" class="scroll-view-all">View All →</a>
         </div>
         <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
+            <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
             <div class="h-scroll-track">
                 {% for prop in featured_properties %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
+                {% include "properties/_prop_card.html" with prop=prop %}
                 {% endfor %}
             </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
+            <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
         </div>
     </div>
 </section>
 {% endif %}
 
-<!-- FOR RENT -->
-{% if rent_props %}
+<!-- ═══════════════════════════════════════════
+     APARTMENTS, VILLAS & MORE (type cards)
+═══════════════════════════════════════════ -->
+<section class="hs-type-section">
+    <div class="container">
+        <div class="scroll-section-header">
+            <div><span class="section-eyebrow">Explore</span><h2 class="section-title">Apartments, Villas &amp; More</h2></div>
+        </div>
+        <div class="hs-type-grid">
+
+            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#005fa3,#00A9FF), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 22V12h6v10"/><path d="M3 9h18"/></svg></div>
+                    <h3 class="hs-type-name">Apartment</h3>
+                    <p class="hs-type-sub">Modern flats &amp; high-rise living</p>
+                    <span class="hs-type-link">Browse →</span>
+                </div>
+            </a>
+
+            <a href="{% url 'property_search' %}?property_type=villa" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#00724a,#00c17a), url('/static/images/hero-house.jpeg') center 40%/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap" style="border-color:#00c17a"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00c17a" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                    <h3 class="hs-type-name">Villa</h3>
+                    <p class="hs-type-sub">Spacious independent homes</p>
+                    <span class="hs-type-link" style="color:#00c17a">Browse →</span>
+                </div>
+            </a>
+
+            <a href="{% url 'property_search' %}?property_type=house" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#7c3a00,#e07020), url('/static/images/hero-house.jpeg') center 70%/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap" style="border-color:#e07020"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e07020" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><rect x="9" y="14" width="6" height="7"/></svg></div>
+                    <h3 class="hs-type-name">House</h3>
+                    <p class="hs-type-sub">Independent builder floors</p>
+                    <span class="hs-type-link" style="color:#e07020">Browse →</span>
+                </div>
+            </a>
+
+            <a href="{% url 'property_search' %}?property_type=studio" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#5a0075,#b040e0), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap" style="border-color:#b040e0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b040e0" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M4 9h5"/></svg></div>
+                    <h3 class="hs-type-name">Studio / 1RK</h3>
+                    <p class="hs-type-sub">Compact &amp; affordable units</p>
+                    <span class="hs-type-link" style="color:#b040e0">Browse →</span>
+                </div>
+            </a>
+
+            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#003060,#005fa3), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap" style="border-color:#005fa3"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#005fa3" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
+                    <h3 class="hs-type-name">Commercial</h3>
+                    <p class="hs-type-sub">Offices, shops &amp; co-working</p>
+                    <span class="hs-type-link" style="color:#005fa3">Browse →</span>
+                </div>
+            </a>
+
+            <a href="{% url 'property_search' %}?property_type=plot" class="hs-type-card">
+                <div class="hs-type-img" style="background: linear-gradient(135deg,#005a2e,#00a854), url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; background-blend-mode: multiply;"></div>
+                <div class="hs-type-body">
+                    <div class="hs-type-icon-wrap" style="border-color:#00a854"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00a854" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>
+                    <h3 class="hs-type-name">Plot / Land</h3>
+                    <p class="hs-type-sub">Residential &amp; commercial plots</p>
+                    <span class="hs-type-link" style="color:#00a854">Browse →</span>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     BHK CHOICE IN MIND
+═══════════════════════════════════════════ -->
+<section class="hs-bhk-section">
+    <div class="container">
+        <div class="scroll-section-header">
+            <div><span class="section-eyebrow">By Bedrooms</span><h2 class="section-title">BHK Choice in Mind?</h2></div>
+        </div>
+        <div class="hs-bhk-tabs">
+            <button class="hs-bhk-tab active" data-target="bhk1">1 BHK</button>
+            <button class="hs-bhk-tab" data-target="bhk2">2 BHK</button>
+            <button class="hs-bhk-tab" data-target="bhk3">3+ BHK</button>
+        </div>
+        {% for key, prps in bhk_map.items %}
+        <div id="{{ key }}" class="hs-bhk-panel {% if forloop.first %}active{% endif %}">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in prps %}{% include "properties/_prop_card.html" with prop=prop %}
+                    {% empty %}<p class="hs-empty">No {{ key }} listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     HIGH DEMAND
+═══════════════════════════════════════════ -->
+{% if high_demand %}
 <section class="scroll-section scroll-section-alt">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Available Now</span><h2 class="section-title">Properties for Rent</h2></div>
-            <a href="{% url 'property_search' %}?listing_type=rent" class="scroll-view-all">View All →</a>
-        </div>
-        <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="h-scroll-track">
-                {% for prop in rent_props %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- FOR SALE -->
-{% if sale_props %}
-<section class="scroll-section">
-    <div class="container">
-        <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Buy Now</span><h2 class="section-title">Properties for Sale</h2></div>
-            <a href="{% url 'property_search' %}?listing_type=sell" class="scroll-view-all">View All →</a>
-        </div>
-        <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="h-scroll-track">
-                {% for prop in sale_props %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- APARTMENTS -->
-{% if apartments %}
-<section class="scroll-section scroll-section-alt">
-    <div class="container">
-        <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Explore</span><h2 class="section-title">Apartments</h2></div>
-            <a href="{% url 'property_search' %}?property_type=apartment" class="scroll-view-all">View All →</a>
-        </div>
-        <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="h-scroll-track">
-                {% for prop in apartments %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- VILLAS -->
-{% if villas %}
-<section class="scroll-section">
-    <div class="container">
-        <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Premium</span><h2 class="section-title">Villas &amp; Houses</h2></div>
-            <a href="{% url 'property_search' %}?property_type=villa" class="scroll-view-all">View All →</a>
-        </div>
-        <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="h-scroll-track">
-                {% for prop in villas %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- NEW LAUNCHES -->
-{% if new_launches %}
-<section class="scroll-section scroll-section-alt">
-    <div class="container">
-        <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Just Listed</span><h2 class="section-title">New Launches</h2></div>
+            <div><span class="section-eyebrow">🔥 Trending</span><h2 class="section-title">Properties in High Demand</h2></div>
             <a href="{% url 'property_search' %}" class="scroll-view-all">View All →</a>
         </div>
         <div class="h-scroll-wrapper">
-            <button class="scroll-arrow scroll-prev" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
+            <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
             <div class="h-scroll-track">
-                {% for prop in new_launches %}
-                <div class="scroll-card">
-                    <a href="{% url 'property_detail' prop.pk %}" class="scroll-card-image-link">
-                        {% if prop.primary_image %}<img src="{{ prop.primary_image.image.url }}" alt="{{ prop.title }}" class="scroll-card-image">
-                        {% else %}<div class="scroll-card-image-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>{% endif %}
-                        <span class="card-badge badge-{{ prop.listing_type }}">{{ prop.get_listing_type_display }}</span>
-                        <span class="card-views">👁 {{ prop.view_count }}</span>
-                    </a>
-                    <div class="scroll-card-body">
-                        <div class="card-type">{{ prop.get_property_type_display }}</div>
-                        <h3 class="scroll-card-title"><a href="{% url 'property_detail' prop.pk %}">{{ prop.title|truncatechars:40 }}</a></h3>
-                        <div class="card-location"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</div>
-                        <div class="card-meta">{% if prop.bedrooms %}<span>🛏 {{ prop.bedrooms }}bd</span>{% endif %}{% if prop.bathrooms %}<span>🚿 {{ prop.bathrooms }}ba</span>{% endif %}{% if prop.area_sqft %}<span>📐 {{ prop.area_sqft }}sqft</span>{% endif %}</div>
-                        <div class="scroll-card-footer"><span class="card-price">{{ prop.formatted_price }}</span><a href="{% url 'property_detail' prop.pk %}" class="btn btn-sm btn-primary">View</a></div>
-                    </div>
-                </div>
-                {% endfor %}
+                {% for prop in high_demand %}{% include "properties/_prop_card.html" with prop=prop show_views=True %}{% endfor %}
             </div>
-            <button class="scroll-arrow scroll-next" aria-label="Next">
-                <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-            </button>
+            <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
         </div>
     </div>
 </section>
 {% endif %}
 
-<!-- EMPTY STATE -->
-{% if not featured_properties and not rent_props and not sale_props %}
-<section style="padding: 80px 0;">
+<!-- ═══════════════════════════════════════════
+     NEWLY LAUNCHED
+═══════════════════════════════════════════ -->
+{% if new_launches %}
+<section class="scroll-section">
     <div class="container">
-        <div class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <h3>No properties yet</h3>
-            <p>Be the first to list a property!</p>
-            {% if user.is_authenticated %}
-                <a href="{% url 'post_propertyfree' %}" class="btn btn-primary">List Your Property</a>
-            {% else %}
-                <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
-            {% endif %}
+        <div class="scroll-section-header">
+            <div><span class="section-eyebrow">🆕 Just Added</span><h2 class="section-title">Newly Launched Projects</h2></div>
+            <a href="{% url 'property_search' %}?listing_type=sell" class="scroll-view-all">View All →</a>
+        </div>
+        <div class="h-scroll-wrapper">
+            <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <div class="h-scroll-track">
+                {% for prop in new_launches %}{% include "properties/_prop_card.html" with prop=prop badge="NEW" badge_color="#00A9FF" %}{% endfor %}
+            </div>
+            <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
         </div>
     </div>
 </section>
 {% endif %}
 
-<!-- HOW IT WORKS -->
-<section class="how-it-works">
+<!-- ═══════════════════════════════════════════
+     BROWSE BY BUDGET
+═══════════════════════════════════════════ -->
+<section class="hs-budget-section">
     <div class="container">
-        <div class="section-header centered">
-            <span class="section-eyebrow">Simple &amp; Secure</span>
-            <h2 class="section-title">How It Works</h2>
+        <div class="scroll-section-header">
+            <div><span class="section-eyebrow">Your Budget</span><h2 class="section-title">Browse by Budget</h2></div>
         </div>
-        <div class="steps-grid">
-            <div class="step"><div class="step-icon">🔍</div><h3>Search</h3><p>Filter by location, type, and budget.</p></div>
-            <div class="step"><div class="step-icon">🏠</div><h3>Explore</h3><p>Browse listings with photos and pricing.</p></div>
-            <div class="step"><div class="step-icon">🔒</div><h3>Connect Privately</h3><p>Message the owner — their email stays hidden.</p></div>
-            <div class="step"><div class="step-icon">🤝</div><h3>Move In</h3><p>Owner reaches out to schedule a visit.</p></div>
+        <div class="hs-budget-tabs">
+            <button class="hs-budget-tab active" data-target="affordable">💰 Affordable<br><small>Under ₹50 L</small></button>
+            <button class="hs-budget-tab" data-target="mid_segment">🏡 Mid Segment<br><small>₹50 L – 1.5 Cr</small></button>
+            <button class="hs-budget-tab" data-target="luxury">👑 Luxury<br><small>Above ₹1.5 Cr</small></button>
+        </div>
+        <div id="affordable" class="hs-budget-panel active">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in affordable %}{% include "properties/_prop_card.html" with prop=prop badge="Affordable" badge_color="#27ae60" %}
+                    {% empty %}<p class="hs-empty">No affordable listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
+        <div id="mid_segment" class="hs-budget-panel">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in mid_segment %}{% include "properties/_prop_card.html" with prop=prop badge="Mid Segment" badge_color="#0090d9" %}
+                    {% empty %}<p class="hs-empty">No mid-segment listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
+        <div id="luxury" class="hs-budget-panel">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in luxury %}{% include "properties/_prop_card.html" with prop=prop badge="Luxury" badge_color="#8e44ad" %}
+                    {% empty %}<p class="hs-empty">No luxury listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     TOP CITIES GRAPH
+═══════════════════════════════════════════ -->
+{% if top_cities %}
+<section class="hs-cities-section">
+    <div class="container">
+        <div class="scroll-section-header">
+            <div><span class="section-eyebrow">📈 Market Trends</span><h2 class="section-title">Top Cities by Listings</h2></div>
+        </div>
+        <div class="hs-cities-grid">
+            {% for city in top_cities %}
+            <a href="{% url 'property_search' %}?q={{ city.city }}" class="hs-city-bar-card">
+                <div class="hs-city-info">
+                    <span class="hs-city-name">{{ city.city }}</span>
+                    <span class="hs-city-count">{{ city.count }} listing{{ city.count|pluralize }}</span>
+                </div>
+                <div class="hs-city-bar-track">
+                    <div class="hs-city-bar-fill" style="width:{{ city.bar_width }}%"></div>
+                </div>
+                <div class="hs-city-price">Avg: {{ city.avg_price_display }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════
+     BUDGET CALCULATOR CTA
+═══════════════════════════════════════════ -->
+<section class="hs-calc-cta">
+    <div class="container">
+        <div class="hs-calc-cta-inner">
+            <div class="hs-calc-cta-text">
+                <h2>🧮 Not sure about your budget?</h2>
+                <p>Use our free EMI &amp; budget calculator to find properties within your financial reach.</p>
+            </div>
+            <a href="{% url 'budget' %}" class="btn hs-calc-btn">Calculate Budget</a>
         </div>
     </div>
 </section>
@@ -325,20 +357,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.querySelectorAll('.h-scroll-wrapper').forEach(function(wrapper) {
-    var track = wrapper.querySelector('.h-scroll-track');
-    var prev  = wrapper.querySelector('.scroll-prev');
-    var next  = wrapper.querySelector('.scroll-next');
-    var STEP  = 280;
-    if (next) next.addEventListener('click', function() { track.scrollBy({ left: STEP, behavior: 'smooth' }); });
-    if (prev) prev.addEventListener('click', function() { track.scrollBy({ left: -STEP, behavior: 'smooth' }); });
-    function upd() {
-        if (prev) prev.style.opacity = track.scrollLeft > 10 ? '1' : '0.35';
-        if (next) next.style.opacity = track.scrollLeft < track.scrollWidth - track.clientWidth - 10 ? '1' : '0.35';
-    }
-    track.addEventListener('scroll', upd);
-    upd();
-});
-</script>
+<script src="{% static 'js/home.js' %}" defer></script>
 {% endblock %}

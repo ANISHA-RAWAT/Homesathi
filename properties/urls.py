@@ -15,4 +15,5 @@ urlpatterns = [
     path('inbox/<int:pk>/', views.inquiry_thread, name='inquiry_thread'),
     path('mark-rented/<int:pk>/', views.mark_rented, name='mark_rented'),
     path('reviews/', views.reviews_page, name='reviews'),
+    path('budget/', views.budget, name='budget'),
 ]

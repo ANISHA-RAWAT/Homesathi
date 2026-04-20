@@ -63,9 +63,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'homesathi',
+        'NAME': 'Homesathi',
         'USER': 'root',
-        'PASSWORD':'Anish@123?<>',
+        'PASSWORD':'K@shishsqlsaroj123456',
         'HOST': 'localhost',
         'PORT': '3306',
     }

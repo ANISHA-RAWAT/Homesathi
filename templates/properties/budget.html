@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Budget Calculator — Homesathi{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/budget.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="calc-hero">
+    <div class="container">
+        <h1>🧮 Budget &amp; EMI Calculator</h1>
+        <p>Plan your home purchase with confidence. Calculate your monthly EMI and max affordability in seconds.</p>
+    </div>
+</section>
+
+<div class="calc-page" style="margin-top: 0;">
+    <div class="calc-grid">
+
+        <!-- EMI CALCULATOR -->
+        <div class="calc-card">
+            <h2>📊 EMI Calculator</h2>
+            <label class="calc-label">Property Price (₹)</label>
+            <input type="number" id="propPrice" class="calc-input" placeholder="e.g. 5000000" value="5000000">
+            <label class="calc-label">Down Payment (₹)</label>
+            <input type="number" id="downPayment" class="calc-input" placeholder="e.g. 1000000" value="1000000">
+            <label class="calc-label">Interest Rate (% per annum)</label>
+            <input type="range" id="interestSlider" class="calc-slider" min="6" max="15" step="0.1" value="8.5">
+            <div class="calc-range-val">Interest Rate: <strong id="interestDisplay">8.5%</strong></div>
+            <label class="calc-label">Loan Tenure</label>
+            <input type="range" id="tenureSlider" class="calc-slider" min="5" max="30" step="1" value="20">
+            <div class="calc-range-val">Tenure: <strong id="tenureDisplay">20 years</strong></div>
+            <button class="calc-btn" onclick="calculateEMI()">Calculate EMI</button>
+            <div class="calc-result" id="emiResult">
+                <div class="result-row"><span class="result-label">Loan Amount</span><span class="result-val" id="r-loan"></span></div>
+                <div class="result-row"><span class="result-label">Monthly EMI</span><span class="result-val" id="r-emi"></span></div>
+                <div class="result-row"><span class="result-label">Total Interest</span><span class="result-val" id="r-interest"></span></div>
+                <div class="result-row"><span class="result-label">Total Payment</span><span class="result-val" id="r-total"></span></div>
+            </div>
+        </div>
+
+        <!-- AFFORDABILITY CALCULATOR -->
+        <div class="calc-card">
+            <h2>🏠 Affordability Calculator</h2>
+            <label class="calc-label">Monthly Income (₹)</label>
+            <input type="number" id="monthlyIncome" class="calc-input" placeholder="e.g. 80000" value="80000">
+            <label class="calc-label">Monthly Expenses (₹)</label>
+            <input type="number" id="monthlyExpenses" class="calc-input" placeholder="e.g. 30000" value="30000">
+            <label class="calc-label">Existing Loan EMIs (₹)</label>
+            <input type="number" id="existingEMI" class="calc-input" placeholder="e.g. 0" value="0">
+            <label class="calc-label">Savings / Down Payment Available (₹)</label>
+            <input type="number" id="savings" class="calc-input" placeholder="e.g. 500000" value="500000">
+            <label class="calc-label">Expected Interest Rate (%)</label>
+            <input type="number" id="affordRate" class="calc-input" placeholder="8.5" value="8.5" step="0.1">
+            <button class="calc-btn" onclick="calculateAffordability()">Find My Budget</button>
+            <div class="afford-result" id="affordResult">
+                <div style="font-size:0.9rem; color:#555; text-align:center;">You can comfortably afford a property up to</div>
+                <div class="afford-big" id="afford-max"></div>
+                <div class="afford-sub" id="afford-emi-note"></div>
+                <div class="afford-props">
+                    <a id="afford-search-link" href="{% url 'property_search' %}">🔍 View Properties in Your Budget</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TIPS -->
+    <div style="max-width: 960px; margin: 32px auto 0; padding: 0 20px;">
+        <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
+            <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:16px; color:#1a1a1a;">💡 Home Buying Tips</h3>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:16px;">
+                <div style="background:#fdf6f8; border-radius:10px; padding:16px;">
+                    <div style="font-size:1.4rem; margin-bottom:8px;">🎯</div>
+                    <strong style="color:#48252F;">EMI Rule</strong>
+                    <p style="font-size:0.85rem; color:#666; margin-top:4px;">Keep EMI under 40% of your monthly take-home pay for financial comfort.</p>
+                </div>
+                <div style="background:#f0faf4; border-radius:10px; padding:16px;">
+                    <div style="font-size:1.4rem; margin-bottom:8px;">💰</div>
+                    <strong style="color:#27ae60;">Down Payment</strong>
+                    <p style="font-size:0.85rem; color:#666; margin-top:4px;">Aim for 20-30% down payment to reduce your loan burden and interest.</p>
+                </div>
+                <div style="background:#f0f4ff; border-radius:10px; padding:16px;">
+                    <div style="font-size:1.4rem; margin-bottom:8px;">📋</div>
+                    <strong style="color:#3498db;">Hidden Costs</strong>
+                    <p style="font-size:0.85rem; color:#666; margin-top:4px;">Budget 5-10% extra for registration, stamp duty, and maintenance.</p>
+                </div>
+                <div style="background:#fffbf0; border-radius:10px; padding:16px;">
+                    <div style="font-size:1.4rem; margin-bottom:8px;">📈</div>
+                    <strong style="color:#f39c12;">Credit Score</strong>
+                    <p style="font-size:0.85rem; color:#666; margin-top:4px;">A CIBIL score above 750 gets you the best interest rates from banks.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/budget.js' %}" defer></script>  
+{% endblock %}

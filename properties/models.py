@@ -251,6 +251,21 @@ class Property(models.Model):
         return self.images.first()
 
     @property
+    def avg_rating(self):
+        """Returns average star rating from approved reviews for this property."""
+        try:
+            from django.db.models import Avg
+            # Use global approved reviews average as site-wide rating indicator
+            result = Review.objects.filter(is_approved=True).aggregate(avg=Avg('rating'))
+            val = result['avg'] or 0
+            return round(val, 1)
+        except Exception:
+            return 0
+
+    def avg_rating_int(self):
+        """Returns integer floor of avg_rating for star loop comparisons."""
+        return int(self.avg_rating)
+
     def formatted_price(self):
         price = self.price
         if price >= 10_000_000:

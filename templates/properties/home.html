@@ -13,7 +13,6 @@
         <!-- Slide 1 -->
         <div class="hs-slide" style="background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.3)), url('/static/images/hero-house.jpeg') center/cover no-repeat;">
             <div class="hs-slide-content">
-                <span class="hs-slide-tag">🏡 Premium Listings</span>
                 <h1>Find Your <span class="hs-accent">Perfect</span> Home</h1>
                 <p>Search thousands of verified properties for rent &amp; sale across India.</p>
             </div>
@@ -123,73 +122,61 @@
 {% endif %}
 
 <!-- ═══════════════════════════════════════════
-     APARTMENTS, VILLAS & MORE (type cards)
+     APARTMENTS, VILLAS & MORE — 99acres style horizontal
 ═══════════════════════════════════════════ -->
 <section class="hs-type-section">
     <div class="container">
         <div class="scroll-section-header">
             <div><span class="section-eyebrow">Explore</span><h2 class="section-title">Apartments, Villas &amp; More</h2></div>
         </div>
-        <div class="hs-type-grid">
+        <div class="hs-type-scroll">
 
-            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#005fa3,#00A9FF), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 22V12h6v10"/><path d="M3 9h18"/></svg></div>
-                    <h3 class="hs-type-name">Apartment</h3>
-                    <p class="hs-type-sub">Modern flats &amp; high-rise living</p>
-                    <span class="hs-type-link">Browse →</span>
+            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-type-card" style="background:#EBF5FF;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">Residential<br>Apartment</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(200deg) saturate(0.7);"></div>
             </a>
 
-            <a href="{% url 'property_search' %}?property_type=villa" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#00724a,#00c17a), url('/static/images/hero-house.jpeg') center 40%/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap" style="border-color:#00c17a"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00c17a" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-                    <h3 class="hs-type-name">Villa</h3>
-                    <p class="hs-type-sub">Spacious independent homes</p>
-                    <span class="hs-type-link" style="color:#00c17a">Browse →</span>
+            <a href="{% url 'property_search' %}?property_type=villa" class="hs-type-card" style="background:#EAFAF1;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">Independent<br>House / Villa</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(100deg) saturate(0.7);"></div>
             </a>
 
-            <a href="{% url 'property_search' %}?property_type=house" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#7c3a00,#e07020), url('/static/images/hero-house.jpeg') center 70%/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap" style="border-color:#e07020"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e07020" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><rect x="9" y="14" width="6" height="7"/></svg></div>
-                    <h3 class="hs-type-name">House</h3>
-                    <p class="hs-type-sub">Independent builder floors</p>
-                    <span class="hs-type-link" style="color:#e07020">Browse →</span>
+            <a href="{% url 'property_search' %}?property_type=studio" class="hs-type-card" style="background:#F0F0FF;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">1 RK / Studio<br>Apartment</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(260deg) saturate(0.6);"></div>
             </a>
 
-            <a href="{% url 'property_search' %}?property_type=studio" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#5a0075,#b040e0), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap" style="border-color:#b040e0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b040e0" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M4 9h5"/></svg></div>
-                    <h3 class="hs-type-name">Studio / 1RK</h3>
-                    <p class="hs-type-sub">Compact &amp; affordable units</p>
-                    <span class="hs-type-link" style="color:#b040e0">Browse →</span>
+            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-type-card" style="background:#FFF8E7;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">Office /<br>Commercial</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(30deg) saturate(0.7);"></div>
             </a>
 
-            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#003060,#005fa3), url('/static/images/hero-house.jpeg') center/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap" style="border-color:#005fa3"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#005fa3" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
-                    <h3 class="hs-type-name">Commercial</h3>
-                    <p class="hs-type-sub">Offices, shops &amp; co-working</p>
-                    <span class="hs-type-link" style="color:#005fa3">Browse →</span>
+            <a href="{% url 'property_search' %}?property_type=plot" class="hs-type-card" style="background:#FFF0F0;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">Plot /<br>Land</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(320deg) saturate(0.6);"></div>
             </a>
 
-            <a href="{% url 'property_search' %}?property_type=plot" class="hs-type-card">
-                <div class="hs-type-img" style="background: linear-gradient(135deg,#005a2e,#00a854), url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; background-blend-mode: multiply;"></div>
-                <div class="hs-type-body">
-                    <div class="hs-type-icon-wrap" style="border-color:#00a854"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00a854" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>
-                    <h3 class="hs-type-name">Plot / Land</h3>
-                    <p class="hs-type-sub">Residential &amp; commercial plots</p>
-                    <span class="hs-type-link" style="color:#00a854">Browse →</span>
+            <a href="{% url 'property_search' %}?listing_type=sell" class="hs-type-card" style="background:#F0FAFF;">
+                <div class="hs-type-text">
+                    <h3 class="hs-type-name">Builder<br>Floor</h3>
+                    <span class="hs-type-count">Browse listings</span>
                 </div>
+                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(170deg) saturate(0.6);"></div>
             </a>
 
         </div>
@@ -325,7 +312,7 @@
             {% for city in top_cities %}
             <a href="{% url 'property_search' %}?q={{ city.city }}" class="hs-city-bar-card">
                 <div class="hs-city-info">
-                    <span class="hs-city-name">{{ city.city }}</span>
+                    <span class="hs-city-name">{{ city.city|capfirst }}</span>
                     <span class="hs-city-count">{{ city.count }} listing{{ city.count|pluralize }}</span>
                 </div>
                 <div class="hs-city-bar-track">
@@ -349,7 +336,7 @@
                 <h2>🧮 Not sure about your budget?</h2>
                 <p>Use our free EMI &amp; budget calculator to find properties within your financial reach.</p>
             </div>
-            <a href="{% url 'budget' %}" class="btn hs-calc-btn">Calculate Budget</a>
+            <a href="{% url 'budget_calculator' %}" class="btn hs-calc-btn">Calculate Budget</a>
         </div>
     </div>
 </section>
@@ -357,5 +344,69 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/home.js' %}" defer></script>
+<script>
+/* ── Hero slider ─────────────────────────── */
+(function(){
+    var track  = document.getElementById('heroTrack');
+    var slides = track.querySelectorAll('.hs-slide');
+    var dotsEl = document.getElementById('slideDots');
+    var prev   = document.getElementById('slidePrev');
+    var next   = document.getElementById('slideNext');
+    var cur    = 0;
+    var timer;
+
+    // Build dots
+    slides.forEach(function(_, i) {
+        var d = document.createElement('button');
+        d.className = 'hs-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', function(){ goTo(i); });
+        dotsEl.appendChild(d);
+    });
+
+    function goTo(n) {
+        slides[cur].classList.remove('active');
+        dotsEl.children[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active');
+        dotsEl.children[cur].classList.add('active');
+        track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+    }
+    slides[0].classList.add('active');
+    prev.addEventListener('click', function(){ goTo(cur - 1); resetTimer(); });
+    next.addEventListener('click', function(){ goTo(cur + 1); resetTimer(); });
+    function resetTimer() { clearInterval(timer); timer = setInterval(function(){ goTo(cur+1); }, 5000); }
+    resetTimer();
+})();
+
+/* ── Horizontal scroll arrows ────────────── */
+document.querySelectorAll('.h-scroll-wrapper').forEach(function(wrapper){
+    var track = wrapper.querySelector('.h-scroll-track');
+    var p = wrapper.querySelector('.scroll-prev');
+    var n = wrapper.querySelector('.scroll-next');
+    if(p) p.addEventListener('click', function(){ track.scrollBy({left:-320,behavior:'smooth'}); });
+    if(n) n.addEventListener('click', function(){ track.scrollBy({left:320,behavior:'smooth'}); });
+});
+
+/* ── BHK tabs ────────────────────────────── */
+document.querySelectorAll('.hs-bhk-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+        document.querySelectorAll('.hs-bhk-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelectorAll('.hs-bhk-panel').forEach(function(p){ p.classList.remove('active'); });
+        tab.classList.add('active');
+        var panel = document.getElementById(tab.dataset.target);
+        if(panel) panel.classList.add('active');
+    });
+});
+
+/* ── Budget tabs ─────────────────────────── */
+document.querySelectorAll('.hs-budget-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+        document.querySelectorAll('.hs-budget-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelectorAll('.hs-budget-panel').forEach(function(p){ p.classList.remove('active'); });
+        tab.classList.add('active');
+        var panel = document.getElementById(tab.dataset.target);
+        if(panel) panel.classList.add('active');
+    });
+});
+</script>
 {% endblock %}

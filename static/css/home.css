@@ -19,6 +19,10 @@
     position: relative;
     padding: 120px 0 100px;
     background: url('/static/images/hero-house.jpeg') center/cover no-repeat !important;
+    background: url('/static/images/hi.jpg') center/cover no-repeat !important;
+    background: url('/static/images/hero-house.jpeg') center/cover no-repeat !important;
+    background: url('/static/images/hero-house.jpeg') center/cover no-repeat !important;
+
 }
 
 .hero::before {
@@ -372,8 +376,7 @@
 ═══════════════════════════════════════════════════════ */
 .hs-hero-slider {
     position: relative;
-    height: 100vh;
-    min-height: 580px;
+    height: 500px;
     overflow: hidden;
     margin-top: var(--navbar-h);
 }
@@ -390,8 +393,9 @@
     min-width: 20%;
     height: 100%;
     display: flex;
-    align-items: flex-end;
-    padding-bottom: 160px;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 120px;
     opacity: 0;
     transition: opacity 0.4s ease;
 }
@@ -440,8 +444,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.85));
-    padding: 20px 20px 28px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.80));
+    padding: 16px 20px 22px;
     z-index: 10;
 }
 
@@ -506,8 +510,8 @@
 /* Slider arrows */
 .hs-slide-prev, .hs-slide-next {
     position: absolute;
-    top: 50%;
-    transform: translateY(-60%);
+    top: 42%;
+    transform: translateY(-50%);
     background: rgba(255,255,255,0.15);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255,255,255,0.3);
@@ -528,7 +532,7 @@
 /* Dots */
 .hs-slide-dots {
     position: absolute;
-    bottom: 110px;
+    bottom: 90px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -581,71 +585,71 @@
 /* ═══════════════════════════════════════════════════════
    PROPERTY TYPE CARDS  — bigger, image + icon, themed
 ═══════════════════════════════════════════════════════ */
-.hs-type-section { padding: 56px 0; background: #f8fcff; }
-.hs-type-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 24px;
-}
+.hs-type-section { padding: 40px 0 48px; background: #ffffff; }
 
+/* Horizontal scroll wrapper for type cards */
+.hs-type-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 0 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+}
+.hs-type-scroll::-webkit-scrollbar { display: none; }
+
+/* 99acres style: tall card, image fills bottom half, text on top half */
 .hs-type-card {
+    flex: 0 0 220px;
+    height: 260px;
     border-radius: 16px;
     overflow: hidden;
     text-decoration: none;
-    background: white;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    scroll-snap-align: start;
+    background: #f0f8ff;
 }
-.hs-type-card:hover { transform: translateY(-6px); box-shadow: 0 8px 28px rgba(0,169,255,0.18); }
+.hs-type-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,169,255,0.20); }
 
+/* Text area - top */
+.hs-type-text {
+    padding: 18px 18px 0;
+    z-index: 2;
+    flex: 1;
+}
+.hs-type-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 6px;
+    display: block;
+}
+.hs-type-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin: 0 0 4px;
+}
+.hs-type-sub {
+    font-size: 0.78rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Image area - bottom */
 .hs-type-img {
-    height: 160px;
+    height: 130px;
     width: 100%;
     flex-shrink: 0;
-}
-
-.hs-type-body {
-    padding: 20px 22px 22px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.hs-type-icon-wrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    border: 2px solid #00A9FF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 14px;
-    background: #f0f9ff;
-}
-
-.hs-type-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 6px;
-}
-
-.hs-type-sub {
-    font-size: 0.85rem;
-    color: #777;
-    margin: 0;
-    flex: 1;
-}
-
-.hs-type-link {
-    display: inline-block;
-    margin-top: 14px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #00A9FF;
+    background-size: cover;
+    background-position: center bottom;
 }
 
 
@@ -701,8 +705,17 @@
    TOP CITIES GRAPH
 ═══════════════════════════════════════════════════════ */
 .hs-cities-section { padding: 56px 0; background: white; }
-.hs-cities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+.hs-cities-grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 0 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.hs-cities-grid::-webkit-scrollbar { display: none; }
 .hs-city-bar-card {
+    flex: 0 0 260px;
     background: #f8fcff;
     border: 1px solid #d0eaff;
     border-radius: 12px;
@@ -710,6 +723,7 @@
     text-decoration: none;
     transition: box-shadow 0.2s, transform 0.2s;
     display: block;
+    scroll-snap-align: start;
 }
 .hs-city-bar-card:hover { box-shadow: 0 6px 20px rgba(0,169,255,0.15); transform: translateY(-2px); }
 .hs-city-info   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -736,14 +750,13 @@
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════ */
-@media (max-width: 1100px) { .hs-type-grid { grid-template-columns: repeat(2, 1fr); } }
+
 @media (max-width: 900px)  {
     .hs-cities-grid { grid-template-columns: 1fr; }
     .hs-calc-cta-inner { flex-direction: column; text-align: center; }
     .hs-budget-tabs { flex-direction: column; }
 }
 @media (max-width: 640px)  {
-    .hs-type-grid { grid-template-columns: 1fr 1fr; }
     .hs-bhk-tabs  { flex-wrap: wrap; }
     .hs-slide-content { padding: 0 16px; }
     .hs-hero-stats { gap: 14px; }
@@ -752,5 +765,4 @@
     .hs-hero-slider { height: 100svh; }
 }
 @media (max-width: 400px) {
-    .hs-type-grid { grid-template-columns: 1fr; }
 }

@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Budget Calculator — Homesathi{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Page layout ─────────────────────────────── */
+.calc-hero {
+    background: linear-gradient(135deg, #0070b8, #00A9FF);
+    color: white;
+    padding: 52px 20px 44px;
+    margin-top: var(--navbar-h);
+    text-align: center;
+}
+.calc-hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.calc-hero p  { opacity: 0.88; font-size: 1rem; max-width: 560px; margin: 0 auto; }
+
+.calc-page { background: #f0f8ff; padding: 40px 0 80px; }
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ── Card ─────────────────────────────────────── */
+.calc-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+.calc-card h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid #e8f4ff;
+    padding-bottom: 14px;
+}
+
+/* ── Inputs ──────────────────────────────────── */
+.calc-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+.calc-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #d0e8ff;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    color: #333;
+    background: #f8fcff;
+    margin-bottom: 18px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.calc-input:focus {
+    border-color: #00A9FF;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0,169,255,0.12);
+}
+
+/* ── Sliders ─────────────────────────────────── */
+.slider-wrap { margin-bottom: 18px; }
+.slider-top  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.slider-top .calc-label { margin: 0; }
+.slider-val  { font-size: 0.9rem; font-weight: 700; color: #00A9FF; background: #e8f4ff; padding: 3px 10px; border-radius: 20px; }
+.calc-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 99px;
+    background: linear-gradient(to right, #00A9FF var(--pct, 37%), #d0e8ff var(--pct, 37%));
+    outline: none;
+    cursor: pointer;
+}
+.calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #00A9FF;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,169,255,0.4);
+    cursor: pointer;
+}
+.calc-slider::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #00A9FF;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,169,255,0.4);
+    cursor: pointer;
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.calc-btn {
+    width: 100%;
+    background: #00A9FF;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 6px;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(0,169,255,0.3);
+}
+.calc-btn:hover { background: #0090d9; transform: translateY(-1px); }
+.calc-btn:active { transform: translateY(0); }
+
+/* ── EMI Result ──────────────────────────────── */
+.emi-result-box {
+    display: none;
+    margin-top: 20px;
+    border: 1.5px solid #b8e0ff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.emi-result-box.show { display: block; }
+
+.emi-result-header {
+    background: #00A9FF;
+    color: white;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.emi-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e8f4ff;
+    background: white;
+}
+.emi-result-row:last-child { border-bottom: none; background: #f0f8ff; font-weight: 700; }
+.emi-result-label { font-size: 0.88rem; color: #555; }
+.emi-result-value { font-size: 0.95rem; font-weight: 700; color: #00A9FF; }
+.emi-result-row:last-child .emi-result-value { color: #0070b8; font-size: 1.05rem; }
+
+/* EMI donut summary */
+.emi-donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px;
+    background: #f8fcff;
+    border-top: 1px solid #e0f0ff;
+}
+.emi-donut { width: 80px; height: 80px; flex-shrink: 0; }
+.emi-legend { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.emi-leg-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #555; }
+.emi-leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Affordability Result ────────────────────── */
+.afford-result-box {
+    display: none;
+    margin-top: 20px;
+    background: #f0fff8;
+    border: 1.5px solid #7de0a8;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+.afford-result-box.show { display: block; }
+.afford-label { font-size: 0.85rem; color: #555; margin-bottom: 6px; }
+.afford-big   { font-size: 2.4rem; font-weight: 800; color: #00a854; margin: 4px 0 8px; line-height: 1; }
+.afford-note  { font-size: 0.82rem; color: #666; margin-bottom: 14px; line-height: 1.6; }
+.afford-link  {
+    display: inline-block;
+    background: #00A9FF;
+    color: white;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.afford-link:hover { background: #0090d9; }
+
+/* ── Tips ─────────────────────────────────────── */
+.calc-tips {
+    max-width: 980px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+}
+.calc-tips-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.calc-tips-card h3 { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 18px; }
+.tips-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.tip-item  { background: #f0f8ff; border-radius: 10px; padding: 16px; }
+.tip-icon  { font-size: 1.3rem; margin-bottom: 8px; }
+.tip-title { font-weight: 700; color: #0070b8; font-size: 0.88rem; margin-bottom: 6px; display: block; }
+.tip-text  { font-size: 0.8rem; color: #666; line-height: 1.5; }
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr 1fr; }
+    .calc-hero h1 { font-size: 1.5rem; }
+}
+@media (max-width: 480px) {
+    .tips-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="calc-hero">
+    <div class="container">
+        <h1>🧮 Budget &amp; EMI Calculator</h1>
+        <p>Plan your home purchase with confidence. Calculate your monthly EMI and affordability in seconds.</p>
+    </div>
+</section>
+
+<div class="calc-page">
+    <div class="calc-grid">
+
+        <!-- ── EMI CALCULATOR ─────────────────── -->
+        <div class="calc-card">
+            <h2>📊 EMI Calculator</h2>
+
+            <label class="calc-label">Property Price (₹)</label>
+            <input type="number" id="propPrice" class="calc-input" value="5000000" min="100000">
+
+            <label class="calc-label">Down Payment (₹)</label>
+            <input type="number" id="downPayment" class="calc-input" value="1000000" min="0">
+
+            <div class="slider-wrap">
+                <div class="slider-top">
+                    <label class="calc-label">Interest Rate (% per annum)</label>
+                    <span class="slider-val" id="interestDisplay">8.5%</span>
+                </div>
+                <input type="range" id="interestSlider" class="calc-slider" min="6" max="15" step="0.1" value="8.5">
+            </div>
+
+            <div class="slider-wrap">
+                <div class="slider-top">
+                    <label class="calc-label">Loan Tenure</label>
+                    <span class="slider-val" id="tenureDisplay">20 yrs</span>
+                </div>
+                <input type="range" id="tenureSlider" class="calc-slider" min="5" max="30" step="1" value="20">
+            </div>
+
+            <button class="calc-btn" onclick="calculateEMI()">Calculate EMI</button>
+
+            <div class="emi-result-box" id="emiResult">
+                <div class="emi-result-header">Your EMI Breakdown</div>
+                <div class="emi-result-row">
+                    <span class="emi-result-label">Loan Amount</span>
+                    <span class="emi-result-value" id="r-loan">—</span>
+                </div>
+                <div class="emi-result-row">
+                    <span class="emi-result-label">Monthly EMI</span>
+                    <span class="emi-result-value" id="r-emi">—</span>
+                </div>
+                <div class="emi-result-row">
+                    <span class="emi-result-label">Total Interest Payable</span>
+                    <span class="emi-result-value" id="r-interest">—</span>
+                </div>
+                <div class="emi-result-row">
+                    <span class="emi-result-label">Total Amount Payable</span>
+                    <span class="emi-result-value" id="r-total">—</span>
+                </div>
+                <div class="emi-donut-wrap">
+                    <svg class="emi-donut" viewBox="0 0 80 80" id="emiDonut">
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="#d0e8ff" stroke-width="14"/>
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="#00A9FF" stroke-width="14"
+                            stroke-dasharray="188.5" stroke-dashoffset="188.5"
+                            stroke-linecap="round" transform="rotate(-90 40 40)" id="emiDonutArc"/>
+                    </svg>
+                    <div class="emi-legend">
+                        <div class="emi-leg-row"><div class="emi-leg-dot" style="background:#00A9FF"></div><span>Principal: <strong id="leg-principal">—</strong></span></div>
+                        <div class="emi-leg-row"><div class="emi-leg-dot" style="background:#d0e8ff"></div><span>Interest: <strong id="leg-interest">—</strong></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── AFFORDABILITY CALCULATOR ───────── -->
+        <div class="calc-card">
+            <h2>🏠 Affordability Calculator</h2>
+
+            <label class="calc-label">Monthly Income (₹)</label>
+            <input type="number" id="monthlyIncome" class="calc-input" value="80000" min="0">
+
+            <label class="calc-label">Monthly Expenses (₹)</label>
+            <input type="number" id="monthlyExpenses" class="calc-input" value="30000" min="0">
+
+            <label class="calc-label">Existing Loan EMIs (₹)</label>
+            <input type="number" id="existingEMI" class="calc-input" value="0" min="0">
+
+            <label class="calc-label">Savings / Down Payment Available (₹)</label>
+            <input type="number" id="savings" class="calc-input" value="500000" min="0">
+
+            <label class="calc-label">Expected Interest Rate (% per annum)</label>
+            <input type="number" id="affordRate" class="calc-input" value="8.5" step="0.1" min="1" max="20">
+
+            <button class="calc-btn" onclick="calculateAffordability()">Find My Budget</button>
+
+            <div class="afford-result-box" id="affordResult">
+                <div class="afford-label">You can comfortably afford a property up to</div>
+                <div class="afford-big" id="afford-max">—</div>
+                <div class="afford-note" id="afford-note"></div>
+                <a class="afford-link" id="afford-link" href="{% url 'property_search' %}">🔍 View Properties in Your Budget</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── TIPS ─────────────────────────────── -->
+    <div class="calc-tips">
+        <div class="calc-tips-card">
+            <h3>💡 Smart Home Buying Tips</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <div class="tip-icon">🎯</div>
+                    <span class="tip-title">40% EMI Rule</span>
+                    <p class="tip-text">Keep your EMI under 40% of monthly take-home pay for financial stability.</p>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💰</div>
+                    <span class="tip-title">Down Payment</span>
+                    <p class="tip-text">Aim for 20–30% down payment to reduce loan burden and save on interest.</p>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">📋</div>
+                    <span class="tip-title">Hidden Costs</span>
+                    <p class="tip-text">Budget 5–10% extra for stamp duty, registration fees &amp; maintenance.</p>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">📈</div>
+                    <span class="tip-title">Credit Score</span>
+                    <p class="tip-text">A CIBIL score above 750 unlocks the best interest rates from banks.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Helpers ────────────────────────────────────
+function fmtINR(n) {
+    n = Math.round(n);
+    if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+    if (n >= 100000)   return '₹' + (n/100000).toFixed(1) + ' L';
+    return '₹' + n.toLocaleString('en-IN');
+}
+
+function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function el(id)  { return document.getElementById(id); }
+
+// ── Slider live updates ────────────────────────
+function updateSlider(sliderId, displayId, suffix, decimals) {
+    var s = el(sliderId);
+    var d = el(displayId);
+    function update() {
+        var v = parseFloat(s.value);
+        d.textContent = v.toFixed(decimals) + suffix;
+        // Update fill gradient
+        var min = parseFloat(s.min), max = parseFloat(s.max);
+        var pct = ((v - min) / (max - min) * 100).toFixed(1);
+        s.style.setProperty('--pct', pct + '%');
+    }
+    s.addEventListener('input', update);
+    update(); // run on load
+}
+
+updateSlider('interestSlider', 'interestDisplay', '%', 1);
+updateSlider('tenureSlider',   'tenureDisplay',   ' yrs', 0);
+
+// ── EMI Calculator ─────────────────────────────
+function calculateEMI() {
+    var P    = val('propPrice');
+    var D    = val('downPayment');
+    var rate = parseFloat(el('interestSlider').value);
+    var yrs  = parseFloat(el('tenureSlider').value);
+
+    // Validation
+    if (P <= 0) { alert('Please enter a valid property price.'); return; }
+    if (D >= P) { alert('Down payment cannot be more than property price.'); return; }
+
+    var loan = P - D;
+    var r    = rate / 12 / 100;
+    var n    = yrs * 12;
+
+    var emi      = loan * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+    var totalPay = emi * n;
+    var totalInt = totalPay - loan;
+    var principalPct = (loan / totalPay * 188.5).toFixed(1); // dashoffset for donut
+
+    // Populate values
+    el('r-loan').textContent     = fmtINR(loan);
+    el('r-emi').textContent      = fmtINR(emi) + '/mo';
+    el('r-interest').textContent = fmtINR(totalInt);
+    el('r-total').textContent    = fmtINR(totalPay);
+    el('leg-principal').textContent = fmtINR(loan);
+    el('leg-interest').textContent  = fmtINR(totalInt);
+
+    // Donut arc
+    var arc = el('emiDonutArc');
+    if (arc) {
+        var offset = (188.5 - (loan / totalPay) * 188.5).toFixed(1);
+        arc.setAttribute('stroke-dashoffset', offset);
+    }
+
+    el('emiResult').classList.add('show');
+    el('emiResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Affordability Calculator ───────────────────
+function calculateAffordability() {
+    var income   = val('monthlyIncome');
+    var expenses = val('monthlyExpenses');
+    var existing = val('existingEMI');
+    var savings  = val('savings');
+    var rate     = val('affordRate') || 8.5;
+
+    if (income <= 0) { alert('Please enter your monthly income.'); return; }
+
+    var disposable = income - expenses - existing;
+    var maxEMI     = disposable * 0.40;
+
+    if (maxEMI <= 0) {
+        alert('Your expenses and existing EMIs exceed your income. Please review your inputs.');
+        return;
+    }
+
+    var r       = rate / 12 / 100;
+    var n       = 20 * 12; // 20 year tenure
+    var maxLoan = maxEMI * (Math.pow(1+r, n) - 1) / (r * Math.pow(1+r, n));
+    var maxProp = maxLoan + savings;
+
+    el('afford-max').textContent = fmtINR(maxProp);
+    el('afford-note').innerHTML  =
+        '<b>Max Monthly EMI:</b> ' + fmtINR(maxEMI) + ' &nbsp;|&nbsp; ' +
+        '<b>Max Loan:</b> ' + fmtINR(maxLoan) + ' &nbsp;|&nbsp; ' +
+        '<b>Down Payment:</b> ' + fmtINR(savings);
+
+    // Build search URL safely using pre-resolved base
+    var base = '{% url "property_search" %}';
+    var url  = base + '?listing_type=sell';
+    if (maxProp <= 5000000)       url += '&max_price=5000000';
+    else if (maxProp <= 15000000) url += '&max_price=15000000';
+    el('afford-link').href = url;
+
+    el('affordResult').classList.add('show');
+    el('affordResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

@@ -19,7 +19,7 @@ def home(request):
     sale_props           = active.filter(listing_type='sell').order_by('-created_at')[:8]
     apartments           = active.filter(property_type='apartment').order_by('-created_at')[:8]
     villas               = active.filter(property_type='villa').order_by('-created_at')[:8]
-    new_launches         = active.filter(listing_type='sell').order_by('-created_at')[:8]
+    new_launches         = active.order_by('-created_at')[:20]
 
     # BHK sections
     bhk1 = active.filter(bedrooms=1).order_by('-created_at')[:8]
@@ -38,7 +38,7 @@ def home(request):
     top_cities_qs = (
         active.values('city')
         .annotate(count=Count('id'), avg_price=Avg('price'))
-        .order_by('-count')[:6]
+        .order_by('-count')[:10]
     )
     top_cities = [
         {
@@ -423,5 +423,7 @@ def reviews_page(request):
         'bar_data': bar_data, 'avg_stars': avg_stars,
         'error': None, 'success': success,
     })
-def budget(request):
-    return render(request, 'properties/budget.html')
+
+# ── BUDGET CALCULATOR ─────────────────────────────────────────
+def budget_calculator(request):
+    return render(request, 'properties/budget_calculator.html')

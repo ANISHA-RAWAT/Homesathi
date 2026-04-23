@@ -1,4 +1,4 @@
-/* RENTED BUTTON */
+/* ── RENTED BUTTON ───────────────────────────────────────── */
 .btn-warning {
     background: #a5a58d;
     color: white;
@@ -9,7 +9,7 @@
     background: #6b705c;
 }
 
-/* RENTED STATUS BADGE */
+/* ── RENTED STATUS BADGE ─────────────────────────────────── */
 .status-rented {
     background: #6b705c;
     color: white;
@@ -21,9 +21,22 @@
     margin-left: 5px;
 }
 
-/* ALIGN ACTION BUTTONS */
+/* ── REPOST BUTTON ───────────────────────────────────────── */
+.btn-repost {
+    background: #2a9d8f;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-repost:hover {
+    background: #21867a;
+}
+
+/* ── ACTION BUTTONS ROW ──────────────────────────────────── */
 .table-actions {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    align-items: center;
 }

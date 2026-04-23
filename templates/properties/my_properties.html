@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}My Listings — RentalHome{% endblock %}
+{% block title %}My Listings — HomeSathi{% endblock %}
 
 {% block content %}
 <div class="dashboard-page">
@@ -17,7 +17,12 @@
             <table class="listings-table">
                 <thead>
                     <tr>
-                        <th>Property</th><th>Type</th><th>Price</th><th>Views</th><th>Status</th><th>Actions</th>
+                        <th>PROPERTY</th>
+                        <th>TYPE</th>
+                        <th>PRICE</th>
+                        <th>VIEWS</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,34 +45,43 @@
                         <td class="price-cell">{{ prop.formatted_price }}</td>
                         <td>👁 {{ prop.view_count }}</td>
                         <td><span class="status-dot status-{{ prop.status }}">{{ prop.get_status_display }}</span></td>
-                       <td>
-    <div class="table-actions">
+                        <td>
+                            <div class="table-actions">
 
-        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-xs btn-outline">View</a>
+                                <a href="{% url 'property_detail' prop.pk %}" class="btn btn-xs btn-outline">View</a>
+                                <a href="{% url 'edit_property' prop.pk %}" class="btn btn-xs btn-outline">Edit</a>
 
-        <a href="{% url 'edit_property' prop.pk %}" class="btn btn-xs btn-outline">Edit</a>
+                                <form method="post" action="{% url 'delete_property' prop.pk %}" style="display:inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-xs btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this property?')">
+                                        Delete
+                                    </button>
+                                </form>
 
-        <form method="post" action="{% url 'delete_property' prop.pk %}" style="display:inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-xs btn-danger">Delete</button>
-        </form>
+                                {% if not prop.is_rented %}
+                                    {# ── RENTED BUTTON: opens modal so owner can pick which buyer got it ── #}
+                                    <button type="button" class="btn btn-xs btn-warning"
+                                        onclick="openRentedModal({{ prop.pk }}, '{{ prop.title|escapejs }}')">
+                                        Rented
+                                    </button>
+                                {% else %}
+                                    {# ── RENTED BADGE + REPOST BUTTON ── #}
+                                    <span class="status-rented">Rented</span>
+                                    <form method="post" action="{% url 'repost_property' prop.pk %}" style="display:inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-xs btn-repost">🔁 Repost</button>
+                                    </form>
+                                {% endif %}
 
-        {% if not prop.is_rented %}
-        <form method="post" action="{% url 'mark_rented' prop.pk %}" style="display:inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-xs btn-warning">Rented</button>
-        </form>
-        {% else %}
-        <span class="status-rented">Rented</span>
-        {% endif %}
-
-    </div>
-</td>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
         {% else %}
         <div class="empty-state">
             <div style="font-size:4rem">🏡</div>
@@ -76,6 +90,144 @@
             <a href="{% url 'post_propertyfree' %}" class="btn btn-primary">List Your Property</a>
         </div>
         {% endif %}
+
     </div>
 </div>
+
+
+{# ═══════════════════════════════════════════════════════════ #}
+{# RENTED MODAL                                               #}
+{# ═══════════════════════════════════════════════════════════ #}
+<div id="rentedModal" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.50);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: #fff;
+        border-radius: 14px;
+        padding: 32px 36px;
+        max-width: 440px;
+        width: 92%;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.20);
+        position: relative;
+    ">
+        {# Close X button #}
+        <button onclick="closeRentedModal()" style="
+            position: absolute; top: 14px; right: 16px;
+            background: none; border: none; font-size: 20px;
+            cursor: pointer; color: #888; line-height: 1;
+        ">✕</button>
+
+        <h3 style="margin: 0 0 4px; font-size: 18px;">Mark as Rented / Sold</h3>
+        <p id="modalPropName" style="color: #666; font-size: 13px; margin: 0 0 20px;"></p>
+
+        <form method="post" id="rentedForm">
+            {% csrf_token %}
+
+            <label style="display:block; font-size:13px; font-weight:600; color:#444; margin-bottom:6px;">
+                Who got the property?
+                <span style="font-weight:400; color:#999;">(optional)</span>
+            </label>
+            <p style="font-size:12px; color:#999; margin: 0 0 10px; line-height:1.5;">
+                Select the buyer who rented/bought this property. All <em>other</em> inquirers
+                will receive an automatic notification in their inbox.
+                Leave blank to notify everyone.
+            </p>
+
+            <select name="rented_to_inquiry_pk" id="inquirySelect" style="
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                margin-bottom: 24px;
+                background: #fafafa;
+                color: #333;
+            ">
+                <option value="">— Notify all inquirers —</option>
+            </select>
+
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="closeRentedModal()"
+                    class="btn btn-xs btn-outline" style="padding: 9px 20px; font-size:13px;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-xs btn-warning"
+                    style="padding: 9px 20px; font-size:13px;">
+                    ✓ Confirm Rented
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{# ═══════════════════════════════════════════════════════════ #}
+{# INQUIRY DATA + MODAL JS                                    #}
+{# ═══════════════════════════════════════════════════════════ #}
+<script>
+// Build a lookup: property PK → list of {pk, name} for inquirers
+const propertyInquiries = {
+    {% for prop in properties %}
+    "{{ prop.pk }}": [
+        {% for inq in prop.inquiries.all %}
+        { pk: "{{ inq.pk }}", name: "{{ inq.seeker_name|escapejs }}" },
+        {% endfor %}
+    ],
+    {% endfor %}
+};
+
+function openRentedModal(propPk, propTitle) {
+    // Set title
+    document.getElementById('modalPropName').textContent = propTitle;
+
+    // Point the form to the correct property
+    document.getElementById('rentedForm').action = "{% url 'mark_rented' 0 %}".replace('/0/', '/' + propPk + '/');
+
+    // Populate the dropdown with this property's inquirers
+    const select = document.getElementById('inquirySelect');
+    select.innerHTML = '<option value="">— Notify all inquirers —</option>';
+
+    const inquiries = propertyInquiries[String(propPk)] || [];
+    if (inquiries.length === 0) {
+        const opt = document.createElement('option');
+        opt.disabled = true;
+        opt.textContent = 'No inquiries for this property yet';
+        select.appendChild(opt);
+    } else {
+        inquiries.forEach(function(inq) {
+            const opt = document.createElement('option');
+            opt.value = inq.pk;
+            opt.textContent = inq.name;
+            select.appendChild(opt);
+        });
+    }
+
+    // Show modal
+    const modal = document.getElementById('rentedModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRentedModal() {
+    document.getElementById('rentedModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close when clicking the dark backdrop
+document.getElementById('rentedModal').addEventListener('click', function(e) {
+    if (e.target === this) closeRentedModal();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRentedModal();
+});
+</script>
+
 {% endblock %}

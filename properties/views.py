@@ -21,20 +21,16 @@ def home(request):
     villas               = active.filter(property_type='villa').order_by('-created_at')[:8]
     new_launches         = active.order_by('-created_at')[:20]
 
-    # BHK sections
     bhk1 = active.filter(bedrooms=1).order_by('-created_at')[:8]
     bhk2 = active.filter(bedrooms=2).order_by('-created_at')[:8]
     bhk3 = active.filter(bedrooms__gte=3).order_by('-created_at')[:8]
 
-    # Budget segments (in rupees)
-    affordable = active.filter(price__lte=5000000).order_by('price')[:8]        # up to 50L
-    mid_segment = active.filter(price__gt=5000000, price__lte=15000000).order_by('price')[:8]  # 50L-1.5Cr
-    luxury      = active.filter(price__gt=15000000).order_by('-price')[:8]      # 1.5Cr+
+    affordable  = active.filter(price__lte=5000000).order_by('price')[:8]
+    mid_segment = active.filter(price__gt=5000000, price__lte=15000000).order_by('price')[:8]
+    luxury      = active.filter(price__gt=15000000).order_by('-price')[:8]
 
-    # High demand = most viewed
     high_demand = active.order_by('-view_count')[:8]
 
-    # Top gainer cities: cities with most listings
     top_cities_qs = (
         active.values('city')
         .annotate(count=Count('id'), avg_price=Avg('price'))
@@ -50,7 +46,7 @@ def home(request):
                 else f"₹{c['avg_price']/100000:.1f} L" if (c['avg_price'] or 0) >= 100000
                 else f"₹{int(c['avg_price'] or 0):,}"
             ),
-            'bar_width': 0,  # filled below
+            'bar_width': 0,
         }
         for c in top_cities_qs
     ]
@@ -239,12 +235,98 @@ def _notify_reply(inquiry, sender_role):
         pass
 
 
+def _notify_rented_to_others(prop, exclude_inquiry_pk=None):
+    """
+    Posts a system message in every OTHER buyer's inbox thread for this property
+    and emails them to say the property is no longer available.
+    """
+    from django.core.mail import send_mail
+
+    qs = Inquiry.objects.filter(property=prop)
+    if exclude_inquiry_pk:
+        qs = qs.exclude(pk=exclude_inquiry_pk)
+
+    for inquiry in qs:
+        # Drop a system message into their inbox thread
+        InquiryReply.objects.create(
+            inquiry=inquiry,
+            sender=None,          # system message — no human sender
+            sender_role='seller',
+            message=(
+                f"🏠 Update: This property has been rented/sold. "
+                f"Thank you for your interest in \"{prop.title}\". "
+                f"We hope you find the perfect place soon — "
+                f"please explore our other available listings!"
+            ),
+        )
+        # Mark thread closed
+        inquiry.status = 'closed'
+        inquiry.save(update_fields=['status', 'updated_at'])
+
+        # Email them if they have an account with an email address
+        if inquiry.buyer and inquiry.buyer.email:
+            try:
+                send_mail(
+                    subject=f"Property no longer available: {prop.title}",
+                    message=(
+                        f"Hello {inquiry.seeker_name},\n\n"
+                        f"We wanted to let you know that \"{prop.title}\" "
+                        f"in {prop.city} has been rented/sold and is no longer available.\n\n"
+                        f"Please visit our platform to explore other listings.\n\n"
+                        f"Best regards,\n"
+                        f"{getattr(settings, 'SITE_NAME', 'HomeSathi')} Team"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[inquiry.buyer.email],
+                    fail_silently=True,
+                )
+            except Exception:
+                pass
+
+
+@login_required
+def mark_rented(request, pk):
+    prop = get_object_or_404(Property, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        # Owner may optionally select which buyer got the property.
+        # That buyer's thread is left untouched; everyone else gets notified.
+        rented_to_pk = request.POST.get('rented_to_inquiry_pk') or None
+
+        prop.is_rented = True
+        prop.status    = 'sold'
+        prop.save(update_fields=['is_rented', 'status'])
+
+        # Validate the selected inquiry belongs to this property
+        exclude_pk = None
+        if rented_to_pk:
+            try:
+                chosen = Inquiry.objects.get(pk=rented_to_pk, property=prop)
+                exclude_pk = chosen.pk
+            except Inquiry.DoesNotExist:
+                exclude_pk = None
+
+        _notify_rented_to_others(prop, exclude_inquiry_pk=exclude_pk)
+
+        messages.success(
+            request,
+            'Property marked as rented. Other inquirers have been notified automatically.'
+        )
+    return redirect('my_properties')
+
+
+@login_required
+def repost_property(request, pk):
+    """Flip a sold/rented property back to active without touching any other fields."""
+    prop = get_object_or_404(Property, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        prop.is_rented = False
+        prop.status    = 'active'
+        prop.save(update_fields=['is_rented', 'status'])
+        messages.success(request, f'"{prop.title}" is now live again!')
+    return redirect('my_properties')
+
+
 def _build_form_data_json(form):
-    """
-    Serialize form field values to a plain dict so the template can pass
-    them to JavaScript via Django's json_script filter — no inline Django
-    tags inside <script> blocks, no JS linter errors.
-    """
     data = {}
     for field in form:
         val = field.value()
@@ -264,25 +346,21 @@ def post_property_free(request):
             property_obj.owner  = request.user
             property_obj.status = 'active'
 
-            # Sync listing_type from the choice radio (named listing_type_choice in template)
             listing_type_choice = request.POST.get('listing_type_choice', '')
             if listing_type_choice:
                 property_obj.listing_type = listing_type_choice
 
-            # Sync furnishing from chip selection
             furnishing_status = request.POST.get('furnishing_status', '')
             if furnishing_status:
                 property_obj.furnishing   = furnishing_status
                 property_obj.is_furnished = (furnishing_status == 'furnished')
 
-            # PG for field
             pg_for = request.POST.get('pg_for', '')
             if pg_for:
                 property_obj.pg_for = pg_for
 
             property_obj.save()
 
-            # Save images (multiple)
             images = request.FILES.getlist('property_images')
             for i, image in enumerate(images):
                 from .models import PropertyImage
@@ -296,8 +374,6 @@ def post_property_free(request):
             messages.success(request, 'Your property has been listed successfully!')
             return redirect('property_detail', pk=property_obj.pk)
         else:
-            # Form invalid — re-render with errors.
-            # Build form_data_json so JS can restore field values after reload.
             messages.error(request, 'Please fix the errors below.')
             return render(request, 'properties/post_propertyfree.html', {
                 'form': form,
@@ -308,13 +384,13 @@ def post_property_free(request):
 
     return render(request, 'properties/post_propertyfree.html', {
         'form': form,
-        'form_data_json': '{}',   # empty on fresh GET — JS restoreOnError will be a no-op
+        'form_data_json': '{}',
     })
 
 
 @login_required
 def my_properties(request):
-    properties = Property.objects.filter(owner=request.user).order_by('-created_at')
+    properties = Property.objects.filter(owner=request.user).order_by('-created_at').prefetch_related('inquiries')
     return render(request, 'properties/my_properties.html', {'properties': properties})
 
 
@@ -356,14 +432,6 @@ def delete_property(request, pk):
     if request.method == 'POST':
         property_obj.delete()
         messages.success(request, 'Property deleted.')
-    return redirect('my_properties')
-
-
-def mark_rented(request, pk):
-    prop = get_object_or_404(Property, pk=pk, owner=request.user)
-    prop.is_rented = True
-    prop.status = 'sold'
-    prop.save()
     return redirect('my_properties')
 
 
@@ -423,6 +491,7 @@ def reviews_page(request):
         'bar_data': bar_data, 'avg_stars': avg_stars,
         'error': None, 'success': success,
     })
+
 
 # ── BUDGET CALCULATOR ─────────────────────────────────────────
 def budget_calculator(request):

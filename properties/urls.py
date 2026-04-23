@@ -14,6 +14,7 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/<int:pk>/', views.inquiry_thread, name='inquiry_thread'),
     path('mark-rented/<int:pk>/', views.mark_rented, name='mark_rented'),
+    path('repost-property/<int:pk>/', views.repost_property, name='repost_property'),  # NEW
     path('reviews/', views.reviews_page, name='reviews'),
     path('budget_calculator/', views.budget_calculator, name='budget_calculator'),
 ]

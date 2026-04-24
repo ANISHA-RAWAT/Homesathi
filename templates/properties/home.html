@@ -2,117 +2,452 @@
 {% load static %}
 {% block title %}HOMESATHI — Find Your Perfect Space{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════════════════
+   HERO SLIDER — full fix
+   Images: place your own photos in /static/images/
+   and update the src paths in each .hs-slide below.
+   Current placeholders use inline base64 gradients so
+   the slider always renders even without network images.
+═══════════════════════════════════════════════════════ */
+
+/* Remove any top margin/padding the base template adds */
+.hs-hero-slider {
+    position: relative;
+    width: 100%;
+    height: 580px;          /* ← change this to increase banner height */
+    overflow: hidden;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    background: #1a1a2e;
+}
+
+/* Each slide sits on top of one another — only .active is visible */
+.hs-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 140px;  /* push content above the search bar */
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+.hs-slide.active { opacity: 1; }
+
+/* ── SLIDE BACKGROUNDS ──────────────────────────────────
+   TO USE YOUR OWN IMAGES replace the url() values below.
+   Put your images in:  yourproject/static/images/
+   then use:  url("{% static 'images/yourfile.jpg' %}")
+   Or use an absolute URL: url("https://...")
+   The gradient overlay is written first so it sits on top.
+──────────────────────────────────────────────────────── */
+.hs-slide-1 {
+    background:
+        linear-gradient(rgba(0,0,0,0.50), rgba(0,0,0,0.25)),
+        url("https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=85&auto=format")
+        center/cover no-repeat;
+}
+.hs-slide-2 {
+    background:
+        linear-gradient(rgba(0,40,100,0.55), rgba(0,20,60,0.30)),
+        url("https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600&q=85&auto=format")
+        center/cover no-repeat;
+}
+.hs-slide-3 {
+    background:
+        linear-gradient(rgba(0,50,20,0.55), rgba(0,30,10,0.30)),
+        url("https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=85&auto=format")
+        center/cover no-repeat;
+}
+.hs-slide-4 {
+    background:
+        linear-gradient(rgba(50,0,70,0.55), rgba(20,0,40,0.30)),
+        url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=85&auto=format")
+        center/cover no-repeat;
+}
+.hs-slide-5 {
+    background:
+        linear-gradient(rgba(0,50,90,0.55), rgba(0,25,55,0.30)),
+        url("https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1600&q=85&auto=format")
+        center/cover no-repeat;
+}
+
+/* Fallback gradient if image fails to load */
+.hs-slide-1 { background-color: #1a3a5c; }
+.hs-slide-2 { background-color: #1a2c5c; }
+.hs-slide-3 { background-color: #1a3a2c; }
+.hs-slide-4 { background-color: #3a1a5c; }
+.hs-slide-5 { background-color: #1a3a5c; }
+
+.hs-slide-content {
+    width: 100%;
+    max-width: 720px;
+    padding: 0 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.hs-slide-tag {
+    display: inline-block;
+    background: rgba(0,169,255,0.90);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.hs-slide-content h1 {
+    font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.hs-accent { color: #00A9FF; }
+
+.hs-slide-content p {
+    font-size: 1.05rem;
+    opacity: 0.90;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* ── SEARCH BAR OVERLAY ──────────────────────────────── */
+.hs-hero-search-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    padding: 20px 20px 24px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.72) 35%, rgba(0,0,0,0.85));
+}
+
+.hs-hero-search-form {
+    max-width: 820px;
+    margin: 0 auto 16px;
+}
+
+/* ── THE SEARCH BAR itself ── */
+.hs-search-inner {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 0 6px 0 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.7);
+    overflow: hidden;
+    height: 56px;
+}
+
+.hs-search-icon-wrap {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    flex-shrink: 0;
+}
+
+.hs-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: #1a1a2e;
+    background: transparent;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+}
+.hs-search-input::placeholder { color: #9ca3af; }
+
+.hs-search-divider {
+    width: 1px;
+    height: 28px;
+    background: #e5e7eb;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+.hs-search-select {
+    border: none;
+    outline: none;
+    font-size: 0.88rem;
+    color: #374151;
+    background: transparent;
+    padding: 0 12px;
+    height: 100%;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+.hs-search-btn {
+    background: #00A9FF;
+    color: white;
+    border: none;
+    padding: 0 28px;
+    height: 44px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    margin: 6px 0;
+    flex-shrink: 0;
+}
+.hs-search-btn:hover { background: #0090d9; }
+
+/* ── STATS ROW under search ── */
+.hs-hero-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 28px;
+}
+.hs-stat { text-align: center; }
+.hs-stat-n {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #00A9FF;
+    line-height: 1.1;
+}
+.hs-stat-l {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.78);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.hs-stat-div {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.28);
+}
+
+/* ── SLIDER ARROWS ── */
+.hs-slide-prev,
+.hs-slide-next {
+    position: absolute;
+    top: calc(50% - 70px);   /* above the search bar overlay */
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: white;
+    font-size: 1.8rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.2s, border-color 0.2s;
+    padding: 0;
+}
+.hs-slide-prev { left: 18px; }
+.hs-slide-next { right: 18px; }
+.hs-slide-prev:hover,
+.hs-slide-next:hover {
+    background: rgba(0,169,255,0.75);
+    border-color: rgba(0,169,255,0.8);
+}
+
+/* ── DOTS ── */
+.hs-slide-dots {
+    position: absolute;
+    bottom: 118px;   /* above search bar */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 9px;
+    z-index: 25;
+}
+.hs-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.40);
+    border: none;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+    padding: 0;
+}
+.hs-dot.active {
+    background: #00A9FF;
+    transform: scale(1.35);
+}
+
+
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+    .hs-hero-slider { height: 100svh; min-height: 520px; }
+    .hs-slide { padding-bottom: 180px; }
+    .hs-slide-prev { left: 8px; }
+    .hs-slide-next { right: 8px; }
+    .hs-search-btn { padding: 0 16px; }
+    .hs-hero-stats { gap: 14px; }
+    .hs-stat-div { height: 28px; }
+    .hs-slide-dots { bottom: 148px; }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<!-- ═══════════════════════════════════════════
-     HERO SLIDER
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ HERO SLIDER ═══════════════════════
+     IMAGES: Each slide has a class like "hs-slide-1", "hs-slide-2" etc.
+     To swap images, go to the <style> block above and update the url()
+     inside .hs-slide-1, .hs-slide-2 etc.
+     Example: url("{% static 'images/your-banner1.jpg' %}")
+════════════════════════════════════════════════════════════ -->
 <section class="hs-hero-slider">
-    <div class="hs-slider-track" id="heroTrack">
 
-        <!-- Slide 1 -->
-        <div class="hs-slide" style="background: linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.3)), url('/static/images/hero-house.jpeg') center/cover no-repeat;">
-            <div class="hs-slide-content">
-                <h1>Find Your <span class="hs-accent">Perfect</span> Home</h1>
-                <p>Search thousands of verified properties for rent &amp; sale across India.</p>
-            </div>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="hs-slide" style="background: linear-gradient(rgba(0,90,160,0.7),rgba(0,50,100,0.5)), url('/static/images/hero-house.jpeg') center 30%/cover no-repeat;">
-            <div class="hs-slide-content">
-                <span class="hs-slide-tag">🏢 Apartments</span>
-                <h1>Modern <span class="hs-accent">Apartments</span> Await</h1>
-                <p>From cozy studios to spacious 4BHKs — find your ideal apartment today.</p>
-            </div>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="hs-slide" style="background: linear-gradient(rgba(20,80,20,0.65),rgba(0,40,0,0.4)), url('/static/images/hero-house.jpeg') center 60%/cover no-repeat;">
-            <div class="hs-slide-content">
-                <span class="hs-slide-tag">🌿 Villas &amp; Bungalows</span>
-                <h1>Luxury <span class="hs-accent">Villas</span> &amp; More</h1>
-                <p>Exclusive villas and independent houses in prime locations.</p>
-            </div>
-        </div>
-
-        <!-- Slide 4 -->
-        <div class="hs-slide" style="background: linear-gradient(rgba(100,0,60,0.65),rgba(50,0,30,0.4)), url('/static/images/hero-house.jpeg') center 80%/cover no-repeat;">
-            <div class="hs-slide-content">
-                <span class="hs-slide-tag">💼 Commercial Spaces</span>
-                <h1>Grow Your <span class="hs-accent">Business</span> Here</h1>
-                <p>Offices, retail shops and warehouses in top commercial hubs.</p>
-            </div>
-        </div>
-
-        <!-- Slide 5 -->
-        <div class="hs-slide" style="background: linear-gradient(rgba(0,80,130,0.7),rgba(0,40,80,0.45)), url('/static/images/hero-house.jpeg') center top/cover no-repeat;">
-            <div class="hs-slide-content">
-                <span class="hs-slide-tag">🔑 Ready to Move</span>
-                <h1>Move In <span class="hs-accent">Immediately</span></h1>
-                <p>Ready-to-move properties — no waiting, just living.</p>
-            </div>
+    <!-- SLIDE 1 — update .hs-slide-1 in CSS above to change image -->
+    <div class="hs-slide hs-slide-1 active">
+        <div class="hs-slide-content">
+            <span class="hs-slide-tag">🏡 Premium Listings</span>
+            <h1>Find Your <span class="hs-accent">Perfect</span> Home</h1>
+            <p>Search thousands of verified properties for rent &amp; sale across India.</p>
         </div>
     </div>
 
-    <!-- Search bar (pinned over slider) -->
-    <div class="hs-hero-search-wrap">
-        <form class="hs-hero-search-form" action="{% url 'property_search' %}" method="get">
-            <div class="hs-search-inner">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" name="q" placeholder="Enter city, locality or property type..." class="hs-search-input">
+    <!-- SLIDE 2 — update .hs-slide-2 in CSS above to change image -->
+    <div class="hs-slide hs-slide-2">
+        <div class="hs-slide-content">
+            <span class="hs-slide-tag">🏢 Apartments</span>
+            <h1>Modern <span class="hs-accent">Apartments</span> Await</h1>
+            <p>From cozy studios to spacious 4BHKs — find your ideal apartment today.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 3 — update .hs-slide-3 in CSS above to change image -->
+    <div class="hs-slide hs-slide-3">
+        <div class="hs-slide-content">
+            <span class="hs-slide-tag">🌿 Villas &amp; Bungalows</span>
+            <h1>Luxury <span class="hs-accent">Villas</span> &amp; More</h1>
+            <p>Exclusive villas and independent houses in prime locations.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 4 — update .hs-slide-4 in CSS above to change image -->
+    <div class="hs-slide hs-slide-4">
+        <div class="hs-slide-content">
+            <span class="hs-slide-tag">💼 Commercial Spaces</span>
+            <h1>Grow Your <span class="hs-accent">Business</span> Here</h1>
+            <p>Offices, retail shops and warehouses in top commercial hubs.</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 5 — update .hs-slide-5 in CSS above to change image -->
+    <div class="hs-slide hs-slide-5">
+        <div class="hs-slide-content">
+            <span class="hs-slide-tag">🔑 Ready to Move</span>
+            <h1>Move In <span class="hs-accent">Immediately</span></h1>
+            <p>Ready-to-move properties — no waiting, just living.</p>
+        </div>
+    </div>
+
+    <!-- SEARCH BAR (pinned to bottom of slider) -->
+<!-- Dot indicators — ABOVE search bar -->
+<div class="hs-slide-dots" id="slideDots"></div>
+
+<!-- SEARCH BAR (pinned to bottom of slider) -->
+<div class="hs-hero-search-wrap">
+    <form class="hs-hero-search-form" action="{% url 'property_search' %}" method="get">
+        <div class="hs-search-inner">
+            <!-- Search icon -->
+            <div class="hs-search-icon-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+            </div>
+            <!-- Location input -->
+            <input
+                type="text"
+                name="q"
+                placeholder="Search by city, locality or area…"
+                class="hs-search-input"
+                autocomplete="off"
+            >
+            <!-- Divider -->
+            <div class="hs-search-divider"></div>
+            <!-- Listing type dropdown -->
+            <div class="hs-type-dropdown-wrap">
                 <select name="listing_type" class="hs-search-select">
                     <option value="">All</option>
                     <option value="rent">Rent</option>
-                    <option value="sell">Buy</option>
+                    <option value="sell">Sale</option>
+                    <option value="pg">PG</option>
                 </select>
-                <button type="submit" class="hs-search-btn">Search</button>
             </div>
-        </form>
+            <!-- Submit -->
+            <button type="submit" class="hs-search-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Search
+            </button>
+        </div>
+    </form>
+
+        <!-- Stats row -->
         <div class="hs-hero-stats">
-            <div class="hs-stat"><span class="hs-stat-n">2K+</span><span class="hs-stat-l">Properties</span></div>
+            <div class="hs-stat">
+                <span class="hs-stat-n">2K+</span>
+                <span class="hs-stat-l">Properties</span>
+            </div>
             <div class="hs-stat-div"></div>
-            <div class="hs-stat"><span class="hs-stat-n">500+</span><span class="hs-stat-l">Cities</span></div>
+            <div class="hs-stat">
+                <span class="hs-stat-n">500+</span>
+                <span class="hs-stat-l">Cities</span>
+            </div>
             <div class="hs-stat-div"></div>
-            <div class="hs-stat"><span class="hs-stat-n">100%</span><span class="hs-stat-l">Privacy</span></div>
+            <div class="hs-stat">
+                <span class="hs-stat-n">100%</span>
+                <span class="hs-stat-l">Privacy</span>
+            </div>
         </div>
     </div>
 
-    <!-- Slider controls -->
+    <!-- Prev / Next arrows -->
     <button class="hs-slide-prev" id="slidePrev" aria-label="Previous slide">&#8249;</button>
     <button class="hs-slide-next" id="slideNext" aria-label="Next slide">&#8250;</button>
-    <div class="hs-slide-dots" id="slideDots"></div>
+
 </section>
 
-<!-- QUICK FILTER CHIPS -->
-<section class="hs-chips-bar">
-    <div class="container">
-        <div class="hs-chips">
-            <a href="{% url 'property_search' %}?listing_type=rent" class="hs-chip">For Rent</a>
-            <a href="{% url 'property_search' %}?listing_type=sell" class="hs-chip">For Sale</a>
-            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-chip">Apartments</a>
-            <a href="{% url 'property_search' %}?property_type=villa" class="hs-chip">Villas</a>
-            <a href="{% url 'property_search' %}?property_type=studio" class="hs-chip">Studios</a>
-            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-chip">Commercial</a>
-        </div>
-    </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     FEATURED PROPERTIES
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ FEATURED ═══════════════════════ -->
 {% if featured_properties %}
 <section class="scroll-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Most Viewed</span><h2 class="section-title">Featured Properties</h2></div>
+            <div>
+                <span class="section-eyebrow">Most Viewed</span>
+                <h2 class="section-title">Featured Properties</h2>
+            </div>
             <a href="{% url 'property_search' %}" class="scroll-view-all">View All →</a>
         </div>
         <div class="h-scroll-wrapper">
             <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
             <div class="h-scroll-track">
                 {% for prop in featured_properties %}
-                {% include "properties/_prop_card.html" with prop=prop %}
+                    {% include "properties/_prop_card.html" with prop=prop %}
                 {% endfor %}
             </div>
             <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
@@ -121,104 +456,121 @@
 </section>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════
-     APARTMENTS, VILLAS & MORE — 99acres style horizontal
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ PROPERTY TYPES ═══════════════════════ -->
 <section class="hs-type-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Explore</span><h2 class="section-title">Apartments, Villas &amp; More</h2></div>
+            <div>
+                <span class="section-eyebrow">Explore</span>
+                <h2 class="section-title">Apartments, Villas &amp; More</h2>
+            </div>
         </div>
         <div class="hs-type-scroll">
-
-            <a href="{% url 'property_search' %}?property_type=apartment" class="hs-type-card" style="background:#EBF5FF;">
+            <a href="{% url 'property_search' %}?property_type=flat_apartment" class="hs-type-card" style="background:#EBF5FF;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Residential<br>Apartment</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(200deg) saturate(0.7);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=75&auto=format');"></div>
             </a>
-
-            <a href="{% url 'property_search' %}?property_type=villa" class="hs-type-card" style="background:#EAFAF1;">
+            <a href="{% url 'property_search' %}?property_type=independent_house_villa" class="hs-type-card" style="background:#EAFAF1;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Independent<br>House / Villa</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(100deg) saturate(0.7);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=75&auto=format');"></div>
             </a>
-
-            <a href="{% url 'property_search' %}?property_type=studio" class="hs-type-card" style="background:#F0F0FF;">
+            <a href="{% url 'property_search' %}?property_type=studio_1rk" class="hs-type-card" style="background:#F5F0FF;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">1 RK / Studio<br>Apartment</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(260deg) saturate(0.6);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=75&auto=format');"></div>
             </a>
-
-            <a href="{% url 'property_search' %}?property_type=commercial" class="hs-type-card" style="background:#FFF8E7;">
+            <a href="{% url 'property_search' %}?property_type=office" class="hs-type-card" style="background:#FFF8E7;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Office /<br>Commercial</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(30deg) saturate(0.7);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=75&auto=format');"></div>
             </a>
-
-            <a href="{% url 'property_search' %}?property_type=plot" class="hs-type-card" style="background:#FFF0F0;">
+            <a href="{% url 'property_search' %}?property_type=plot_land_res" class="hs-type-card" style="background:#FFF0F0;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Plot /<br>Land</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(320deg) saturate(0.6);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=75&auto=format');"></div>
             </a>
-
-            <a href="{% url 'property_search' %}?listing_type=sell" class="hs-type-card" style="background:#F0FAFF;">
+            <a href="{% url 'property_search' %}?property_type=builder_floor" class="hs-type-card" style="background:#F0FFF4;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Builder<br>Floor</h3>
-                    <span class="hs-type-count">Browse listings</span>
+                    <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background: url('/static/images/hero-house.jpeg') center bottom/cover no-repeat; filter: hue-rotate(170deg) saturate(0.6);"></div>
+                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=75&auto=format');"></div>
             </a>
-
         </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     BHK CHOICE IN MIND
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ BHK TABS ═══════════════════════ -->
 <section class="hs-bhk-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">By Bedrooms</span><h2 class="section-title">BHK Choice in Mind?</h2></div>
+            <div>
+                <span class="section-eyebrow">By Bedrooms</span>
+                <h2 class="section-title">BHK Choice in Mind?</h2>
+            </div>
         </div>
         <div class="hs-bhk-tabs">
             <button class="hs-bhk-tab active" data-target="bhk1">1 BHK</button>
             <button class="hs-bhk-tab" data-target="bhk2">2 BHK</button>
             <button class="hs-bhk-tab" data-target="bhk3">3+ BHK</button>
         </div>
-        {% for key, prps in bhk_map.items %}
-        <div id="{{ key }}" class="hs-bhk-panel {% if forloop.first %}active{% endif %}">
+
+        <div id="bhk1" class="hs-bhk-panel active">
             <div class="h-scroll-wrapper">
                 <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
                 <div class="h-scroll-track">
-                    {% for prop in prps %}{% include "properties/_prop_card.html" with prop=prop %}
-                    {% empty %}<p class="hs-empty">No {{ key }} listings yet.</p>{% endfor %}
+                    {% for prop in bhk1 %}{% include "properties/_prop_card.html" with prop=prop %}
+                    {% empty %}<p class="hs-empty">No 1 BHK listings yet.</p>{% endfor %}
                 </div>
                 <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
             </div>
         </div>
-        {% endfor %}
+
+        <div id="bhk2" class="hs-bhk-panel">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in bhk2 %}{% include "properties/_prop_card.html" with prop=prop %}
+                    {% empty %}<p class="hs-empty">No 2 BHK listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
+
+        <div id="bhk3" class="hs-bhk-panel">
+            <div class="h-scroll-wrapper">
+                <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="h-scroll-track">
+                    {% for prop in bhk3 %}{% include "properties/_prop_card.html" with prop=prop %}
+                    {% empty %}<p class="hs-empty">No 3+ BHK listings yet.</p>{% endfor %}
+                </div>
+                <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     HIGH DEMAND
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ HIGH DEMAND ═══════════════════════ -->
 {% if high_demand %}
 <section class="scroll-section scroll-section-alt">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">🔥 Trending</span><h2 class="section-title">Properties in High Demand</h2></div>
+            <div>
+                <span class="section-eyebrow">🔥 Trending</span>
+                <h2 class="section-title">Properties in High Demand</h2>
+            </div>
             <a href="{% url 'property_search' %}" class="scroll-view-all">View All →</a>
         </div>
         <div class="h-scroll-wrapper">
@@ -232,15 +584,16 @@
 </section>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════
-     NEWLY LAUNCHED
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ NEWLY LAUNCHED ═══════════════════════ -->
 {% if new_launches %}
 <section class="scroll-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">🆕 Just Added</span><h2 class="section-title">Newly Launched Projects</h2></div>
-            <a href="{% url 'property_search' %}?listing_type=sell" class="scroll-view-all">View All →</a>
+            <div>
+                <span class="section-eyebrow">🆕 Just Added</span>
+                <h2 class="section-title">Newly Launched Projects</h2>
+            </div>
+            <a href="{% url 'property_search' %}" class="scroll-view-all">View All →</a>
         </div>
         <div class="h-scroll-wrapper">
             <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -253,19 +606,21 @@
 </section>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════
-     BROWSE BY BUDGET
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ BROWSE BY BUDGET ═══════════════════════ -->
 <section class="hs-budget-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">Your Budget</span><h2 class="section-title">Browse by Budget</h2></div>
+            <div>
+                <span class="section-eyebrow">Your Budget</span>
+                <h2 class="section-title">Browse by Budget</h2>
+            </div>
         </div>
         <div class="hs-budget-tabs">
             <button class="hs-budget-tab active" data-target="affordable">💰 Affordable<br><small>Under ₹50 L</small></button>
             <button class="hs-budget-tab" data-target="mid_segment">🏡 Mid Segment<br><small>₹50 L – 1.5 Cr</small></button>
             <button class="hs-budget-tab" data-target="luxury">👑 Luxury<br><small>Above ₹1.5 Cr</small></button>
         </div>
+
         <div id="affordable" class="hs-budget-panel active">
             <div class="h-scroll-wrapper">
                 <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -276,6 +631,7 @@
                 <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
             </div>
         </div>
+
         <div id="mid_segment" class="hs-budget-panel">
             <div class="h-scroll-wrapper">
                 <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -286,6 +642,7 @@
                 <button class="scroll-arrow scroll-next"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
             </div>
         </div>
+
         <div id="luxury" class="hs-budget-panel">
             <div class="h-scroll-wrapper">
                 <button class="scroll-arrow scroll-prev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -299,14 +656,15 @@
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     TOP CITIES GRAPH
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ TOP CITIES ═══════════════════════ -->
 {% if top_cities %}
 <section class="hs-cities-section">
     <div class="container">
         <div class="scroll-section-header">
-            <div><span class="section-eyebrow">📈 Market Trends</span><h2 class="section-title">Top Cities by Listings</h2></div>
+            <div>
+                <span class="section-eyebrow">📈 Market Trends</span>
+                <h2 class="section-title">Top Cities by Listings</h2>
+            </div>
         </div>
         <div class="hs-cities-grid">
             {% for city in top_cities %}
@@ -326,9 +684,7 @@
 </section>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════
-     BUDGET CALCULATOR CTA
-═══════════════════════════════════════════ -->
+<!-- ═══════════════════════ BUDGET CTA ═══════════════════════ -->
 <section class="hs-calc-cta">
     <div class="container">
         <div class="hs-calc-cta-inner">
@@ -345,67 +701,120 @@
 
 {% block extra_js %}
 <script>
-/* ── Hero slider ─────────────────────────── */
-(function(){
-    var track  = document.getElementById('heroTrack');
-    var slides = track.querySelectorAll('.hs-slide');
-    var dotsEl = document.getElementById('slideDots');
-    var prev   = document.getElementById('slidePrev');
-    var next   = document.getElementById('slideNext');
-    var cur    = 0;
-    var timer;
+/* ═══════════════════════════════════════════════════════
+   HERO SLIDER — fade-based (not translateX)
+   Slides use opacity transitions so no scroll-track needed.
+═══════════════════════════════════════════════════════ */
+(function () {
+    'use strict';
 
-    // Build dots
-    slides.forEach(function(_, i) {
-        var d = document.createElement('button');
-        d.className = 'hs-dot' + (i === 0 ? ' active' : '');
-        d.addEventListener('click', function(){ goTo(i); });
-        dotsEl.appendChild(d);
+    var slides  = document.querySelectorAll('.hs-hero-slider .hs-slide');
+    var dotsEl  = document.getElementById('slideDots');
+    var prevBtn = document.getElementById('slidePrev');
+    var nextBtn = document.getElementById('slideNext');
+
+    if (!slides.length) return;
+
+    var current = 0;
+    var total   = slides.length;
+    var timer   = null;
+    var INTERVAL = 5500;   /* ms between auto-advances */
+
+    /* Build dot buttons */
+    slides.forEach(function (_, i) {
+        var dot = document.createElement('button');
+        dot.className = 'hs-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        dot.addEventListener('click', function () {
+            goTo(i);
+            resetTimer();
+        });
+        dotsEl.appendChild(dot);
     });
 
     function goTo(n) {
-        slides[cur].classList.remove('active');
-        dotsEl.children[cur].classList.remove('active');
-        cur = (n + slides.length) % slides.length;
-        slides[cur].classList.add('active');
-        dotsEl.children[cur].classList.add('active');
-        track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+        /* hide current */
+        slides[current].classList.remove('active');
+        dotsEl.children[current].classList.remove('active');
+
+        /* show next */
+        current = (n + total) % total;
+        slides[current].classList.add('active');
+        dotsEl.children[current].classList.add('active');
     }
-    slides[0].classList.add('active');
-    prev.addEventListener('click', function(){ goTo(cur - 1); resetTimer(); });
-    next.addEventListener('click', function(){ goTo(cur + 1); resetTimer(); });
-    function resetTimer() { clearInterval(timer); timer = setInterval(function(){ goTo(cur+1); }, 5000); }
+
+    function advance() { goTo(current + 1); }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(advance, INTERVAL);
+    }
+
+    /* Arrow buttons */
+    prevBtn.addEventListener('click', function () { goTo(current - 1); resetTimer(); });
+    nextBtn.addEventListener('click', function () { goTo(current + 1); resetTimer(); });
+
+    /* Touch / swipe support */
+    var touchStartX = 0;
+    var slider = document.querySelector('.hs-hero-slider');
+    slider.addEventListener('touchstart', function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    slider.addEventListener('touchend', function (e) {
+        var diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) {
+            goTo(diff > 0 ? current + 1 : current - 1);
+            resetTimer();
+        }
+    }, { passive: true });
+
+    /* Pause on hover */
+    slider.addEventListener('mouseenter', function () { clearInterval(timer); });
+    slider.addEventListener('mouseleave', resetTimer);
+
+    /* Start */
     resetTimer();
 })();
 
-/* ── Horizontal scroll arrows ────────────── */
-document.querySelectorAll('.h-scroll-wrapper').forEach(function(wrapper){
+
+/* ═══════════════════════════════════════════════════════
+   HORIZONTAL SCROLL ARROWS (property card rows)
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.h-scroll-wrapper').forEach(function (wrapper) {
     var track = wrapper.querySelector('.h-scroll-track');
-    var p = wrapper.querySelector('.scroll-prev');
-    var n = wrapper.querySelector('.scroll-next');
-    if(p) p.addEventListener('click', function(){ track.scrollBy({left:-320,behavior:'smooth'}); });
-    if(n) n.addEventListener('click', function(){ track.scrollBy({left:320,behavior:'smooth'}); });
+    var prev  = wrapper.querySelector('.scroll-prev');
+    var next  = wrapper.querySelector('.scroll-next');
+    if (!track) return;
+    var scrollAmount = 320;
+    if (prev) prev.addEventListener('click', function () { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); });
+    if (next) next.addEventListener('click', function () { track.scrollBy({ left:  scrollAmount, behavior: 'smooth' }); });
 });
 
-/* ── BHK tabs ────────────────────────────── */
-document.querySelectorAll('.hs-bhk-tab').forEach(function(tab){
-    tab.addEventListener('click', function(){
-        document.querySelectorAll('.hs-bhk-tab').forEach(function(t){ t.classList.remove('active'); });
-        document.querySelectorAll('.hs-bhk-panel').forEach(function(p){ p.classList.remove('active'); });
+
+/* ═══════════════════════════════════════════════════════
+   BHK TABS
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.hs-bhk-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+        document.querySelectorAll('.hs-bhk-tab').forEach(function (t)  { t.classList.remove('active'); });
+        document.querySelectorAll('.hs-bhk-panel').forEach(function (p) { p.classList.remove('active'); });
         tab.classList.add('active');
         var panel = document.getElementById(tab.dataset.target);
-        if(panel) panel.classList.add('active');
+        if (panel) panel.classList.add('active');
     });
 });
 
-/* ── Budget tabs ─────────────────────────── */
-document.querySelectorAll('.hs-budget-tab').forEach(function(tab){
-    tab.addEventListener('click', function(){
-        document.querySelectorAll('.hs-budget-tab').forEach(function(t){ t.classList.remove('active'); });
-        document.querySelectorAll('.hs-budget-panel').forEach(function(p){ p.classList.remove('active'); });
+
+/* ═══════════════════════════════════════════════════════
+   BUDGET TABS
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.hs-budget-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+        document.querySelectorAll('.hs-budget-tab').forEach(function (t)  { t.classList.remove('active'); });
+        document.querySelectorAll('.hs-budget-panel').forEach(function (p) { p.classList.remove('active'); });
         tab.classList.add('active');
         var panel = document.getElementById(tab.dataset.target);
-        if(panel) panel.classList.add('active');
+        if (panel) panel.classList.add('active');
     });
 });
 </script>

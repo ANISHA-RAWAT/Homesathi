@@ -2,7 +2,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f4f6f5;
-    color: #1f3d2b;
+    color: black;
 }
 
 .faq-section {
@@ -31,7 +31,7 @@ body {
 }
 
 .faq-item {
-    background: #ffffff;
+    background: white;
     border-radius: 12px;
     margin-bottom: 15px;
     overflow: hidden;
@@ -84,7 +84,7 @@ body {
     display: inline-block;
     margin-top: 15px;
     padding: 10px 25px;
-    background-color: #1f3d2b;
+    background-color: #00A9FF;
     color: white;
     text-decoration: none;
     border-radius: 25px;
@@ -93,4 +93,7 @@ body {
 
 .contact-btn:hover {
     background-color: #163021;
+}
+.contact-section a{
+    color: #00A9FF;
 }

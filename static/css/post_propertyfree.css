@@ -614,3 +614,13 @@
   .subtype-grid { grid-template-columns: 1fr 1fr; }
   .pp-three-col { grid-template-columns: 1fr; }
 }
+
+/* ── FIX: Stop form clashing with fixed navbar ── */
+/* Add this at the TOP of your post_propertyfree.css, replacing the existing .pp-page rule */
+
+.pp-page {
+  min-height: calc(100vh - var(--navbar-h, 64px));
+  background: #f8f9fb;
+  padding-top: var(--navbar-h, 64px);   /* ← THIS is the fix */
+  padding-bottom: 80px;
+}

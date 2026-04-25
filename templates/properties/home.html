@@ -49,31 +49,31 @@
 .hs-slide-1 {
     background:
         linear-gradient(rgba(0,0,0,0.50), rgba(0,0,0,0.25)),
-        url("https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600&q=85&auto=format")
+        url("{% static 'images/heroimage1.png' %}")
         center/cover no-repeat;
 }
 .hs-slide-2 {
     background:
         linear-gradient(rgba(0,40,100,0.55), rgba(0,20,60,0.30)),
-        url("https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600&q=85&auto=format")
+        url("{% static 'images/heroimage2.png' %}")
         center/cover no-repeat;
 }
 .hs-slide-3 {
     background:
         linear-gradient(rgba(0,50,20,0.55), rgba(0,30,10,0.30)),
-        url("https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=85&auto=format")
+        url("{% static 'images/heroimage3.png' %}")
         center/cover no-repeat;
 }
 .hs-slide-4 {
     background:
         linear-gradient(rgba(50,0,70,0.55), rgba(20,0,40,0.30)),
-        url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=85&auto=format")
+        url("{% static 'images/heroimage5.png' %}")
         center/cover no-repeat;
 }
 .hs-slide-5 {
     background:
         linear-gradient(rgba(0,50,90,0.55), rgba(0,25,55,0.30)),
-        url("https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1600&q=85&auto=format")
+        url("{% static 'images/heroimage4.png' %}")
         center/cover no-repeat;
 }
 
@@ -471,42 +471,42 @@
                     <h3 class="hs-type-name">Residential<br>Apartment</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=75&auto=format');"></div>
+               <div class="hs-type-img" style="background-image:url('{% static "images/heroimage5.png" %}');"></div>
             </a>
             <a href="{% url 'property_search' %}?property_type=independent_house_villa" class="hs-type-card" style="background:#EAFAF1;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Independent<br>House / Villa</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=75&auto=format');"></div>
+                <div class="hs-type-img" style="background-image:url('{% static "images/heroimage1.png" %}');"></div>
             </a>
             <a href="{% url 'property_search' %}?property_type=studio_1rk" class="hs-type-card" style="background:#F5F0FF;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">1 RK / Studio<br>Apartment</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=75&auto=format');"></div>
+              <div class="hs-type-img" style="background-image:url('{% static "images/heroimage2.png" %}');"></div>
             </a>
             <a href="{% url 'property_search' %}?property_type=office" class="hs-type-card" style="background:#FFF8E7;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Office /<br>Commercial</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=75&auto=format');"></div>
+               <div class="hs-type-img" style="background-image:url('{% static "images/heroimage3.png" %}');"></div>
             </a>
             <a href="{% url 'property_search' %}?property_type=plot_land_res" class="hs-type-card" style="background:#FFF0F0;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Plot /<br>Land</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=75&auto=format');"></div>
+               <div class="hs-type-img" style="background-image:url('{% static "images/heroimage6.png" %}');"></div>
             </a>
             <a href="{% url 'property_search' %}?property_type=builder_floor" class="hs-type-card" style="background:#F0FFF4;">
                 <div class="hs-type-text">
                     <h3 class="hs-type-name">Builder<br>Floor</h3>
                     <span class="hs-type-count">Browse listings →</span>
                 </div>
-                <div class="hs-type-img" style="background-image:url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=75&auto=format');"></div>
+              <div class="hs-type-img" style="background-image:url('{% static "images/heroimage4.png" %}');"></div>
             </a>
         </div>
     </div>

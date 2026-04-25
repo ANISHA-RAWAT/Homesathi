@@ -25,7 +25,8 @@ var PP_BUILDER = (function () {
       '', true);
 
     html += H.twoCol(
-      H.field('Price (₹)', H.prefixInput('price', 'e.g. 5000000', '₹'), isPlot ? 'Starting price per plot' : 'Unit price', true),
+      // NOTE: Min Price (₹) removed — only Price shown
+      H.field('Price (₹)', H.prefixInput('price', isPlot ? 'e.g. 2500000' : 'e.g. 5000000', '₹'), isPlot ? 'Starting price per plot' : 'Unit price', true),
       H.field('Total Units in Project', H.numberInput('total_units', 'e.g. 120'), '')
     );
 
@@ -77,15 +78,31 @@ var PP_BUILDER = (function () {
     return { id: 'location', title: 'Location', icon: '📍', html: html };
   }
 
-  /* ── PANEL 3a: PLOT UNIT DETAILS ─────────────────────────── */
+  /* ── PANEL 3a: BUILDER PLOT UNIT DETAILS ─────────────────── */
+  // Flooring REMOVED from plot panel as requested
   function plotUnitPanel() {
     var html = '';
+
+    html += H.sectionHead('What Type of Plot?');
+    html += H.field('Plot Type',
+      H.chipGroup('plot_type', [
+        { key: 'residential_plot',  label: 'Residential Plot',   emoji: '🏠' },
+        { key: 'commercial_plot',   label: 'Commercial Plot',    emoji: '🏢' },
+        { key: 'agricultural_land', label: 'Agricultural Land',  emoji: '🌾' },
+        { key: 'industrial_land',   label: 'Industrial Land',    emoji: '🏭' },
+      ], false),
+      'Select the type of plot in this project', true);
 
     html += H.sectionHead('Plot Dimensions');
     html += H.threeCol(
       H.field('Min Plot Area', H.numberInput('min_area', 'Min'), ''),
       H.field('Max Plot Area', H.numberInput('max_area', 'Max'), ''),
       H.field('Area Unit', H.selectInput('area_unit', D.AREA_UNIT_OPTIONS), '')
+    );
+
+    html += H.twoCol(
+      H.field('Plot Length', H.textInput('plot_length', 'e.g. 20 ft'), ''),
+      H.field('Plot Width',  H.textInput('plot_width',  'e.g. 10 ft'), '')
     );
 
     html += H.twoCol(
@@ -96,13 +113,31 @@ var PP_BUILDER = (function () {
         ]), '')
     );
 
-    html += H.sectionHead('Infrastructure');
+    html += H.sectionHead('Utilities Available');
+    html += H.field('',
+      H.chipGroup('utilities', [
+        { key: 'electricity',      label: 'Electricity Available', emoji: '⚡' },
+        { key: 'water_connection', label: 'Water Connection',      emoji: '💧' },
+        { key: 'sewer_connection', label: 'Sewer Connection',      emoji: '🚰' },
+        { key: 'borewell',         label: 'Borewell',              emoji: '🔩' },
+      ], true),
+      'Select all utilities available');
+
+    html += H.sectionHead('Legal & Approvals');
+    html += H.field('',
+      H.chipGroup('legal_status', [
+        { key: 'clear_title',    label: 'Clear Title',    emoji: '📄' },
+        { key: 'loan_approved',  label: 'Loan Approved',  emoji: '🏦' },
+        { key: 'registry_ready', label: 'Registry Ready', emoji: '✅' },
+      ], true),
+      'Select all that apply');
+
     html += H.twoCol(
-      H.field('Water Source', H.selectInput('water_source', D.WATER_SOURCE_OPTIONS), ''),
-      H.field('Power Connection',
-        H.selectInput('power_connection', [
-          ['','Select'],['available','Available'],['not_available','Not Available'],
-        ]), '')
+      H.field('Approved for Construction',
+        H.selectInput('approved_for_construction', [
+          ['','Select'],['yes','Yes'],['no','No'],
+        ]), ''),
+      H.field('Water Source', H.selectInput('water_source', D.WATER_SOURCE_OPTIONS), '')
     );
 
     html += H.twoCol(
@@ -116,6 +151,7 @@ var PP_BUILDER = (function () {
         ]), '')
     );
 
+    // NOTE: Flooring REMOVED from builder residential plot as requested
     html += H.field('Vastu Compliant', H.toggleSwitch('vastu_compliant', 'Yes, plots are Vastu compliant'), '');
 
     return { id: 'unit', title: 'Plot Details', icon: '📐', html: html };

@@ -359,6 +359,12 @@ def post_property_free(request):
             if pg_for:
                 property_obj.pg_for = pg_for
 
+            # Default integer fields that must not be NULL in DB
+            if property_obj.bedrooms is None:
+                property_obj.bedrooms = 0
+            if property_obj.bathrooms is None:
+                property_obj.bathrooms = 0
+
             property_obj.save()
 
             images = request.FILES.getlist('property_images')

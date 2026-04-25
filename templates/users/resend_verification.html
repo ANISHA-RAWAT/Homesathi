@@ -7,7 +7,11 @@
 <div class="auth-page">
     <div class="auth-card" style="text-align:center; max-width:480px;">
 
-        <div style="font-size:4rem; margin-bottom:16px;">📬</div>
+        <div style="display:flex; justify-content:center; margin-bottom:20px;">
+            <img src="{% static 'images/logo1.png' %}" alt="Homesathi"
+                 style="width:80px; height:80px; object-fit:contain; border-radius:50%;
+                        box-shadow:0 4px 20px rgba(0,169,255,0.2);">
+        </div>
 
         <h1 style="font-family:var(--font-display); color:var(--primary); margin-bottom:8px;">
             Check Your Inbox
@@ -20,7 +24,7 @@
 
         <div style="background:var(--accent-pale); border:1px solid var(--accent-light);
                     border-radius:var(--radius); padding:16px 20px; margin-bottom:24px; text-align:left;">
-            <p style="margin:0 0 8px 0; font-weight:600; color:var(--primary);">📋 What to do next:</p>
+            <p style="margin:0 0 8px 0; font-weight:600; color:var(--primary);">What to do next:</p>
             <ul style="margin:0; padding-left:20px; color:var(--text); line-height:1.8;">
                 <li>Open your email inbox</li>
                 <li>Look for an email from <strong>HomeSathi</strong></li>
@@ -32,7 +36,7 @@
         <div style="background:var(--surface); border:1px solid var(--border);
                     border-radius:var(--radius); padding:14px 20px; margin-bottom:24px;">
             <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
-                ⚠️ The link expires in <strong>24 hours</strong>.
+                The link expires in <strong>24 hours</strong>.
                 Check your spam folder if you don't see the email.
             </p>
         </div>

@@ -9,6 +9,76 @@ var PP_OWNER = (function () {
   var H = PP_H;
   var D = PP_DATA;
 
+  /* ── PLOT SPECIFIC FIELDS (shared between owner & dealer) ─── */
+  function plotSpecificFields() {
+    var html = '';
+
+    html += H.sectionHead('What Type of Plot?');
+    html += H.field('Plot Type',
+      H.chipGroup('plot_type', [
+        { key: 'residential_plot',  label: 'Residential Plot',   emoji: '🏠' },
+        { key: 'commercial_plot',   label: 'Commercial Plot',    emoji: '🏢' },
+        { key: 'agricultural_land', label: 'Agricultural Land',  emoji: '🌾' },
+        { key: 'industrial_land',   label: 'Industrial Land',    emoji: '🏭' },
+      ], false),
+      'Select the type of plot you are selling', true);
+
+    html += H.sectionHead('Plot Dimensions');
+    html += H.twoCol(
+      H.field('Plot Length', H.textInput('plot_length', 'e.g. 20 ft or 6 m'), ''),
+      H.field('Plot Width',  H.textInput('plot_width',  'e.g. 10 ft or 3 m'), '')
+    );
+    html += H.threeCol(
+      H.field('Plot Area', H.numberInput('plot_area', 'e.g. 200'), '', true),
+      H.field('Unit', H.selectInput('area_unit', D.AREA_UNIT_OPTIONS), '', true),
+      H.field('Facing', H.selectInput('facing', D.PLOT_FACING_OPTIONS), '')
+    );
+    html += H.twoCol(
+      H.field('Width of Facing Road',
+        H.selectInput('width_of_facing_road', D.ROAD_FACING_OPTIONS),
+        'Wider road = higher value'),
+      H.field('Open Sides',
+        H.selectInput('open_sides', [
+          ['','Select'],['1','1 Side'],['2','2 Sides'],['3','3 Sides'],['4','4 Sides (Corner)'],
+        ]), '')
+    );
+
+    html += H.sectionHead('Utilities Available');
+    html += H.field('',
+      H.chipGroup('utilities', [
+        { key: 'electricity',      label: 'Electricity Available', emoji: '⚡' },
+        { key: 'water_connection', label: 'Water Connection',      emoji: '💧' },
+        { key: 'sewer_connection', label: 'Sewer Connection',      emoji: '🚰' },
+        { key: 'borewell',         label: 'Borewell',              emoji: '🔩' },
+      ], true),
+      'Select all utilities available at this plot');
+
+    html += H.sectionHead('Legal Status');
+    html += H.field('',
+      H.chipGroup('legal_status', [
+        { key: 'clear_title',    label: 'Clear Title',       emoji: '📄' },
+        { key: 'loan_approved',  label: 'Loan Approved',     emoji: '🏦' },
+        { key: 'registry_ready', label: 'Registry Ready',    emoji: '✅' },
+      ], true),
+      'Select all that apply');
+
+    html += H.twoCol(
+      H.field('Approved for Construction',
+        H.selectInput('approved_for_construction', [
+          ['','Select'],['yes','Yes'],['no','No'],
+        ]), ''),
+      H.field('Property Ownership',
+        H.selectInput('property_ownership', [
+          ['','Select'],['freehold','Freehold'],['leasehold','Leasehold'],
+          ['power_of_attorney','Power of Attorney'],
+        ]), '')
+    );
+
+    html += H.field('Vastu Compliant', H.toggleSwitch('vastu_compliant', 'Yes, this plot is Vastu compliant'), '');
+
+    return html;
+  }
+
   /* ── PANEL 1: BASICS ─────────────────────────────────────── */
   function basicsPanel(isPlot, isCommercial) {
     var html = H.listingTypeBlock(false);
@@ -55,85 +125,26 @@ var PP_OWNER = (function () {
     return { id: 'basics', title: 'Basics', icon: '📝', html: html };
   }
 
-  /* ── PANEL 2a: PLOT DETAILS ──────────────────────────────── */
-  function plotDetailsPanel() {
-    var html = '';
-
-    html += H.sectionHead('Plot Size & Dimensions');
-    html += H.threeCol(
-      H.field('Plot Area', H.numberInput('plot_area', 'e.g. 200'), '', true),
-      H.field('Unit', H.selectInput('area_unit', D.AREA_UNIT_OPTIONS), '', true),
-      H.field('Facing', H.selectInput('facing', D.PLOT_FACING_OPTIONS), '')
-    );
-
-    html += H.twoCol(
-      H.field('Plot Length', H.textInput('plot_length', 'e.g. 20 ft'), ''),
-      H.field('Plot Width', H.textInput('plot_width', 'e.g. 10 ft'), '')
-    );
-
-    html += H.sectionHead('Road & Access');
-    html += H.twoCol(
-      H.field('Width of Facing Road',
-        H.selectInput('width_of_facing_road', D.ROAD_FACING_OPTIONS),
-        'Wider road = higher value'),
-      H.field('Number of Open Sides',
-        H.selectInput('open_sides', [
-          ['','Select'],['1','1 Side'],['2','2 Sides'],['3','3 Sides'],['4','4 Sides (Corner)'],
-        ]), '')
-    );
-
-    html += H.sectionHead('Infrastructure & Approvals');
-    html += H.twoCol(
-      H.field('Water Source', H.selectInput('water_source', D.WATER_SOURCE_OPTIONS), ''),
-      H.field('Power Connection',
-        H.selectInput('power_connection', [
-          ['','Select'],['available','Available'],['not_available','Not Available'],
-        ]), '')
-    );
-
-    html += H.twoCol(
-      H.field('Boundary Wall',
-        H.selectInput('boundary_wall', [
-          ['','Select'],['yes','Yes'],['no','No'],['partial','Partial'],
-        ]), ''),
-      H.field('Gated Colony',
-        H.selectInput('gated_colony', [
-          ['','Select'],['yes','Yes — Gated'],['no','No'],
-        ]), '')
-    );
-
-    html += H.twoCol(
-      H.field('Construction Allowed',
-        H.selectInput('construction_allowed', [
-          ['','Select'],['residential','Residential'],['commercial','Commercial'],
-          ['mixed','Mixed Use'],['industrial','Industrial'],
-        ]), ''),
-      H.field('Approved By',
-        H.selectInput('approved_by', [
-          ['','Select'],['municipality','Municipality'],['gram_panchayat','Gram Panchayat'],
-          ['rera','RERA Approved'],['other','Other Authority'],
-        ]), '')
-    );
-
-    html += H.twoCol(
-      H.field('Transaction Type',
-        H.selectInput('transaction_type', [
-          ['','Select'],['new_property','New Property'],['resale','Resale'],
-        ]), ''),
-      H.field('Property Ownership',
-        H.selectInput('property_ownership', [
-          ['','Select'],['freehold','Freehold'],['leasehold','Leasehold'],
-          ['power_of_attorney','Power of Attorney'],
-        ]), '')
-    );
-
-    html += H.field('Vastu Compliant', H.toggleSwitch('vastu_compliant', 'Yes, this plot is Vastu compliant'), '');
-
+  /* ── PANEL 2a: OWNER PLOT DETAILS ────────────────────────── */
+  function ownerPlotDetailsPanel() {
+    var html = plotSpecificFields();
     return { id: 'details', title: 'Plot Details', icon: '📋', html: html };
   }
 
-  /* ── PANEL 2b: PROPERTY DETAILS (rooms/floors) ───────────── */
-  function propertyDetailsPanel(pt, isCommercial, hasFloors, isMultiFloor) {
+  /* ── PANEL 2b: DEALER PLOT DETAILS ──────────────────────── */
+  // Dealer plot: same as owner but without construction status,
+  // property age, transaction type, flooring, facing, property ownership
+  // (facing and ownership are inside plotSpecificFields which already
+  //  has the right subset — we reuse the same function)
+  function dealerPlotDetailsPanel() {
+    // plotSpecificFields already excludes construction status, property age,
+    // transaction type, flooring — matches the dealer requirements exactly
+    var html = plotSpecificFields();
+    return { id: 'details', title: 'Plot Details', icon: '📋', html: html };
+  }
+
+  /* ── PANEL 2c: PROPERTY DETAILS (rooms/floors) ───────────── */
+  function propertyDetailsPanel(pt, isCommercial, hasFloors, isMultiFloor, isDealer) {
     var html = '';
 
     html += H.sectionHead('Size & Layout');
@@ -150,7 +161,7 @@ var PP_OWNER = (function () {
     html += H.bathroomFields(isCommercial);
     html += H.twoCol(
       H.field('Built-up Area (sq ft)', H.numberInput('area_sqft', 'e.g. 1200'), '', true),
-      H.field('Carpet Area (sq ft)', H.numberInput('carpet_area_sqft', 'e.g. 950'), '', false)
+      H.field('Carpet Area (sq ft)', H.numberInput('carpet_area_sqft', 'e.g. 950'), '')
     );
 
     if (isMultiFloor) {
@@ -226,14 +237,14 @@ var PP_OWNER = (function () {
     if (isPlot) {
       html += H.sectionHead('Plot Amenities');
       html += H.field('', H.chipGroup('plot_amenities', [
-        { key:'park',           label:'Park / Garden',     emoji:'🌳' },
-        { key:'street_lights',  label:'Street Lights',     emoji:'💡' },
-        { key:'water_supply',   label:'Water Supply',      emoji:'💧' },
-        { key: 'sewage',        label:'Sewage / Drainage', emoji:'🚰' },
-        { key:'gated',          label:'Gated Colony',      emoji:'🏘️' },
-        { key:'cctv',           label:'CCTV',              emoji:'📷' },
-        { key:'security',       label:'Security Guard',    emoji:'👮' },
-        { key:'playground',     label:'Playground',        emoji:'🎠' },
+        { key:'park',          label:'Park / Garden',     emoji:'🌳' },
+        { key:'street_lights', label:'Street Lights',     emoji:'💡' },
+        { key:'water_supply',  label:'Water Supply',      emoji:'💧' },
+        { key:'sewage',        label:'Sewage / Drainage', emoji:'🚰' },
+        { key:'gated',         label:'Gated Colony',      emoji:'🏘️' },
+        { key:'cctv',          label:'CCTV',              emoji:'📷' },
+        { key:'security',      label:'Security Guard',    emoji:'👮' },
+        { key:'playground',    label:'Playground',        emoji:'🎠' },
       ], true), '');
     } else {
       html += H.sectionHead('Amenities');
@@ -242,15 +253,12 @@ var PP_OWNER = (function () {
 
     if (!isPlot && !isCommercial) {
       html += H.sectionHead('Tenant Preferences');
-      html += H.twoCol(
-        H.field('Preferred Tenants',
-          H.selectInput('preferred_tenants', [
-            ['','Any'],['family','Family'],['single_man','Single Man'],
-            ['single_woman','Single Woman'],['company_lease','Company Lease'],['any','Any'],
-          ]), ''),
-        H.field('Security Deposit (₹)',
-          H.prefixInput('security_deposit', 'e.g. 50000', '₹'), '')
-      );
+      html += H.field('Preferred Tenants',
+        H.selectInput('preferred_tenants', [
+          ['','Any'],['family','Family'],['single_man','Single Man'],
+          ['single_woman','Single Woman'],['company_lease','Company Lease'],['any','Any'],
+        ]), '');
+      // NOTE: Min Price (₹) removed as requested
     }
 
     if (isCommercial) {
@@ -275,14 +283,19 @@ var PP_OWNER = (function () {
     var isMultiFloor = D.MULTI_FLOOR_TYPES.indexOf(pt) > -1;
     var isCommercial = (cat === 'commercial');
 
+    // Detect dealer via PP_CORE state (set by pp-init.js)
+    var isDealer = (typeof PP_CORE !== 'undefined' && PP_CORE.state.sellerType === 'dealer');
+
     var panels = [];
     panels.push(basicsPanel(isPlot, isCommercial));
 
     if (isPlot) {
-      panels.push(plotDetailsPanel());
+      // Both owner and dealer use the same plot details panel
+      // (plotSpecificFields already has the right subset for both)
+      panels.push(ownerPlotDetailsPanel());
       panels.push(furnishingPanel(true, isCommercial));
     } else {
-      panels.push(propertyDetailsPanel(pt, isCommercial, hasFloors, isMultiFloor));
+      panels.push(propertyDetailsPanel(pt, isCommercial, hasFloors, isMultiFloor, isDealer));
       panels.push(furnishingPanel(false, isCommercial));
     }
 

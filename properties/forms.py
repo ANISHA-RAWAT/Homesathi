@@ -186,8 +186,12 @@ class PropertyForm(forms.ModelForm):
             self.fields['property_type'].choices = COMMERCIAL_TYPES
         elif cat == 'residential':
             self.fields['property_type'].choices = RESIDENTIAL_TYPES
+        elif cat == 'pg':
+            self.fields['property_type'].choices = [('pg_hostel', 'PG / Hostel')]
         else:
-            self.fields['property_type'].choices = RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:]
+            self.fields['property_type'].choices = (
+                RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:] + [('pg_hostel', 'PG / Hostel')]
+            )
 
         # Pre-populate JSON multi-fields from instance
         if self.instance and self.instance.pk:

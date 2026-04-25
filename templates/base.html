@@ -36,8 +36,6 @@
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'property_search' %}">Search</a></li>
             <li><a href="{% url 'post_propertyfree' %}">Post Property Free</a></li>
-             <li><a href="{% url 'about' %}">AboutUs</a></li>
-            <li><a href="{% url 'faq' %}">FAQ</a></li>
             <li><a href="{% url 'contactus' %}">ContactUs</a></li>
             <li><a href="{% url 'reviews' %}">Review</a></li>
 
@@ -60,7 +58,10 @@
                     <div class="dropdown-menu" id="avatarMenu">
                         <a href="{% url 'my_properties' %}">My Listings</a>
                         <a href="{% url 'post_propertyfree' %}">Post Property</a>
+                        <a href="{% url 'about' %}">AboutUs</a>
+                        <a href="{% url 'faq' %}">FAQ</a>
                         <a href="{% url 'logout' %}">Logout</a>
+
                     </div>
                 </li>
             {% else %}
@@ -88,6 +89,8 @@
         <li><a href="{% url 'home' %}">🏠&nbsp; Home</a></li>
         <li><a href="{% url 'property_search' %}">🔍&nbsp; Search Properties</a></li>
         <li><a href="{% url 'post_propertyfree' %}">➕&nbsp; Post Property Free</a></li>
+         <li><a href="{% url 'about' %}">💙About Us</a></li>
+          <li><a href="{% url 'faq' %}">💙FAQ</a></li>
 
         {% if user.is_authenticated %}
             <li><a href="{% url 'my_properties' %}">📋&nbsp; My Listings</a></li>
@@ -135,11 +138,13 @@
             <strong>Discover</strong>
             <a href="{% url 'property_search' %}?listing_type=rent">Rent</a>
             <a href="{% url 'property_search' %}?listing_type=sell">Buy</a>
+            <a href="{% url 'about' %}">About Us</a>
         </div>
         <div class="footer-col">
             <strong>Account</strong>
             <a href="{% url 'post_propertyfree' %}">Post Property Free</a>
             <a href="{% url 'my_properties' %}">My Listings</a>
+            <a href="{% url 'faq' %}">FAQ</a>
         </div>
     </div>
     <div class="footer-bottom">

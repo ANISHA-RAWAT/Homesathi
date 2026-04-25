@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Log In — RentalHome{% endblock %}
+{% block title %}Log In — Homesathi{% endblock %}
 
 {% block content %}
 <div class="auth-page">
     <div class="auth-card">
 
         <div class="auth-header">
-            <div class="auth-logo">🏠</div>
+            <div class="auth-logo">
+                <img src="{% static 'images/logo1.png' %}" alt="Homesathi" style="width:72px; height:72px; object-fit:contain; border-radius:50%; box-shadow:0 4px 16px rgba(0,169,255,0.18);">
+            </div>
             <h1>Welcome Back</h1>
             <p>Log in to manage your listings and inquiries</p>
         </div>
@@ -46,7 +49,6 @@
             Don't have an account?
             <a href="{% url 'signup' %}">Sign up free</a>
         </div>
-
 
     </div>
 </div>

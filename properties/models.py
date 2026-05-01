@@ -329,7 +329,8 @@ class Inquiry(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='sent_inquiries'
     )
-    seeker_name = models.CharField(max_length=100)
+    seeker_name  = models.CharField(max_length=100)
+    seeker_email = models.EmailField(blank=True, help_text='Contact email of the seeker')
     seeker_phone = models.CharField(max_length=20, blank=True)
     message = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')

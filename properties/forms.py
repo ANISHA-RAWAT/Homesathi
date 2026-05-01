@@ -166,10 +166,16 @@ class PropertyForm(forms.ModelForm):
 
         # Nothing is required at form level — required is enforced per step in JS
         # Django will still validate model-level required fields on POST
-        required_fields = ['title', 'listing_type', 'property_category',
-                           'property_type', 'price', 'city', 'description']
+        # Only basic fields required — property_type/category/listing_type
+        # are set by JS wizard hidden fields and mapped in the view
+        required_fields = ['title', 'price', 'city', 'description']
         for name, field in self.fields.items():
             field.required = name in required_fields
+
+        # Wizard-controlled fields: not required at form level
+        for wf in ('listing_type', 'property_category', 'property_type', 'seller_type'):
+            if wf in self.fields:
+                self.fields[wf].required = False
 
         # property_category choices
         self.fields['property_category'].choices = [
@@ -179,19 +185,13 @@ class PropertyForm(forms.ModelForm):
             ('pg', 'PG / Co-living'),
         ]
 
-        # Dynamic property_type
-        cat = (self.data.get('property_category') or
-               (self.instance.property_category if self.instance and self.instance.pk else ''))
-        if cat == 'commercial':
-            self.fields['property_type'].choices = COMMERCIAL_TYPES
-        elif cat == 'residential':
-            self.fields['property_type'].choices = RESIDENTIAL_TYPES
-        elif cat == 'pg':
-            self.fields['property_type'].choices = [('pg_hostel', 'PG / Hostel')]
-        else:
-            self.fields['property_type'].choices = (
-                RESIDENTIAL_TYPES + COMMERCIAL_TYPES[1:] + [('pg_hostel', 'PG / Hostel')]
-            )
+        # Accept ALL property_type values the JS wizard can send
+        self.fields['property_type'].choices = (
+            [('', '— Select —')] +
+            RESIDENTIAL_TYPES[1:] +
+            COMMERCIAL_TYPES[1:] +
+            [('pg_hostel', 'PG / Hostel')]
+        )
 
         # Pre-populate JSON multi-fields from instance
         if self.instance and self.instance.pk:
@@ -229,13 +229,24 @@ PropertyImageFormSet = forms.inlineformset_factory(
 class InquiryForm(forms.ModelForm):
     class Meta:
         model = Inquiry
-        fields = ['seeker_name', 'seeker_phone', 'message']
+        fields = ['seeker_name', 'seeker_email', 'seeker_phone', 'message']
         widgets = {
             'seeker_name':  forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Your full name'}),
+            'seeker_email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Your email address'}),
             'seeker_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Phone number (optional)'}),
             'message':      forms.Textarea(attrs={'class': 'form-input', 'rows': 4,
                             'placeholder': "Tell the owner about yourself and when you'd like to visit…"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        # If user is logged in, pre-fill and make email not required (auto-filled)
+        if self.user and self.user.is_authenticated:
+            self.fields['seeker_email'].required = False
+            self.fields['seeker_email'].widget.attrs['placeholder'] = self.user.email
+        else:
+            self.fields['seeker_email'].required = True
 
 
 class ReplyForm(forms.Form):

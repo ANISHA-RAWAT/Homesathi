@@ -25,9 +25,10 @@ class PropertyAdmin(admin.ModelAdmin):
 
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
-    list_display = ('seeker_name', 'property', 'status', 'created_at')
-    list_filter = ('status',)
-    readonly_fields = ('seeker_name', 'seeker_phone', 'message', 'buyer', 'created_at')
+    list_display  = ('seeker_name', 'seeker_email', 'seeker_phone', 'property', 'buyer', 'status', 'created_at')
+    list_filter   = ('status', 'created_at')
+    search_fields = ('seeker_name', 'seeker_email', 'seeker_phone', 'property__title', 'buyer__email')
+    readonly_fields = ('seeker_name', 'seeker_email', 'seeker_phone', 'message', 'buyer', 'property', 'created_at')
     inlines = [InquiryReplyInline]
 
 from .models import Review

@@ -404,7 +404,16 @@
 .privacy-icon { font-size: 1.4rem; }
 
 /* SIDEBAR */
-.detail-sidebar { position: sticky; top: calc(var(--navbar-h) + 16px); }
+.detail-sidebar {
+    position: sticky;
+    top: calc(var(--navbar-h) + 16px);
+    max-height: calc(100vh - var(--navbar-h) - 32px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #e0e0e0 transparent;
+}
+.detail-sidebar::-webkit-scrollbar { width: 4px; }
+.detail-sidebar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 99px; }
 
 .contact-card {
     background: white;
@@ -462,7 +471,11 @@
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .detail-layout { grid-template-columns: 1fr; }
-    .detail-sidebar { position: static; }
+    .detail-sidebar {
+        position: static;
+        max-height: none;
+        overflow-y: visible;
+    }
     .ap-gallery-main { height: 300px; }
     .ap-gallery-grid { display: none; }
     .ap-arrow-next { right: 12px; }
@@ -725,6 +738,8 @@
             <span class="privacy-badge">🔒 Private</span>
           </div>
           <p class="contact-intro">Interested? Send a message — their contact info stays private.</p>
+
+          {% if user.is_authenticated %}
           <form method="post" class="inquiry-form" id="inquiryForm">
             {% csrf_token %}
             {% for field in inquiry_form %}
@@ -739,25 +754,22 @@
             </button>
             <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
           </form>
-        </div>
-
-        <div class="quick-info-card">
-          <h4>Quick Info</h4>
-          <div class="quick-info-row"><span>Listed</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
-          <div class="quick-info-row"><span>Type</span><span>{{ property.get_listing_type_display }}</span></div>
-          <div class="quick-info-row"><span>Views</span><span>{{ property.view_count }}</span></div>
-          {% if property.pg_for %}<div class="quick-info-row"><span>PG For</span><span>{{ property.get_pg_for_display }}</span></div>{% endif %}
-          {% if property.pg_notice_period %}<div class="quick-info-row"><span>Notice Period</span><span>{{ property.pg_notice_period }}</span></div>{% endif %}
-          {% if user == property.owner %}
-          <div class="owner-actions">
-            <a href="{% url 'edit_property' property.pk %}" class="btn btn-sm btn-outline">Edit Listing</a>
-            <form method="post" action="{% url 'delete_property' property.pk %}" onsubmit="return confirm('Delete this listing?')">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-            </form>
+          {% else %}
+          <div class="inquiry-login-prompt">
+            <div class="ilp-icon">🔐</div>
+            <p class="ilp-text">You need to be logged in to contact the owner.</p>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-full" style="margin-top:12px;">
+              Log In to Send Message
+            </a>
+            <a href="{% url 'signup' %}" class="btn btn-outline btn-full" style="margin-top:8px;">
+              Create Free Account
+            </a>
+            <p class="form-privacy-note" style="margin-top:12px;">🔒 Owner contact details are always private.</p>
           </div>
           {% endif %}
         </div>
+
+        
 
       </aside>
     </div>

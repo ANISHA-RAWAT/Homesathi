@@ -755,7 +755,7 @@
 /* ═══════════════════════════════════════════════════════
    BUDGET CALC CTA
 ═══════════════════════════════════════════════════════ */
-.hs-calc-cta { padding: 56px 0; background: linear-gradient(135deg, #0070b8, #00A9FF); }
+.hs-calc-cta { padding: 56px 0 0; background: linear-gradient(135deg, #0070b8, #00A9FF); margin-bottom: 0; }
 .hs-calc-cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .hs-calc-cta-text h2 { font-size: 1.6rem; font-weight: 700; color: white; margin-bottom: 8px; }
 .hs-calc-cta-text p  { color: rgba(255,255,255,0.85); font-size: 0.95rem; }
@@ -807,4 +807,3 @@
     background-position: right 6px center;
     min-width: 80px;
 }
-

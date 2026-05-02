@@ -20,6 +20,11 @@
         <div class="privacy-icon">🔒</div>
         <div><strong>Privacy Protected</strong> — Neither party's email address is visible here. All communication stays on-platform.</div>
       </div>
+      {% if is_seller and inquiry.seeker_phone %}
+      <div style="background:#f0f9ff;border:1px solid #A0E9FF;border-radius:8px;padding:10px 16px;margin-top:10px;font-size:0.88rem;">
+          📞 Buyer's phone: <strong>{{ inquiry.seeker_phone }}</strong>
+      </div>
+      {% endif %}
     </div>
 
     <div class="thread-messages" id="chat-messages">

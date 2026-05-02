@@ -4,7 +4,9 @@
 
 {% block extra_css %}
 <style>
-/* ── APARTMENTS.COM STYLE GALLERY ── */
+/* ══════════════════════════════════════════
+   APARTMENTS.COM STYLE GALLERY
+   ══════════════════════════════════════════ */
 .ap-gallery {
     position: relative;
     width: 100%;
@@ -13,14 +15,12 @@
     overflow: hidden;
     margin-bottom: 24px;
 }
-
 .ap-gallery-main {
     position: relative;
     width: 100%;
     height: 480px;
     overflow: hidden;
 }
-
 .ap-gallery-main img {
     width: 100%;
     height: 100%;
@@ -28,8 +28,6 @@
     display: block;
     transition: opacity 0.3s ease;
 }
-
-/* GRID OVERLAY (bottom-right: up to 4 small thumbs) */
 .ap-gallery-grid {
     position: absolute;
     top: 0; right: 0;
@@ -38,16 +36,14 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    padding: 3px 3px 3px 3px;
+    padding: 3px;
 }
-
 .ap-grid-thumb {
     flex: 1;
     overflow: hidden;
     cursor: pointer;
     position: relative;
 }
-
 .ap-grid-thumb img {
     width: 100%;
     height: 100%;
@@ -55,10 +51,7 @@
     transition: transform 0.3s ease;
     display: block;
 }
-
 .ap-grid-thumb:hover img { transform: scale(1.05); }
-
-/* +N more overlay on last thumb */
 .ap-grid-more {
     position: absolute;
     inset: 0;
@@ -70,8 +63,6 @@
     font-size: 1.2rem;
     font-weight: 700;
 }
-
-/* NAV ARROWS */
 .ap-arrow {
     position: absolute;
     top: 50%;
@@ -91,8 +82,6 @@
 .ap-arrow:hover { background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
 .ap-arrow-prev { left: 12px; }
 .ap-arrow-next { right: {% if images|length > 1 %}240px{% else %}12px{% endif %}; }
-
-/* BADGES ON GALLERY */
 .ap-badge-row {
     position: absolute;
     top: 14px; left: 14px;
@@ -110,8 +99,6 @@
 .ap-badge-pg   { background: #7c3aed; }
 .ap-badge-vastu { background: #d97706; }
 .ap-badge-rented { background: #6b7280; }
-
-/* BOTTOM BAR */
 .ap-gallery-bar {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -120,13 +107,11 @@
     display: flex; align-items: center; justify-content: space-between;
     z-index: 5;
 }
-
 .ap-photo-count {
     color: white;
     font-size: 0.85rem;
     display: flex; align-items: center; gap: 6px;
 }
-
 .ap-view-all-btn {
     background: white;
     color: #1a1a2e;
@@ -139,8 +124,6 @@
     transition: all 0.2s;
 }
 .ap-view-all-btn:hover { background: #f0f9ff; color: #00A9FF; }
-
-/* VIDEO BUTTON */
 .ap-video-btn {
     background: rgba(0,0,0,0.6);
     color: white;
@@ -167,14 +150,12 @@
     justify-content: center;
 }
 .ap-lightbox.open { display: flex; }
-
 .ap-lightbox-img {
     max-width: 90vw;
     max-height: 80vh;
     object-fit: contain;
     border-radius: 8px;
 }
-
 .ap-lightbox-close {
     position: absolute;
     top: 20px; right: 24px;
@@ -185,7 +166,6 @@
     border: none;
     line-height: 1;
 }
-
 .ap-lightbox-nav {
     position: absolute;
     top: 50%;
@@ -203,15 +183,12 @@
 .ap-lightbox-nav:hover { background: rgba(255,255,255,0.2); }
 .ap-lightbox-prev { left: 20px; }
 .ap-lightbox-next { right: 20px; }
-
 .ap-lightbox-counter {
     position: absolute;
     bottom: 20px;
     color: rgba(255,255,255,0.7);
     font-size: 0.9rem;
 }
-
-/* THUMBNAIL STRIP IN LIGHTBOX */
 .ap-lightbox-strip {
     position: absolute;
     bottom: 50px;
@@ -232,8 +209,6 @@
     transition: all 0.2s;
 }
 .ap-lb-strip-thumb.active { opacity: 1; border-color: white; }
-
-/* VIDEO MODAL */
 .ap-video-modal {
     display: none;
     position: fixed;
@@ -256,19 +231,17 @@
     background: none; border: none; cursor: pointer;
 }
 
-/* ── DETAIL PAGE LAYOUT ── */
+/* ══════════════════════════════════════════
+   DETAIL PAGE LAYOUT
+   ══════════════════════════════════════════ */
 .detail-page { padding: 40px 0 80px; background: #f8f9fb; }
-
 .detail-layout {
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 28px;
     align-items: start;
 }
-
 .detail-main { min-width: 0; }
-
-/* PRICE + TITLE CARD */
 .detail-title-card {
     background: white;
     border: 1px solid #e5e7eb;
@@ -276,11 +249,9 @@
     padding: 24px;
     margin-bottom: 16px;
 }
-
 .detail-badges-row {
     display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
 }
-
 .detail-type-badge {
     padding: 3px 10px; border-radius: 99px;
     background: #f0f9ff; color: #00A9FF;
@@ -301,23 +272,18 @@
     background: #f3f4f6; color: #6b7280;
     font-size: 0.75rem; font-weight: 700;
 }
-
 .detail-title {
     font-family: var(--font-display);
     font-size: 1.7rem; color: #1a1a2e; margin-bottom: 8px;
 }
-
 .detail-location {
     display: flex; align-items: center; gap: 6px;
     color: #6b7280; font-size: 0.9rem; margin-bottom: 4px;
 }
 .detail-address { font-size: 0.85rem; color: #6b7280; margin-top: 4px; }
-
 .detail-price-block { margin-top: 16px; }
 .detail-price { font-size: 2rem; font-weight: 800; color: #1a1a2e; }
 .detail-price-note { font-size: 0.85rem; color: #6b7280; }
-
-/* KEY FEATURES STRIP */
 .detail-features {
     display: flex; flex-wrap: wrap; gap: 10px;
     background: white;
@@ -326,7 +292,6 @@
     padding: 18px 20px;
     margin-bottom: 16px;
 }
-
 .feature-item {
     display: flex; flex-direction: column; align-items: center;
     padding: 10px 16px;
@@ -338,8 +303,6 @@
 .feature-icon { font-size: 1.3rem; margin-bottom: 3px; }
 .feature-val  { font-weight: 700; font-size: 0.95rem; color: #1a1a2e; }
 .feature-label{ font-size: 0.72rem; color: #6b7280; }
-
-/* DETAIL SECTIONS */
 .detail-section {
     background: white;
     border: 1px solid #e5e7eb;
@@ -347,17 +310,13 @@
     padding: 22px 24px;
     margin-bottom: 16px;
 }
-
 .detail-section h2 {
     font-size: 1.1rem; font-weight: 700;
     color: #1a1a2e; margin-bottom: 14px;
     padding-bottom: 10px;
     border-bottom: 1px solid #f3f4f6;
 }
-
 .detail-description { color: #6b7280; line-height: 1.8; }
-
-/* PROPERTY INFO GRID */
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
 .di-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -369,15 +328,12 @@
 .di-label { color: #6b7280; }
 .di-val   { font-weight: 600; color: #1a1a2e; text-align: right; }
 .di-yes   { color: #2d6a4f; }
-
-/* DETAIL TAGS & CHIPS */
 .detail-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .detail-tag {
     background: #f0f9ff; color: #00A9FF;
     border: 1px solid #A0E9FF;
     border-radius: 99px; padding: 5px 14px; font-size: 0.82rem; font-weight: 500;
 }
-
 .detail-bullet-list {
     list-style: none; padding: 0;
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -387,15 +343,12 @@
     font-size: 0.875rem; color: #374151;
 }
 .detail-bullet-list li::before { content: '✓'; color: #00A9FF; font-weight: 700; }
-
 .furnishing-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .furnishing-chip {
     background: #f0fdf4; color: #2d6a4f;
     border: 1px solid #bbf7d0;
     border-radius: 99px; padding: 5px 12px; font-size: 0.82rem;
 }
-
-/* PRIVACY NOTICE */
 .privacy-notice {
     display: flex; align-items: flex-start; gap: 14px;
     background: #f0f9ff; border: 1px solid #A0E9FF;
@@ -414,7 +367,6 @@
 }
 .detail-sidebar::-webkit-scrollbar { width: 4px; }
 .detail-sidebar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 99px; }
-
 .contact-card {
     background: white;
     border: 1px solid #e5e7eb;
@@ -423,12 +375,10 @@
     margin-bottom: 14px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
-
 .contact-card-header {
     display: flex; align-items: center; gap: 12px;
     margin-bottom: 14px; flex-wrap: wrap;
 }
-
 .owner-avatar {
     width: 44px; height: 44px; border-radius: 50%;
     background: #00A9FF; color: white;
@@ -442,11 +392,9 @@
     color: #00A9FF; background: #f0f9ff;
     padding: 3px 8px; border-radius: 99px; border: 1px solid #A0E9FF;
 }
-
 .contact-intro { font-size: 0.85rem; color: #6b7280; margin-bottom: 16px; line-height: 1.6; }
 .btn-connect   { margin-top: 8px; }
 .form-privacy-note { font-size: 0.75rem; color: #9ca3af; text-align: center; margin-top: 10px; }
-
 .quick-info-card {
     background: white; border: 1px solid #e5e7eb;
     border-radius: var(--radius); padding: 20px;
@@ -459,7 +407,6 @@
 }
 .quick-info-row:last-child { border-bottom: none; }
 .quick-info-row span:last-child { font-weight: 600; color: #1a1a2e; }
-.owner-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 
 /* BREADCRUMB */
 .breadcrumb {
@@ -468,19 +415,99 @@
 }
 .breadcrumb a:hover { color: #00A9FF; }
 
-/* RESPONSIVE */
+/* ══════════════════════════════════════════
+   REVIEWS SECTION
+   ══════════════════════════════════════════ */
+.reviews-section { margin-bottom: 16px; }
+
+.review-summary {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    padding: 0 0 20px;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.review-big-score { text-align: center; min-width: 90px; }
+.review-big-number { font-size: 3rem; font-weight: 800; color: #1a1a2e; line-height: 1; }
+.review-big-stars { display: flex; gap: 3px; justify-content: center; margin: 6px 0 4px; }
+.review-big-stars .star-icon { font-size: 1.1rem; }
+.review-big-count { font-size: 0.78rem; color: #9ca3af; }
+.review-breakdown { flex: 1; min-width: 180px; }
+.breakdown-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.82rem; }
+.breakdown-label { width: 36px; color: #6b7280; flex-shrink: 0; display: flex; align-items: center; gap: 2px; font-weight: 600; }
+.breakdown-bar-wrap { flex: 1; height: 8px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
+.breakdown-bar-fill { height: 100%; background: linear-gradient(90deg,#f59e0b,#fbbf24); border-radius: 99px; transition: width 0.6s ease; }
+.breakdown-count { width: 24px; text-align: right; color: #9ca3af; font-size: 0.78rem; }
+.review-dual-scores { display: flex; flex-direction: column; gap: 10px; min-width: 140px; }
+.dual-score-item { background: #f8f9fb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 14px; text-align: center; }
+.dual-score-label { font-size: 0.72rem; color: #6b7280; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.dual-score-value { font-size: 1.4rem; font-weight: 800; color: #1a1a2e; }
+.dual-score-stars { display: flex; gap: 2px; justify-content: center; margin-top: 3px; }
+.dual-score-stars .star-icon { font-size: 0.75rem; }
+
+.star-icon.filled { color: #f59e0b; }
+.star-icon.half   { color: #f59e0b; opacity: 0.6; }
+.star-icon.empty  { color: #d1d5db; }
+
+.reviews-list { display: flex; flex-direction: column; gap: 16px; }
+.review-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; background: #fff; transition: box-shadow 0.2s; position: relative; }
+.review-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+.review-card.own-review { border-color: #A0E9FF; background: #f0f9ff; }
+.review-card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,#00A9FF,#7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+.reviewer-info { flex: 1; }
+.reviewer-name { font-weight: 700; font-size: 0.9rem; color: #1a1a2e; display: flex; align-items: center; gap: 6px; }
+.reviewer-you-badge { background: #00A9FF; color: white; font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; letter-spacing: 0.3px; }
+.reviewer-date { font-size: 0.75rem; color: #9ca3af; margin-top: 2px; }
+.review-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.review-action-btn { padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.review-action-btn.edit { color: #00A9FF; border-color: #A0E9FF; background: white; }
+.review-action-btn.edit:hover { background: #f0f9ff; }
+.review-action-btn.delete { color: #ef4444; border-color: #fca5a5; background: white; }
+.review-action-btn.delete:hover { background: #fef2f2; }
+.review-ratings-row { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+.review-rating-item { display: flex; align-items: center; gap: 5px; font-size: 0.82rem; }
+.review-rating-label { color: #6b7280; font-size: 0.78rem; }
+.review-rating-stars { display: flex; gap: 2px; }
+.review-rating-stars .star-icon { font-size: 0.85rem; }
+.review-rating-num { font-weight: 700; color: #1a1a2e; font-size: 0.82rem; }
+.review-comment { font-size: 0.88rem; color: #374151; line-height: 1.7; }
+.no-reviews-placeholder { text-align: center; padding: 40px 20px; color: #9ca3af; }
+.no-reviews-placeholder .nr-icon { font-size: 3rem; margin-bottom: 10px; }
+.no-reviews-placeholder p { font-size: 0.9rem; }
+
+.review-form-wrap { margin-top: 24px; padding-top: 20px; border-top: 1px solid #f3f4f6; }
+.review-form-title { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.star-picker-wrap { margin-bottom: 6px; }
+.star-picker-label { font-size: 0.82rem; color: #374151; font-weight: 600; margin-bottom: 6px; display: block; }
+.star-picker { display: flex; gap: 6px; margin-bottom: 4px; }
+.star-picker .sp-star { font-size: 1.6rem; cursor: pointer; color: #d1d5db; transition: color 0.15s, transform 0.1s; line-height: 1; user-select: none; }
+.star-picker .sp-star:hover, .star-picker .sp-star.active { color: #f59e0b; transform: scale(1.15); }
+.star-picker-hint { font-size: 0.75rem; color: #9ca3af; min-height: 16px; }
+.review-hidden-select { display: none; }
+.review-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 600px) { .review-form-grid { grid-template-columns: 1fr; } }
+
+.review-login-gate { background: #f8f9fb; border: 1.5px dashed #d1d5db; border-radius: 12px; padding: 24px; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f3f4f6; }
+.review-login-gate .gate-icon { font-size: 2rem; margin-bottom: 8px; }
+.review-login-gate p { font-size: 0.88rem; color: #6b7280; margin-bottom: 14px; }
+.review-login-gate .gate-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.own-property-notice { background: #fef9ec; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 18px; font-size: 0.85rem; color: #92400e; margin-top: 20px; display: flex; align-items: center; gap: 8px; }
+.edit-review-collapse { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
+.edit-review-collapse.open { display: block; }
+
 @media (max-width: 900px) {
     .detail-layout { grid-template-columns: 1fr; }
-    .detail-sidebar {
-        position: static;
-        max-height: none;
-        overflow-y: visible;
-    }
+    .detail-sidebar { position: static; max-height: none; overflow-y: visible; }
     .ap-gallery-main { height: 300px; }
     .ap-gallery-grid { display: none; }
     .ap-arrow-next { right: 12px; }
     .detail-info-grid { grid-template-columns: 1fr; }
     .detail-bullet-list { grid-template-columns: 1fr; }
+    .review-summary { flex-direction: column; gap: 16px; }
+    .review-dual-scores { flex-direction: row; }
 }
 </style>
 {% endblock %}
@@ -489,36 +516,25 @@
 <div class="detail-page">
   <div class="container">
 
-    <!-- BREADCRUMB -->
     <nav class="breadcrumb">
       <a href="{% url 'home' %}">Home</a><span>/</span>
       <a href="{% url 'property_search' %}">Search</a><span>/</span>
       <span>{{ property.title|truncatechars:40 }}</span>
     </nav>
 
-    <!-- ══════════════════════════════════════════
-         APARTMENTS.COM STYLE GALLERY
-         ══════════════════════════════════════════ -->
     {% if images %}
     <div class="ap-gallery">
-      <!-- MAIN IMAGE -->
       <div class="ap-gallery-main" id="apMainWrap">
         <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="apMainImg">
-
-        <!-- BADGES -->
         <div class="ap-badge-row">
           <span class="ap-badge ap-badge-{{ property.listing_type }}">{{ property.get_listing_type_display }}</span>
           {% if property.vastu_compliant %}<span class="ap-badge ap-badge-vastu">🧿 Vastu</span>{% endif %}
           {% if property.is_rented %}<span class="ap-badge ap-badge-rented">Rented/Sold</span>{% endif %}
         </div>
-
-        <!-- NAV ARROWS -->
         {% if images|length > 1 %}
         <button class="ap-arrow ap-arrow-prev" onclick="apNav(-1)">&#8249;</button>
         <button class="ap-arrow ap-arrow-next" onclick="apNav(1)">&#8250;</button>
         {% endif %}
-
-        <!-- BOTTOM BAR -->
         <div class="ap-gallery-bar">
           <span class="ap-photo-count">📷 <span id="apCounter">1</span> / {{ images|length }}</span>
           <div style="display:flex;gap:8px;">
@@ -529,8 +545,6 @@
           </div>
         </div>
       </div>
-
-      <!-- GRID THUMBS (right side, max 4) -->
       {% if images|length > 1 %}
       <div class="ap-gallery-grid">
         {% for img in images %}
@@ -546,9 +560,7 @@
       </div>
       {% endif %}
     </div>
-
     {% else %}
-    <!-- NO PHOTOS -->
     <div style="height:300px;background:#f3f4f6;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9ca3af;margin-bottom:24px;gap:12px;">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
         <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
@@ -557,9 +569,6 @@
     </div>
     {% endif %}
 
-    <!-- ══════════════════════════════════════════
-         LIGHTBOX
-         ══════════════════════════════════════════ -->
     <div class="ap-lightbox" id="apLightbox">
       <button class="ap-lightbox-close" onclick="closeLightbox()">×</button>
       <button class="ap-lightbox-nav ap-lightbox-prev" onclick="lbNav(-1)">&#8249;</button>
@@ -573,7 +582,6 @@
       <span class="ap-lightbox-counter" id="apLbCounter"></span>
     </div>
 
-    <!-- VIDEO MODAL -->
     {% if property.property_video %}
     <div class="ap-video-modal" id="apVideoModal">
       <button class="ap-video-modal-close" onclick="closeVideo()">×</button>
@@ -583,15 +591,10 @@
     </div>
     {% endif %}
 
-    <!-- ══════════════════════════════════════════
-         MAIN LAYOUT
-         ══════════════════════════════════════════ -->
     <div class="detail-layout">
-
-      <!-- LEFT COLUMN -->
       <div class="detail-main">
 
-        <!-- TITLE + PRICE CARD -->
+        <!-- TITLE CARD -->
         <div class="detail-title-card">
           <div class="detail-badges-row">
             <span class="detail-type-badge">{{ property.get_property_type_display }}</span>
@@ -607,6 +610,16 @@
             {{ property.location }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}
           </div>
           {% if property.address %}<div class="detail-address">📍 {{ property.address }}</div>{% endif %}
+          {% if total_reviews > 0 %}
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+            <div style="display:flex;gap:2px;">
+              {% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= avg_overall %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}
+            </div>
+            <span style="font-weight:700;font-size:0.9rem;color:#1a1a2e;">{{ avg_overall }}</span>
+            <span style="font-size:0.82rem;color:#6b7280;">({{ total_reviews }} review{{ total_reviews|pluralize }})</span>
+            <a href="#reviews-section" style="font-size:0.82rem;color:#00A9FF;text-decoration:none;">See all →</a>
+          </div>
+          {% endif %}
           <div class="detail-price-block">
             <div class="detail-price">{{ property.formatted_price }}</div>
             {% if property.listing_type == 'rent' %}<div class="detail-price-note">per month</div>{% endif %}
@@ -614,7 +627,7 @@
           </div>
         </div>
 
-        <!-- KEY FEATURES STRIP -->
+        <!-- KEY FEATURES -->
         <div class="detail-features">
           {% if property.bhk %}<div class="feature-item"><span class="feature-icon">🏠</span><span class="feature-val">{{ property.get_bhk_display }}</span><span class="feature-label">BHK</span></div>{% endif %}
           {% if property.bedrooms %}<div class="feature-item"><span class="feature-icon">🛏</span><span class="feature-val">{{ property.bedrooms }}</span><span class="feature-label">Bedrooms</span></div>{% endif %}
@@ -633,7 +646,6 @@
           <p class="detail-description">{{ property.description }}</p>
         </div>
 
-        <!-- KEY HIGHLIGHTS -->
         {% if property.key_highlights %}
         <div class="detail-section">
           <h2>⭐ Why You Should Consider This</h2>
@@ -641,7 +653,6 @@
         </div>
         {% endif %}
 
-        <!-- KEY FACILITIES -->
         {% if property.key_facilities_list %}
         <div class="detail-section">
           <h2>🏆 Key Facilities</h2>
@@ -674,60 +685,282 @@
           </div>
         </div>
 
-        <!-- OVERLOOKING -->
         {% if property.overlooking %}
         <div class="detail-section">
           <h2>🌅 Overlooking</h2>
-          <div class="detail-tags">
-            {% for item in property.overlooking %}<span class="detail-tag">{{ item|title }}</span>{% endfor %}
-          </div>
+          <div class="detail-tags">{% for item in property.overlooking %}<span class="detail-tag">{{ item|title }}</span>{% endfor %}</div>
         </div>
         {% endif %}
 
-        <!-- AMENITIES -->
         {% if property.amenities %}
         <div class="detail-section">
           <h2>🏛️ Amenities</h2>
-          <ul class="detail-bullet-list">
-            {% for a in property.amenities %}<li>{{ a|title }}</li>{% endfor %}
-          </ul>
+          <ul class="detail-bullet-list">{% for a in property.amenities %}<li>{{ a|title }}</li>{% endfor %}</ul>
         </div>
         {% endif %}
 
-        <!-- PG AMENITIES -->
         {% if property.pg_common_areas %}
         <div class="detail-section">
           <h2>🏠 PG Facilities</h2>
-          <ul class="detail-bullet-list">
-            {% for item in property.pg_common_areas %}<li>{{ item|title }}</li>{% endfor %}
-          </ul>
+          <ul class="detail-bullet-list">{% for item in property.pg_common_areas %}<li>{{ item|title }}</li>{% endfor %}</ul>
         </div>
         {% endif %}
 
-        <!-- FURNISHING ITEMS -->
         {% if property.furnishing_items_display %}
         <div class="detail-section">
           <h2>🛋️ What's Included</h2>
-          <div class="furnishing-chips">
-            {% for item in property.furnishing_items_display %}<span class="furnishing-chip">✓ {{ item }}</span>{% endfor %}
-          </div>
+          <div class="furnishing-chips">{% for item in property.furnishing_items_display %}<span class="furnishing-chip">✓ {{ item }}</span>{% endfor %}</div>
         </div>
         {% endif %}
 
-        <!-- PRIVACY NOTICE -->
         <div class="detail-section privacy-notice">
           <div class="privacy-icon">🔒</div>
           <div>
             <h3 style="margin-bottom:4px;font-size:0.95rem;">Privacy Protected</h3>
-            <p style="font-size:0.85rem;color:#6b7280;">Owner contact details are never displayed publicly. Use the form to connect — we'll forward it securely without revealing their email.</p>
+            <p style="font-size:0.85rem;color:#6b7280;">Owner contact details are never displayed publicly.</p>
           </div>
         </div>
 
+        <!-- ══════════════════════════════════════════
+             REVIEWS SECTION
+             ══════════════════════════════════════════ -->
+        <div class="detail-section reviews-section" id="reviews-section">
+          <h2>⭐ Reviews &amp; Ratings
+            {% if total_reviews > 0 %}<span style="font-size:0.8rem;font-weight:500;color:#6b7280;margin-left:6px;">({{ total_reviews }})</span>{% endif %}
+          </h2>
+
+          {% if total_reviews > 0 %}
+          <div class="review-summary">
+
+            <!-- Overall score -->
+            <div class="review-big-score">
+              <div class="review-big-number">{{ avg_overall }}</div>
+              <div class="review-big-stars">
+                {% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= avg_overall %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}
+              </div>
+              <div class="review-big-count">{{ total_reviews }} review{{ total_reviews|pluralize }}</div>
+            </div>
+
+            <!-- Property rating bar breakdown -->
+            <div class="review-breakdown">
+              <div style="font-size:0.75rem;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Property</div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">5 ★</span>
+                <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:{% if total_reviews %}{% widthratio property_star_counts.5 total_reviews 100 %}{% else %}0{% endif %}%"></div></div>
+                <span class="breakdown-count">{{ property_star_counts.5 }}</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">4 ★</span>
+                <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:{% if total_reviews %}{% widthratio property_star_counts.4 total_reviews 100 %}{% else %}0{% endif %}%"></div></div>
+                <span class="breakdown-count">{{ property_star_counts.4 }}</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">3 ★</span>
+                <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:{% if total_reviews %}{% widthratio property_star_counts.3 total_reviews 100 %}{% else %}0{% endif %}%"></div></div>
+                <span class="breakdown-count">{{ property_star_counts.3 }}</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">2 ★</span>
+                <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:{% if total_reviews %}{% widthratio property_star_counts.2 total_reviews 100 %}{% else %}0{% endif %}%"></div></div>
+                <span class="breakdown-count">{{ property_star_counts.2 }}</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">1 ★</span>
+                <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:{% if total_reviews %}{% widthratio property_star_counts.1 total_reviews 100 %}{% else %}0{% endif %}%"></div></div>
+                <span class="breakdown-count">{{ property_star_counts.1 }}</span>
+              </div>
+            </div>
+
+            <!-- Dual scores -->
+            <div class="review-dual-scores">
+              <div class="dual-score-item">
+                <div class="dual-score-label">🏠 Property</div>
+                <div class="dual-score-value">{{ avg_prop_rating }}</div>
+                <div class="dual-score-stars">{% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= avg_prop_rating %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}</div>
+              </div>
+              <div class="dual-score-item">
+                <div class="dual-score-label">👤 Owner</div>
+                <div class="dual-score-value">{{ avg_owner_rating }}</div>
+                <div class="dual-score-stars">{% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= avg_owner_rating %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}</div>
+              </div>
+            </div>
+
+          </div>
+          {% endif %}
+
+          <!-- REVIEW CARDS -->
+          {% if reviews %}
+          <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-card {% if review.reviewer == request.user %}own-review{% endif %}" id="review-{{ review.pk }}">
+              <div class="review-card-header">
+                <div class="reviewer-avatar">{{ review.reviewer.email|slice:":1"|upper }}</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">
+                    {% if review.reviewer.full_name %}{{ review.reviewer.full_name }}{% else %}{{ review.reviewer.email|slice:":20" }}{% endif %}
+                    {% if review.reviewer == request.user %}<span class="reviewer-you-badge">YOU</span>{% endif %}
+                  </div>
+                  <div class="reviewer-date">{{ review.created_at|date:"M d, Y" }}{% if review.updated_at != review.created_at %} · edited{% endif %}</div>
+                </div>
+                {% if review.reviewer == request.user %}
+                <div class="review-actions">
+                  <button class="review-action-btn edit" onclick="toggleEditForm('{{ review.pk }}')">✏️ Edit</button>
+                  <form method="post" action="{% url 'delete_review' property.pk review.pk %}" style="display:inline;" onsubmit="return confirm('Delete your review?');">
+                    {% csrf_token %}
+                    <button type="submit" class="review-action-btn delete">🗑 Delete</button>
+                  </form>
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="review-ratings-row">
+                <div class="review-rating-item">
+                  <span class="review-rating-label">Property:</span>
+                  <div class="review-rating-stars">{% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= review.property_rating %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}</div>
+                  <span class="review-rating-num">{{ review.property_rating }}/5</span>
+                </div>
+                <div class="review-rating-item">
+                  <span class="review-rating-label">Owner:</span>
+                  <div class="review-rating-stars">{% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= review.owner_rating %}<span class="star-icon filled">★</span>{% else %}<span class="star-icon empty">★</span>{% endif %}{% endwith %}{% endfor %}</div>
+                  <span class="review-rating-num">{{ review.owner_rating }}/5</span>
+                </div>
+              </div>
+
+              <p class="review-comment">{{ review.comment }}</p>
+
+              {% if review.reviewer == request.user %}
+              <div class="edit-review-collapse" id="edit-form-{{ review.pk }}">
+                <form method="post" action="{% url 'property_detail' property.pk %}#reviews-section">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="edit_review">
+                  <div class="review-form-grid">
+                    <div class="star-picker-wrap">
+                      <span class="star-picker-label">🏠 Property Rating *</span>
+                      <div class="star-picker" id="ep-prop-picker-{{ review.pk }}" data-target="ep_prop_{{ review.pk }}">
+                        {% for i in "12345" %}<span class="sp-star {% if forloop.counter <= review.property_rating %}active{% endif %}" data-val="{{ forloop.counter }}">★</span>{% endfor %}
+                      </div>
+                      <div class="star-picker-hint" id="ep-prop-hint-{{ review.pk }}"></div>
+                      <select name="property_rating" id="ep_prop_{{ review.pk }}" class="review-hidden-select" required>
+                        {% for i in "12345" %}<option value="{{ forloop.counter }}" {% if forloop.counter == review.property_rating %}selected{% endif %}>{{ forloop.counter }}</option>{% endfor %}
+                      </select>
+                    </div>
+                    <div class="star-picker-wrap">
+                      <span class="star-picker-label">👤 Owner Rating *</span>
+                      <div class="star-picker" id="ep-own-picker-{{ review.pk }}" data-target="ep_own_{{ review.pk }}">
+                        {% for i in "12345" %}<span class="sp-star {% if forloop.counter <= review.owner_rating %}active{% endif %}" data-val="{{ forloop.counter }}">★</span>{% endfor %}
+                      </div>
+                      <div class="star-picker-hint" id="ep-own-hint-{{ review.pk }}"></div>
+                      <select name="owner_rating" id="ep_own_{{ review.pk }}" class="review-hidden-select" required>
+                        {% for i in "12345" %}<option value="{{ forloop.counter }}" {% if forloop.counter == review.owner_rating %}selected{% endif %}>{{ forloop.counter }}</option>{% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:12px;">
+                    <label class="form-label">Your Comment *</label>
+                    <textarea name="comment" class="form-input" rows="3" required>{{ review.comment }}</textarea>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button type="submit" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem;">💾 Save Changes</button>
+                    <button type="button" class="btn btn-outline" style="padding:8px 16px;font-size:0.85rem;" onclick="toggleEditForm('{{ review.pk }}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          {% else %}
+          <div class="no-reviews-placeholder">
+            <div class="nr-icon">💬</div>
+            <p>No reviews yet. Be the first to share your experience!</p>
+          </div>
+          {% endif %}
+
+          <!-- WRITE A REVIEW / GATE -->
+          {% if request.user.is_authenticated %}
+            {% if request.user == property.owner %}
+              <div class="own-property-notice">
+                <span>ℹ️</span><span>You cannot review your own property.</span>
+              </div>
+            {% elif user_has_reviewed %}
+              <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6;font-size:0.85rem;color:#6b7280;text-align:center;">
+                ✅ You've already reviewed this property. Use the <strong>Edit</strong> button above to update it.
+              </div>
+            {% else %}
+              <div class="review-form-wrap">
+                <div class="review-form-title">✍️ Write a Review</div>
+                {% if review_form.non_field_errors %}
+                <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:#dc2626;">
+                  {% for error in review_form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                <form method="post" action="{% url 'property_detail' property.pk %}#reviews-section">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="submit_review">
+                  <div class="review-form-grid">
+                    <div class="star-picker-wrap">
+                      <span class="star-picker-label">🏠 Property Rating *</span>
+                      <div class="star-picker" id="new-prop-picker" data-target="id_property_rating_new">
+                        <span class="sp-star" data-val="1">★</span>
+                        <span class="sp-star" data-val="2">★</span>
+                        <span class="sp-star" data-val="3">★</span>
+                        <span class="sp-star" data-val="4">★</span>
+                        <span class="sp-star" data-val="5">★</span>
+                      </div>
+                      <div class="star-picker-hint" id="new-prop-hint">Click to rate</div>
+                      <select name="property_rating" id="id_property_rating_new" class="review-hidden-select" required>
+                        <option value="">—</option>
+                        <option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option>
+                      </select>
+                      {% if review_form.property_rating.errors %}<div style="color:#ef4444;font-size:0.78rem;margin-top:4px;">{{ review_form.property_rating.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="star-picker-wrap">
+                      <span class="star-picker-label">👤 Owner Rating *</span>
+                      <div class="star-picker" id="new-own-picker" data-target="id_owner_rating_new">
+                        <span class="sp-star" data-val="1">★</span>
+                        <span class="sp-star" data-val="2">★</span>
+                        <span class="sp-star" data-val="3">★</span>
+                        <span class="sp-star" data-val="4">★</span>
+                        <span class="sp-star" data-val="5">★</span>
+                      </div>
+                      <div class="star-picker-hint" id="new-own-hint">Click to rate</div>
+                      <select name="owner_rating" id="id_owner_rating_new" class="review-hidden-select" required>
+                        <option value="">—</option>
+                        <option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option>
+                      </select>
+                      {% if review_form.owner_rating.errors %}<div style="color:#ef4444;font-size:0.78rem;margin-top:4px;">{{ review_form.owner_rating.errors.0 }}</div>{% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:14px;">
+                    <label class="form-label" style="font-size:0.82rem;font-weight:600;color:#374151;">Your Comment *</label>
+                    <textarea name="comment" class="form-input" rows="4" placeholder="Share your experience — Was the property as described? How was the owner to deal with?" required>{% if review_form.comment.value %}{{ review_form.comment.value }}{% endif %}</textarea>
+                    {% if review_form.comment.errors %}<div style="color:#ef4444;font-size:0.78rem;margin-top:4px;">{{ review_form.comment.errors.0 }}</div>{% endif %}
+                  </div>
+                  <button type="submit" class="btn btn-primary" style="padding:10px 28px;">📤 Post Review</button>
+                </form>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="review-login-gate">
+              <div class="gate-icon">✍️</div>
+              <p>Log in to share your experience with this property and its owner.</p>
+              <div class="gate-btns">
+                <a href="{% url 'login' %}?next={{ request.path }}#reviews-section" class="btn btn-primary">Log In to Review</a>
+                <a href="{% url 'signup' %}" class="btn btn-outline">Create Account</a>
+              </div>
+            </div>
+          {% endif %}
+
+        </div><!-- /reviews-section -->
       </div><!-- /detail-main -->
 
-      <!-- RIGHT SIDEBAR -->
+      <!-- SIDEBAR -->
       <aside class="detail-sidebar">
-
         <div class="contact-card">
           <div class="contact-card-header">
             <div class="owner-avatar">{{ property.owner.email|slice:":1"|upper }}</div>
@@ -737,11 +970,18 @@
             </div>
             <span class="privacy-badge">🔒 Private</span>
           </div>
+          {% if avg_owner_rating %}
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:8px 10px;background:#fffbeb;border-radius:8px;border:1px solid #fde68a;">
+            <span style="font-size:0.78rem;color:#92400e;font-weight:600;">Owner Rating:</span>
+            <div style="display:flex;gap:2px;">{% for i in "12345" %}{% with fi=forloop.counter %}{% if fi <= avg_owner_rating %}<span style="color:#f59e0b;font-size:0.85rem;">★</span>{% else %}<span style="color:#d1d5db;font-size:0.85rem;">★</span>{% endif %}{% endwith %}{% endfor %}</div>
+            <span style="font-weight:700;font-size:0.85rem;color:#92400e;">{{ avg_owner_rating }}</span>
+          </div>
+          {% endif %}
           <p class="contact-intro">Interested? Send a message — their contact info stays private.</p>
-
           {% if user.is_authenticated %}
           <form method="post" class="inquiry-form" id="inquiryForm">
             {% csrf_token %}
+            <input type="hidden" name="action" value="inquiry">
             {% for field in inquiry_form %}
             <div class="form-group">
               <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
@@ -749,105 +989,113 @@
               {% if field.errors %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}{% endif %}
             </div>
             {% endfor %}
-            <button type="submit" class="btn btn-primary btn-full btn-connect" style="margin-top:8px;">
-              📩 Connect with Owner
-            </button>
+            <button type="submit" class="btn btn-primary btn-full btn-connect" style="margin-top:8px;">📩 Connect with Owner</button>
             <p class="form-privacy-note">🔒 The owner's email will never be revealed.</p>
           </form>
           {% else %}
           <div class="inquiry-login-prompt">
             <div class="ilp-icon">🔐</div>
             <p class="ilp-text">You need to be logged in to contact the owner.</p>
-            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-full" style="margin-top:12px;">
-              Log In to Send Message
-            </a>
-            <a href="{% url 'signup' %}" class="btn btn-outline btn-full" style="margin-top:8px;">
-              Create Free Account
-            </a>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-full" style="margin-top:12px;">Log In to Send Message</a>
+            <a href="{% url 'signup' %}" class="btn btn-outline btn-full" style="margin-top:8px;">Create Free Account</a>
             <p class="form-privacy-note" style="margin-top:12px;">🔒 Owner contact details are always private.</p>
           </div>
           {% endif %}
         </div>
 
-        
-
+        <div class="quick-info-card">
+          <h4>📊 Property Stats</h4>
+          <div class="quick-info-row"><span>Total Views</span><span>{{ property.view_count }}</span></div>
+          <div class="quick-info-row"><span>Reviews</span><span>{{ total_reviews }}</span></div>
+          {% if avg_overall %}<div class="quick-info-row"><span>Overall Rating</span><span>{{ avg_overall }} / 5 ★</span></div>{% endif %}
+          <div class="quick-info-row"><span>Listed On</span><span>{{ property.created_at|date:"M d, Y" }}</span></div>
+        </div>
       </aside>
     </div>
   </div>
 </div>
 
-<!-- GALLERY & LIGHTBOX JS -->
 <script>
 (function(){
   var images = [{% for img in images %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
   var current = 0;
-
   function apGoTo(n) {
     current = (n + images.length) % images.length;
     document.getElementById('apMainImg').src = images[current];
     document.getElementById('apCounter').textContent = current + 1;
   }
-
   window.apGoTo = apGoTo;
   window.apNav  = function(dir){ apGoTo(current + dir); };
-
-  // LIGHTBOX
   var lbCurrent = 0;
-  window.openLightbox = function(n){
-    lbCurrent = n || 0;
-    lbUpdate();
-    document.getElementById('apLightbox').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeLightbox = function(){
-    document.getElementById('apLightbox').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-  window.lbNav = function(dir){ lbGoTo(lbCurrent + dir); };
-  window.lbGoTo = function(n){
-    lbCurrent = (n + images.length) % images.length;
-    lbUpdate();
-  };
+  window.openLightbox = function(n){ lbCurrent = n||0; lbUpdate(); document.getElementById('apLightbox').classList.add('open'); document.body.style.overflow='hidden'; };
+  window.closeLightbox = function(){ document.getElementById('apLightbox').classList.remove('open'); document.body.style.overflow=''; };
+  window.lbNav = function(dir){ lbGoTo(lbCurrent+dir); };
+  window.lbGoTo = function(n){ lbCurrent=(n+images.length)%images.length; lbUpdate(); };
   function lbUpdate(){
     document.getElementById('apLbImg').src = images[lbCurrent];
-    document.getElementById('apLbCounter').textContent = (lbCurrent+1) + ' / ' + images.length;
-    document.querySelectorAll('.ap-lb-strip-thumb').forEach(function(t,i){
-      t.classList.toggle('active', i===lbCurrent);
-    });
+    document.getElementById('apLbCounter').textContent = (lbCurrent+1)+' / '+images.length;
+    document.querySelectorAll('.ap-lb-strip-thumb').forEach(function(t,i){ t.classList.toggle('active',i===lbCurrent); });
   }
-  // Close on backdrop click
-  document.getElementById('apLightbox').addEventListener('click', function(e){
-    if(e.target === this) window.closeLightbox();
+  document.getElementById('apLightbox').addEventListener('click',function(e){ if(e.target===this) window.closeLightbox(); });
+  document.addEventListener('keydown',function(e){
+    var lb=document.getElementById('apLightbox');
+    if(!lb.classList.contains('open')) return;
+    if(e.key==='ArrowRight') window.lbNav(1);
+    if(e.key==='ArrowLeft')  window.lbNav(-1);
+    if(e.key==='Escape')     window.closeLightbox();
   });
-  // Keyboard nav
-  document.addEventListener('keydown', function(e){
-    var lb = document.getElementById('apLightbox');
-    if (!lb.classList.contains('open')) return;
-    if (e.key === 'ArrowRight') window.lbNav(1);
-    if (e.key === 'ArrowLeft')  window.lbNav(-1);
-    if (e.key === 'Escape')     window.closeLightbox();
-  });
-
-  // VIDEO MODAL
-  window.openVideo = function(){
-    document.getElementById('apVideoModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeVideo = function(){
-    var modal = document.getElementById('apVideoModal');
-    if (modal) {
-      modal.classList.remove('open');
-      var player = document.getElementById('apVideoPlayer');
-      if (player) player.pause();
-    }
-    document.body.style.overflow = '';
-  };
-  var videoModal = document.getElementById('apVideoModal');
-  if (videoModal) {
-    videoModal.addEventListener('click', function(e){
-      if(e.target === this) window.closeVideo();
-    });
-  }
+  window.openVideo = function(){ var m=document.getElementById('apVideoModal'); if(m){m.classList.add('open');document.body.style.overflow='hidden';} };
+  window.closeVideo = function(){ var m=document.getElementById('apVideoModal'); if(m){m.classList.remove('open');var p=document.getElementById('apVideoPlayer');if(p)p.pause();} document.body.style.overflow=''; };
+  var vm=document.getElementById('apVideoModal');
+  if(vm) vm.addEventListener('click',function(e){if(e.target===this)window.closeVideo();});
 })();
+</script>
+
+<script>
+(function(){
+  var LABELS={1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
+  function initPicker(pickerId,hintId,selectId){
+    var picker=document.getElementById(pickerId);
+    var hint=document.getElementById(hintId);
+    var sel=document.getElementById(selectId);
+    if(!picker||!sel) return;
+    var stars=picker.querySelectorAll('.sp-star');
+    function setVal(val){
+      sel.value=val;
+      stars.forEach(function(s){ s.classList.toggle('active',parseInt(s.dataset.val)<=val); });
+      if(hint) hint.textContent=LABELS[val]||'';
+    }
+    var existing=parseInt(sel.value);
+    if(existing) setVal(existing);
+    stars.forEach(function(star){
+      star.addEventListener('mouseenter',function(){
+        var v=parseInt(this.dataset.val);
+        stars.forEach(function(s){ s.style.color=parseInt(s.dataset.val)<=v?'#f59e0b':'#d1d5db'; });
+        if(hint) hint.textContent=LABELS[v]||'';
+      });
+      star.addEventListener('mouseleave',function(){
+        stars.forEach(function(s){ s.style.color=''; });
+        var cur=parseInt(sel.value);
+        if(hint) hint.textContent=cur?LABELS[cur]:'Click to rate';
+      });
+      star.addEventListener('click',function(){ setVal(parseInt(this.dataset.val)); });
+    });
+  }
+  initPicker('new-prop-picker','new-prop-hint','id_property_rating_new');
+  initPicker('new-own-picker','new-own-hint','id_owner_rating_new');
+  document.querySelectorAll('[id^="ep-prop-picker-"]').forEach(function(el){
+    var pk=el.id.replace('ep-prop-picker-','');
+    initPicker('ep-prop-picker-'+pk,'ep-prop-hint-'+pk,'ep_prop_'+pk);
+  });
+  document.querySelectorAll('[id^="ep-own-picker-"]').forEach(function(el){
+    var pk=el.id.replace('ep-own-picker-','');
+    initPicker('ep-own-picker-'+pk,'ep-own-hint-'+pk,'ep_own_'+pk);
+  });
+})();
+
+function toggleEditForm(pk){
+  var el=document.getElementById('edit-form-'+pk);
+  if(el) el.classList.toggle('open');
+}
 </script>
 {% endblock %}

@@ -161,76 +161,78 @@ class Property(models.Model):
         on_delete=models.CASCADE,
         related_name='properties'
     )
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    listing_type = models.CharField(max_length=10, choices=LISTING_TYPE_CHOICES)
-    property_type = models.CharField(max_length=30, choices=PROPERTY_TYPE_CHOICES)
-    price = models.DecimalField(max_digits=12, decimal_places=2)
-    location = models.CharField(max_length=200, help_text='City, Area or Full Address')
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100, blank=True)
-    bedrooms = models.PositiveIntegerField(default=0, null=True, blank=True)
+    title       = models.CharField(max_length=200, default='')
+    description = models.TextField(default='', blank=True)
+    listing_type  = models.CharField(max_length=10, choices=LISTING_TYPE_CHOICES, default='rent')
+    property_type = models.CharField(max_length=30, choices=PROPERTY_TYPE_CHOICES, default='flat_apartment')
+    price    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    location = models.CharField(max_length=200, default='', blank=True, help_text='City, Area or Full Address')
+    city     = models.CharField(max_length=100, default='', blank=True)
+    state    = models.CharField(max_length=100, default='', blank=True)
+    bedrooms  = models.PositiveIntegerField(default=0, null=True, blank=True)
     bathrooms = models.PositiveIntegerField(default=0, null=True, blank=True)
     area_sqft = models.PositiveIntegerField(null=True, blank=True, verbose_name='Area (sq ft)')
     is_furnished = models.BooleanField(default=False)
-    is_rented = models.BooleanField(default=False)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    is_rented    = models.BooleanField(default=False)
+    status     = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     view_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # ── SELLER / CATEGORY ──
-    seller_type = models.CharField(max_length=20, choices=SELLER_TYPE_CHOICES, blank=True)
-    property_category = models.CharField(max_length=20, choices=PROPERTY_CATEGORY_CHOICES, blank=True)
+    seller_type       = models.CharField(max_length=20, choices=SELLER_TYPE_CHOICES, default='', blank=True)
+    property_category = models.CharField(max_length=20, choices=PROPERTY_CATEGORY_CHOICES, default='', blank=True)
 
     # ── LOCATION DETAIL ──
-    address = models.CharField(max_length=300, blank=True)
+    address = models.CharField(max_length=300, default='', blank=True)
 
     # ── PROPERTY SPECS ──
-    bhk = models.CharField(max_length=10, choices=BHK_CHOICES, blank=True)
-    construction_status = models.CharField(max_length=20, choices=CONSTRUCTION_STATUS_CHOICES, blank=True)
-    posted_by = models.CharField(max_length=20, choices=POSTED_BY_CHOICES, blank=True)
-    min_area = models.PositiveIntegerField(null=True, blank=True)
-    max_area = models.PositiveIntegerField(null=True, blank=True)
-    area_unit = models.CharField(max_length=10, choices=AREA_UNIT_CHOICES, default='sqft', blank=True)
-    purchase_type = models.CharField(max_length=15, choices=PURCHASE_TYPE_CHOICES, blank=True)
-    furnishing = models.CharField(max_length=15, choices=FURNISHING_CHOICES, blank=True)
-    property_age = models.CharField(max_length=10, choices=PROPERTY_AGE_CHOICES, blank=True)
-    preferred_tenants = models.CharField(max_length=15, choices=PREFERRED_TENANTS_CHOICES, blank=True)
+    bhk                 = models.CharField(max_length=10, choices=BHK_CHOICES, default='', blank=True)
+    construction_status = models.CharField(max_length=20, choices=CONSTRUCTION_STATUS_CHOICES, default='', blank=True)
+    posted_by           = models.CharField(max_length=20, choices=POSTED_BY_CHOICES, default='', blank=True)
+    min_area     = models.PositiveIntegerField(null=True, blank=True)
+    max_area     = models.PositiveIntegerField(null=True, blank=True)
+    area_unit    = models.CharField(max_length=10, choices=AREA_UNIT_CHOICES, default='sqft', blank=True)
+    purchase_type      = models.CharField(max_length=15, choices=PURCHASE_TYPE_CHOICES, default='', blank=True)
+    furnishing         = models.CharField(max_length=15, choices=FURNISHING_CHOICES, default='', blank=True)
+    property_age       = models.CharField(max_length=10, choices=PROPERTY_AGE_CHOICES, default='', blank=True)
+    preferred_tenants  = models.CharField(max_length=15, choices=PREFERRED_TENANTS_CHOICES, default='', blank=True)
     min_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     max_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
-    # ── NEW DETAILED FIELDS ──
-    floor_number = models.CharField(max_length=20, blank=True, help_text='e.g. 3, Ground, Basement')
-    total_floors = models.PositiveIntegerField(null=True, blank=True)
-    facing = models.CharField(max_length=15, choices=FACING_CHOICES, blank=True)
-    overlooking = models.JSONField(default=list, blank=True)
-    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES, blank=True)
-    property_ownership = models.CharField(max_length=25, choices=PROPERTY_OWNERSHIP_CHOICES, blank=True)
-    flooring = models.CharField(max_length=20, choices=FLOORING_CHOICES, blank=True)
-    width_of_facing_road = models.CharField(max_length=30, blank=True, help_text='e.g. 30 ft, 9 metres')
-    water_source = models.CharField(max_length=20, choices=WATER_SOURCE_CHOICES, blank=True)
-    key_highlights = models.TextField(blank=True, help_text='Why should someone consider this property?')
-    key_facilities = models.TextField(blank=True, help_text='Comma-separated facilities, e.g. 24hr Security, CCTV')
-    vastu_compliant = models.BooleanField(default=False)
+    # ── DETAILED FIELDS ──
+    floor_number       = models.CharField(max_length=20, default='', blank=True, help_text='e.g. 3, Ground, Basement')
+    total_floors       = models.PositiveIntegerField(null=True, blank=True)
+    facing             = models.CharField(max_length=15, choices=FACING_CHOICES, default='', blank=True)
+    overlooking        = models.JSONField(default=list, blank=True)
+    transaction_type   = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES, default='', blank=True)
+    property_ownership = models.CharField(max_length=25, choices=PROPERTY_OWNERSHIP_CHOICES, default='', blank=True)
+    flooring           = models.CharField(max_length=20, choices=FLOORING_CHOICES, default='', blank=True)
+    width_of_facing_road = models.CharField(max_length=30, default='', blank=True, help_text='e.g. 30 ft, 9 metres')
+    water_source       = models.CharField(max_length=20, choices=WATER_SOURCE_CHOICES, default='', blank=True)
+    key_highlights     = models.TextField(default='', blank=True, help_text='Why should someone consider this property?')
+    key_facilities     = models.TextField(default='', blank=True, help_text='Comma-separated facilities, e.g. 24hr Security, CCTV')
+    vastu_compliant    = models.BooleanField(default=False)
 
-    # ── FURNISHING ITEMS (JSONField list of item keys) ──
+    # ── FURNISHING ITEMS ──
     furnishing_items = models.JSONField(default=list, blank=True)
 
     # ── AMENITIES ──
     amenities = models.JSONField(default=list, blank=True)
 
     # ── PG-SPECIFIC ──
-    pg_for = models.CharField(max_length=20, blank=True,
-        choices=[('male','Male'),('female','Female'),('any','Any')])
+    pg_for = models.CharField(
+        max_length=20, default='', blank=True,
+        choices=[('male', 'Male'), ('female', 'Female'), ('any', 'Any')]
+    )
     pg_meals_included = models.BooleanField(default=False)
-    pg_notice_period = models.CharField(max_length=30, blank=True)
-    pg_common_areas = models.JSONField(default=list, blank=True)
+    pg_notice_period  = models.CharField(max_length=30, default='', blank=True)
+    pg_common_areas   = models.JSONField(default=list, blank=True)
 
     # ── BUILDER-SPECIFIC ──
-    project_name = models.CharField(max_length=200, blank=True)
-    rera_id = models.CharField(max_length=50, blank=True, verbose_name='RERA ID')
-    total_units = models.PositiveIntegerField(null=True, blank=True)
+    project_name = models.CharField(max_length=200, default='', blank=True)
+    rera_id      = models.CharField(max_length=50, default='', blank=True, verbose_name='RERA ID')
+    total_units  = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -242,29 +244,41 @@ class Property(models.Model):
     def get_absolute_url(self):
         return reverse('property_detail', kwargs={'pk': self.pk})
 
-    def increment_view(self):
-        Property.objects.filter(pk=self.pk).update(view_count=models.F('view_count') + 1)
-        self.refresh_from_db(fields=['view_count'])
+    def increment_view(self, user=None):
+        """Increment view count only once per logged-in user per property."""
+        if user and user.is_authenticated:
+            _, created = PropertyView.objects.get_or_create(property=self, user=user)
+            if created:
+                Property.objects.filter(pk=self.pk).update(view_count=models.F('view_count') + 1)
+                self.refresh_from_db(fields=['view_count'])
 
     @property
     def primary_image(self):
         return self.images.first()
 
     @property
-    def avg_rating(self):
-        """Returns average star rating from approved reviews for this property."""
-        try:
-            from django.db.models import Avg
-            # Use global approved reviews average as site-wide rating indicator
-            result = Review.objects.filter(is_approved=True).aggregate(avg=Avg('rating'))
-            val = result['avg'] or 0
-            return round(val, 1)
-        except Exception:
-            return 0
+    def avg_property_rating(self):
+        from django.db.models import Avg
+        result = Review.objects.filter(related_property=self, is_approved=True).aggregate(avg=Avg('property_rating'))
+        return round(result['avg'] or 0, 1)
 
-    def avg_rating_int(self):
-        """Returns integer floor of avg_rating for star loop comparisons."""
-        return int(self.avg_rating)
+    @property
+    def avg_owner_rating(self):
+        from django.db.models import Avg
+        result = Review.objects.filter(related_property=self, is_approved=True).aggregate(avg=Avg('owner_rating'))
+        return round(result['avg'] or 0, 1)
+
+    @property
+    def avg_overall_rating(self):
+        p = self.avg_property_rating
+        o = self.avg_owner_rating
+        if p and o:
+            return round((p + o) / 2, 1)
+        return p or o
+
+    @property
+    def review_count(self):
+        return Review.objects.filter(related_property=self, is_approved=True).count()
 
     def formatted_price(self):
         price = self.price
@@ -285,28 +299,36 @@ class Property(models.Model):
     @property
     def furnishing_items_display(self):
         ITEMS = {
-            'water_purifier': 'Water Purifier',
-            'fan': 'Fan', 'exhaust_fan': 'Exhaust Fan',
-            'dining_table': 'Dining Table', 'geyser': 'Geyser',
-            'light': 'Light', 'modular_kitchen': 'Modular Kitchen',
-            'curtains': 'Curtains', 'bed': 'Bed', 'wardrobe': 'Wardrobe',
-            'sofa': 'Sofa', 'microwave': 'Microwave', 'ac': 'AC',
+            'water_purifier': 'Water Purifier', 'fan': 'Fan', 'exhaust_fan': 'Exhaust Fan',
+            'dining_table': 'Dining Table', 'geyser': 'Geyser', 'light': 'Light',
+            'modular_kitchen': 'Modular Kitchen', 'curtains': 'Curtains', 'bed': 'Bed',
+            'wardrobe': 'Wardrobe', 'sofa': 'Sofa', 'microwave': 'Microwave', 'ac': 'AC',
             'chimney': 'Chimney', 'fridge': 'Refrigerator', 'stove': 'Stove',
             'tv': 'TV', 'washing_machine': 'Washing Machine',
         }
         return [ITEMS[k] for k in (self.furnishing_items or []) if k in ITEMS]
 
 
+class PropertyView(models.Model):
+    """Tracks which logged-in users have viewed which properties (for unique view counting)."""
+    property  = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property_views')
+    user      = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='viewed_properties')
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('property', 'user')
+        verbose_name = 'Property View'
+
+    def __str__(self):
+        return f"{self.user} viewed {self.property}"
+
+
 class PropertyImage(models.Model):
-    property = models.ForeignKey(
-        Property,
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
-    image = models.ImageField(upload_to='properties/%Y/%m/')
-    caption = models.CharField(max_length=100, blank=True)
-    order = models.PositiveIntegerField(default=0)
-    is_primary = models.BooleanField(default=False)
+    property    = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
+    image       = models.ImageField(upload_to='properties/%Y/%m/')
+    caption     = models.CharField(max_length=100, default='', blank=True)
+    order       = models.PositiveIntegerField(default=0)
+    is_primary  = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -324,18 +346,18 @@ class Inquiry(models.Model):
         ('closed', 'Closed'),
     ]
 
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='inquiries')
-    buyer = models.ForeignKey(
+    property     = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='inquiries')
+    buyer        = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='sent_inquiries'
     )
-    seeker_name  = models.CharField(max_length=100)
-    seeker_email = models.EmailField(blank=True, help_text='Contact email of the seeker')
-    seeker_phone = models.CharField(max_length=20, blank=True)
-    message = models.TextField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    seeker_name  = models.CharField(max_length=100, default='', blank=True)
+    seeker_email = models.EmailField(default='', blank=True, help_text='Contact email of the seeker')
+    seeker_phone = models.CharField(max_length=20, default='', blank=True)
+    message      = models.TextField(default='', blank=True)
+    status       = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-updated_at']
@@ -354,14 +376,14 @@ class Inquiry(models.Model):
 class InquiryReply(models.Model):
     ROLE_CHOICES = [('buyer', 'Buyer'), ('seller', 'Seller')]
 
-    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, related_name='replies')
-    sender = models.ForeignKey(
+    inquiry     = models.ForeignKey(Inquiry, on_delete=models.CASCADE, related_name='replies')
+    sender      = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
-    sender_role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-    message = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    sender_role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='buyer')
+    message     = models.TextField(default='', blank=True)
+    is_read     = models.BooleanField(default=False)
+    created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['created_at']
@@ -371,16 +393,49 @@ class InquiryReply(models.Model):
 
 
 class Review(models.Model):
+    """
+    A review for a specific property, written by a logged-in user.
+    Each user can leave at most ONE review per property.
+    """
     STAR_CHOICES = [(i, i) for i in range(1, 6)]
-    name        = models.CharField(max_length=100)
-    email       = models.EmailField()
-    rating      = models.PositiveSmallIntegerField(choices=STAR_CHOICES)
-    message     = models.TextField()
-    is_approved = models.BooleanField(default=False)
+
+    related_property = models.ForeignKey(
+    Property, 
+    on_delete=models.CASCADE, 
+    related_name='reviews',
+    null=True,    # ← fixes the prompt forever
+    blank=True,
+)
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='property_reviews',null=True,blank=True,
+    )
+    property_rating = models.PositiveSmallIntegerField(
+        choices=STAR_CHOICES,
+        default=5,
+        help_text='1-5 stars for the property'
+    )
+    owner_rating = models.PositiveSmallIntegerField(
+        choices=STAR_CHOICES,
+        default=5,
+        help_text='1-5 stars for the owner'
+    )
+    comment = models.TextField(
+        default='',
+        blank=True,
+        help_text='Share your experience with this property and its owner'
+    )
+    is_approved = models.BooleanField(default=True)
     created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
+        unique_together = ('related_property', 'reviewer')
+        verbose_name = 'Property Review'
 
     def __str__(self):
-        return f"{self.name} — {self.rating}★ ({'Approved' if self.is_approved else 'Pending'})"
+        title = self.related_property.title if self.related_property_id else '?'
+        return f"{self.reviewer} on {title!r} — P:{self.property_rating} O:{self.owner_rating}"
+
+    def get_overall_rating(self):
+        return round((self.property_rating + self.owner_rating) / 2, 1)

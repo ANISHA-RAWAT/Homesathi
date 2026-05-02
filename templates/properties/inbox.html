@@ -1,62 +1,158 @@
 {% extends 'base.html' %}
-{% block title %}Inbox — RentalHome{% endblock %}
+{% block title %}Inbox — Homesathi{% endblock %}
+
+{% block extra_css %}
+<style>
+.inbox-page {
+    min-height: 100vh;
+    background: #f4f6f9;
+    padding: 100px 0 60px;
+}
+.inbox-hero {
+    background: linear-gradient(135deg, #00A9FF 0%, #0078b8 100%);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.inbox-hero-text h1 { font-size:1.6rem; font-weight:800; color:white; margin-bottom:4px; }
+.inbox-hero-text p  { font-size:0.88rem; color:rgba(255,255,255,0.82); }
+.inbox-hero-stats   { display:flex; gap:16px; }
+.inbox-stat { text-align:center; background:rgba(255,255,255,0.15); border-radius:10px; padding:12px 20px; min-width:80px; }
+.inbox-stat-n { display:block; font-size:1.5rem; font-weight:800; color:white; }
+.inbox-stat-l { font-size:0.7rem; color:rgba(255,255,255,0.75); text-transform:uppercase; letter-spacing:0.05em; }
+.inbox-section { margin-bottom:28px; }
+.inbox-section-title { font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#6b7280; margin-bottom:10px; padding-left:4px; }
+.inbox-property-group { background:white; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05); }
+.inbox-property-bar { display:flex; align-items:center; gap:14px; padding:14px 18px; background:#f8f9fb; border-bottom:1px solid #e5e7eb; }
+.inbox-property-icon { width:40px; height:40px; background:linear-gradient(135deg,#00A9FF,#0078b8); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+.inbox-property-name { font-weight:700; color:#1a1a2e; font-size:0.92rem; }
+.inbox-property-meta { font-size:0.76rem; color:#6b7280; margin-top:1px; }
+.inbox-property-badge { margin-left:auto; background:#00A9FF; color:white; border-radius:99px; padding:3px 11px; font-size:0.75rem; font-weight:700; flex-shrink:0; }
+.inbox-buyer-row { display:flex; align-items:center; gap:13px; padding:14px 18px; border-bottom:1px solid #f3f4f6; text-decoration:none; transition:background 0.15s; }
+.inbox-buyer-row:last-child { border-bottom:none; }
+.inbox-buyer-row:hover { background:#f8fbff; }
+.inbox-buyer-row--unread { background:#f0f9ff; }
+.inbox-buyer-row--unread:hover { background:#e8f5ff; }
+.inbox-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#00A9FF,#0090d9); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; flex-shrink:0; }
+.inbox-avatar--green { background:linear-gradient(135deg,#2d6a4f,#40916c); }
+.inbox-buyer-info { flex:1; min-width:0; }
+.inbox-buyer-name { font-weight:600; color:#1a1a2e; font-size:0.9rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.inbox-phone-tag { font-size:0.74rem; color:#2d6a4f; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:99px; padding:1px 8px; font-weight:500; }
+.inbox-buyer-preview { font-size:0.82rem; color:#6b7280; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:480px; }
+.inbox-buyer-meta { flex-shrink:0; text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.inbox-time { font-size:0.72rem; color:#9ca3af; }
+.inbox-unread-dot { width:8px; height:8px; border-radius:50%; background:#00A9FF; }
+.status-dot { font-size:0.7rem; padding:2px 8px; border-radius:99px; font-weight:600; }
+.status-pending  { background:#fef3c7; color:#d97706; }
+.status-read     { background:#f0f9ff; color:#00A9FF; }
+.status-replied  { background:#f0fdf4; color:#2d6a4f; }
+.status-closed   { background:#f3f4f6; color:#6b7280; }
+.inbox-empty { text-align:center; padding:60px 20px; background:white; border-radius:14px; border:1px solid #e5e7eb; }
+.inbox-empty-icon { font-size:3.5rem; margin-bottom:12px; }
+.inbox-empty h3 { font-size:1.1rem; color:#1a1a2e; margin-bottom:6px; }
+.inbox-empty p { font-size:0.88rem; color:#6b7280; margin-bottom:20px; }
+@media (max-width:640px) {
+    .inbox-hero { flex-direction:column; align-items:flex-start; }
+    .inbox-hero-stats { gap:12px; }
+    .inbox-buyer-preview { max-width:200px; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="dashboard-page">
+<div class="inbox-page">
   <div class="container" style="max-width:860px">
-    <div class="dashboard-header">
-      <div>
-        <h1 style="margin-top: 50px;">Inbox</h1>
-        <p>All your conversations in one place. No email addresses are ever shown.</p>
+
+    <!-- HERO HEADER -->
+    <div class="inbox-hero">
+      <div class="inbox-hero-text">
+        <h1>📬 Inbox</h1>
+        <p>All conversations — no email addresses are ever shown.</p>
+      </div>
+      <div class="inbox-hero-stats">
+        <div class="inbox-stat">
+          <span class="inbox-stat-n">{{ properties_with_inquiries|length|default:"0" }}</span>
+          <span class="inbox-stat-l">Properties</span>
+        </div>
+        <div class="inbox-stat">
+          <span class="inbox-stat-n">{{ buyer_inquiries|length|default:"0" }}</span>
+          <span class="inbox-stat-l">Sent</span>
+        </div>
       </div>
     </div>
 
-    {% if seller_inquiries %}
+    <!-- SELLER SECTION -->
+    {% if properties_with_inquiries %}
     <div class="inbox-section">
-      <h2 class="inbox-section-title">🏠 Inquiries on Your Properties</h2>
-      {% for inq in seller_inquiries %}
-      <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-row {% if inq.status == 'pending' %}inbox-row--unread{% endif %}">
-        <div class="inbox-icon">💬</div>
-        <div class="inbox-info">
-          <div class="inbox-subject">{{ inq.property.title }}</div>
-          <div class="inbox-preview">From: <strong>{{ inq.seeker_name }}</strong> — {{ inq.message|truncatechars:80 }}</div>
+      <div class="inbox-section-title">🏠 Inquiries on Your Properties</div>
+      {% for property, inquiries in properties_with_inquiries.items %}
+      <div class="inbox-property-group">
+        <div class="inbox-property-bar">
+          <div class="inbox-property-icon">🏢</div>
+          <div>
+            <div class="inbox-property-name">{{ property.title }}</div>
+            <div class="inbox-property-meta">📍 {{ property.city }} &nbsp;·&nbsp; {{ inquiries|length }} buyer{{ inquiries|length|pluralize }}</div>
+          </div>
+          <span class="inbox-property-badge">{{ inquiries|length }}</span>
         </div>
-        <div class="inbox-meta">
-          <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
-          <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
-        </div>
-      </a>
+        {% for inq in inquiries %}
+        <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-buyer-row {% if inq.status == 'pending' %}inbox-buyer-row--unread{% endif %}">
+          <div class="inbox-avatar">{{ inq.seeker_name|slice:":1"|upper }}</div>
+          <div class="inbox-buyer-info">
+            <div class="inbox-buyer-name">
+              {{ inq.seeker_name }}
+              {% if inq.seeker_phone %}<span class="inbox-phone-tag">📞 {{ inq.seeker_phone }}</span>{% endif %}
+            </div>
+            <div class="inbox-buyer-preview">{{ inq.message|truncatechars:75 }}</div>
+          </div>
+          <div class="inbox-buyer-meta">
+            <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
+            <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
+            {% if inq.status == 'pending' %}<span class="inbox-unread-dot"></span>{% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
       {% endfor %}
     </div>
     {% endif %}
 
+    <!-- BUYER SECTION -->
     {% if buyer_inquiries %}
     <div class="inbox-section">
-      <h2 class="inbox-section-title">🔍 Your Sent Inquiries</h2>
-      {% for inq in buyer_inquiries %}
-      <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-row">
-        <div class="inbox-icon">🏡</div>
-        <div class="inbox-info">
-          <div class="inbox-subject">{{ inq.property.title }}</div>
-          <div class="inbox-preview">{{ inq.message|truncatechars:80 }}</div>
-        </div>
-        <div class="inbox-meta">
-          <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
-          <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
-        </div>
-      </a>
-      {% endfor %}
+      <div class="inbox-section-title">🔍 Your Sent Inquiries</div>
+      <div class="inbox-property-group">
+        {% for inq in buyer_inquiries %}
+        <a href="{% url 'inquiry_thread' inq.pk %}" class="inbox-buyer-row">
+          <div class="inbox-avatar inbox-avatar--green">🏡</div>
+          <div class="inbox-buyer-info">
+            <div class="inbox-buyer-name">{{ inq.property.title }}</div>
+            <div class="inbox-buyer-preview">📍 {{ inq.property.city }} &nbsp;·&nbsp; {{ inq.message|truncatechars:60 }}</div>
+          </div>
+          <div class="inbox-buyer-meta">
+            <span class="status-dot status-{{ inq.status }}">{{ inq.get_status_display }}</span>
+            <span class="inbox-time">{{ inq.updated_at|timesince }} ago</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
-    {% if not seller_inquiries and not buyer_inquiries %}
-    <div class="empty-state">
-      <div style="font-size:3rem">📭</div>
+    <!-- EMPTY -->
+    {% if not properties_with_inquiries and not buyer_inquiries %}
+    <div class="inbox-empty">
+      <div class="inbox-empty-icon">📭</div>
       <h3>No messages yet</h3>
       <p>When you send or receive inquiries, they'll appear here.</p>
       <a href="{% url 'property_search' %}" class="btn btn-primary">Browse Properties</a>
     </div>
     {% endif %}
+
   </div>
 </div>
 {% endblock %}

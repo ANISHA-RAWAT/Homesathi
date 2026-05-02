@@ -116,28 +116,21 @@ def property_detail(request, pk):
     property_obj = get_object_or_404(Property, pk=pk, status='active')
     property_obj.increment_view()
 
-    inquiry_form = InquiryForm(user=request.user)
+    inquiry_form = InquiryForm()
 
     if request.method == 'POST':
-        # Must be authenticated to send inquiry
-        if not request.user.is_authenticated:
-            messages.error(request, 'Please log in to send a message to the owner.')
-            from django.conf import settings as _settings
-            login_url = getattr(_settings, 'LOGIN_URL', '/users/login/')
-            return redirect(f'{login_url}?next={request.path}')
-
-        inquiry_form = InquiryForm(request.POST, user=request.user)
+        inquiry_form = InquiryForm(request.POST)
         if inquiry_form.is_valid():
+            # Block owner from messaging their own property
+            if request.user.is_authenticated and request.user == property_obj.owner:
+                messages.error(request, 'You cannot send an inquiry to your own property.')
+                return redirect('property_detail', pk=pk)
             inquiry = inquiry_form.save(commit=False)
             inquiry.property = property_obj
-            inquiry.buyer = request.user
-
-            # Auto-fill name and email from user account if not provided
-            if not inquiry.seeker_name:
-                inquiry.seeker_name = getattr(request.user, 'full_name', '') or request.user.email
-            if not inquiry.seeker_email:
-                inquiry.seeker_email = request.user.email
-
+            if request.user.is_authenticated:
+                inquiry.buyer = request.user
+                if not inquiry.seeker_name:
+                    inquiry.seeker_name = request.user.full_name
             inquiry.save()
             _notify_seller_new_inquiry(inquiry, property_obj)
             messages.success(request, 'Your message has been sent to the owner!')
@@ -150,6 +143,17 @@ def property_detail(request, pk):
     })
 
 
+@login_required
+def delete_review(request, pk, review_pk):
+    from .models import Review
+    property_obj = get_object_or_404(Property, pk=pk)
+    review = get_object_or_404(Review, pk=review_pk, related_property=property_obj, reviewer=request.user)
+    if request.method == 'POST':
+        review.delete()
+        messages.success(request, 'Your review has been deleted.')
+    return redirect('property_detail', pk=pk)
+
+
 def _notify_seller_new_inquiry(inquiry, property_obj):
     from django.core.mail import send_mail
     seller_email = property_obj.owner.email
@@ -158,7 +162,6 @@ def _notify_seller_new_inquiry(inquiry, property_obj):
         f"Hello {property_obj.owner.full_name},\n\n"
         f"You have a new inquiry on \"{property_obj.title}\".\n\n"
         f"From: {inquiry.seeker_name}\n"
-        f"Email: {inquiry.seeker_email or 'Not provided'}\n"
         f"Phone: {inquiry.seeker_phone or 'Not provided'}\n\n"
         f"Message:\n{inquiry.message}\n\n"
         f"---\nLog in to reply via the platform (do NOT reply to this email).\n\n"
@@ -172,15 +175,28 @@ def _notify_seller_new_inquiry(inquiry, property_obj):
 
 @login_required
 def inbox(request):
+    from collections import defaultdict
     seller_inquiries = Inquiry.objects.filter(
         property__owner=request.user
-    ).select_related('property', 'buyer')
+    ).select_related('property', 'buyer').order_by('property__id', '-updated_at')
+
+    # Group by property
+    properties_with_inquiries = defaultdict(list)
+    for inq in seller_inquiries:
+        properties_with_inquiries[inq.property].append(inq)
+
     buyer_inquiries = Inquiry.objects.filter(
         buyer=request.user
-    ).select_related('property', 'property__owner')
+    ).exclude(
+        property__owner=request.user
+    ).select_related('property', 'property__owner').order_by('-updated_at')
+
+    buyer_inquiries_list = list(buyer_inquiries)
     return render(request, 'properties/inbox.html', {
-        'seller_inquiries': seller_inquiries,
-        'buyer_inquiries': buyer_inquiries,
+        'properties_with_inquiries': dict(properties_with_inquiries),
+        'buyer_inquiries': buyer_inquiries_list,
+        'seller_count': len(properties_with_inquiries),
+        'buyer_count': len(buyer_inquiries_list),
     })
 
 
@@ -352,117 +368,36 @@ def _build_form_data_json(form):
 @login_required
 def post_property_free(request):
     if request.method == 'POST':
-        # ── Map JS wizard hidden fields → Django form expected fields ──
-        post_data = request.POST.copy()
-
-        # listing_type: JS sends as 'listing_type_choice'
-        listing_type_choice = post_data.get('listing_type_choice', '').strip()
-        if listing_type_choice:
-            post_data['listing_type'] = listing_type_choice
-
-        # property_category & property_type from wizard hidden inputs
-        if not post_data.get('property_category'):
-            post_data['property_category'] = post_data.get('hCategory', 'residential')
-        if not post_data.get('property_type'):
-            post_data['property_type'] = post_data.get('hPropertyType', '')
-
-        # seller_type from wizard hidden input
-        if not post_data.get('seller_type'):
-            post_data['seller_type'] = post_data.get('hSellerType', '')
-
-        # ── Image size validation (before form) ──────────────────────
-        MAX_IMAGE_MB = 5
-        MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024
-        oversized = []
-        for img in request.FILES.getlist('property_images'):
-            if img.size > MAX_IMAGE_BYTES:
-                oversized.append(img.name)
-        if oversized:
-            messages.error(
-                request,
-                f'The following image(s) are too large (max {MAX_IMAGE_MB} MB each): '
-                + ', '.join(oversized)
-                + '. Please resize them and try again.'
-            )
-            form = PropertyForm(post_data, request.FILES)
-            return render(request, 'properties/post_propertyfree.html', {
-                'form': form,
-                'form_data_json': _build_form_data_json(form),
-            })
-
-        form = PropertyForm(post_data, request.FILES)
+        form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
             property_obj = form.save(commit=False)
             property_obj.owner  = request.user
             property_obj.status = 'active'
 
-            # Apply wizard fields directly to model
+            listing_type_choice = request.POST.get('listing_type_choice', '')
             if listing_type_choice:
                 property_obj.listing_type = listing_type_choice
-            property_obj.property_category = post_data.get('property_category', '')
-            property_obj.property_type     = post_data.get('property_type', '')
-            property_obj.seller_type       = post_data.get('seller_type', '')
 
-            # Furnishing
-            furnishing_status = post_data.get('furnishing_status', '')
+            furnishing_status = request.POST.get('furnishing_status', '')
             if furnishing_status:
                 property_obj.furnishing   = furnishing_status
                 property_obj.is_furnished = (furnishing_status == 'furnished')
 
-            # PG fields
-            pg_for = post_data.get('pg_for', '')
+            pg_for = request.POST.get('pg_for', '')
             if pg_for:
                 property_obj.pg_for = pg_for
 
-            # Extra text/select fields sent by wizard but not auto-mapped by form
-            _str_fields = [
-                'key_highlights', 'key_facilities', 'project_name', 'rera_id',
-                'floor_number', 'facing', 'flooring', 'transaction_type',
-                'property_ownership', 'water_source', 'property_age',
-                'construction_status', 'preferred_tenants', 'pg_notice_period',
-                'width_of_facing_road', 'address', 'state', 'location',
-                'area_unit', 'bhk',
-            ]
-            for f in _str_fields:
-                val = post_data.get(f, '').strip()
-                if val and hasattr(property_obj, f):
-                    setattr(property_obj, f, val)
-
-            # Integer fields
-            _int_fields = ['bedrooms', 'bathrooms', 'total_floors',
-                           'area_sqft', 'min_area', 'max_area', 'total_units']
-            for f in _int_fields:
-                val = post_data.get(f, '').strip()
-                if hasattr(property_obj, f):
-                    try:
-                        setattr(property_obj, f, int(val) if val else 0)
-                    except (ValueError, TypeError):
-                        setattr(property_obj, f, 0)
-
-            # Boolean fields
-            vastu = post_data.get('vastu_compliant', '')
-            property_obj.vastu_compliant = vastu in ('on', 'true', '1', 'yes')
-
-            # JSON list fields (checkboxes)
-            amenities = post_data.getlist('amenities')
-            if amenities:
-                property_obj.amenities = amenities
-            overlooking = post_data.getlist('overlooking')
-            if overlooking:
-                property_obj.overlooking = overlooking
-            furnishing_items = post_data.getlist('furnishing_items')
-            if furnishing_items:
-                property_obj.furnishing_items = furnishing_items
-            pg_common_areas = post_data.getlist('pg_common_areas')
-            if pg_common_areas:
-                property_obj.pg_common_areas = pg_common_areas
+            # Default integer fields that must not be NULL in DB
+            if property_obj.bedrooms is None:
+                property_obj.bedrooms = 0
+            if property_obj.bathrooms is None:
+                property_obj.bathrooms = 0
 
             property_obj.save()
 
-            # Save images (already size-checked above)
-            from .models import PropertyImage
             images = request.FILES.getlist('property_images')
             for i, image in enumerate(images):
+                from .models import PropertyImage
                 PropertyImage.objects.create(
                     property=property_obj,
                     image=image,
@@ -473,12 +408,7 @@ def post_property_free(request):
             messages.success(request, 'Your property has been listed successfully!')
             return redirect('property_detail', pk=property_obj.pk)
         else:
-            # Show specific validation errors so user knows what failed
-            error_fields = ', '.join(
-                f"{k}: {'; '.join(str(e) for e in v)}"
-                for k, v in form.errors.items()
-            )
-            messages.error(request, f'Could not save property. Please check: {error_fields}')
+            messages.error(request, 'Please fix the errors below.')
             return render(request, 'properties/post_propertyfree.html', {
                 'form': form,
                 'form_data_json': _build_form_data_json(form),

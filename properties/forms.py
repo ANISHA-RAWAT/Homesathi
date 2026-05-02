@@ -1,5 +1,5 @@
 from django import forms
-from .models import Property, PropertyImage, Inquiry
+from .models import Property, PropertyImage, Inquiry, Review
 
 # ── FURNISHING ITEMS ──────────────────────────────────────────────────────────
 FURNISHING_ITEM_CHOICES = [
@@ -164,20 +164,14 @@ class PropertyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Nothing is required at form level — required is enforced per step in JS
-        # Django will still validate model-level required fields on POST
-        # Only basic fields required — property_type/category/listing_type
-        # are set by JS wizard hidden fields and mapped in the view
         required_fields = ['title', 'price', 'city', 'description']
         for name, field in self.fields.items():
             field.required = name in required_fields
 
-        # Wizard-controlled fields: not required at form level
         for wf in ('listing_type', 'property_category', 'property_type', 'seller_type'):
             if wf in self.fields:
                 self.fields[wf].required = False
 
-        # property_category choices
         self.fields['property_category'].choices = [
             ('', '— Select —'),
             ('residential', 'Residential'),
@@ -185,7 +179,6 @@ class PropertyForm(forms.ModelForm):
             ('pg', 'PG / Co-living'),
         ]
 
-        # Accept ALL property_type values the JS wizard can send
         self.fields['property_type'].choices = (
             [('', '— Select —')] +
             RESIDENTIAL_TYPES[1:] +
@@ -193,7 +186,6 @@ class PropertyForm(forms.ModelForm):
             [('pg_hostel', 'PG / Hostel')]
         )
 
-        # Pre-populate JSON multi-fields from instance
         if self.instance and self.instance.pk:
             for field in ('amenities', 'furnishing_items', 'overlooking', 'pg_common_areas'):
                 val = getattr(self.instance, field, [])
@@ -241,7 +233,6 @@ class InquiryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # If user is logged in, pre-fill and make email not required (auto-filled)
         if self.user and self.user.is_authenticated:
             self.fields['seeker_email'].required = False
             self.fields['seeker_email'].widget.attrs['placeholder'] = self.user.email
@@ -289,3 +280,48 @@ class SearchForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-input'})
     )
+
+
+class ReviewForm(forms.ModelForm):
+    """Form for submitting / editing a property review."""
+    STAR_CHOICES = [('', '— Select —')] + [(str(i), f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)]
+
+    property_rating = forms.ChoiceField(
+        choices=STAR_CHOICES,
+        label='Property Rating',
+        widget=forms.Select(attrs={'class': 'form-input review-star-select', 'id': 'id_property_rating'}),
+    )
+    owner_rating = forms.ChoiceField(
+        choices=STAR_CHOICES,
+        label='Owner Rating',
+        widget=forms.Select(attrs={'class': 'form-input review-star-select', 'id': 'id_owner_rating'}),
+    )
+
+    class Meta:
+        model = Review
+        fields = ['property_rating', 'owner_rating', 'comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={
+                'class': 'form-input',
+                'rows': 4,
+                'placeholder': 'Share your experience — Was the property as described? How was the owner to deal with?',
+            }),
+        }
+
+    def clean_property_rating(self):
+        val = self.cleaned_data.get('property_rating')
+        if not val:
+            raise forms.ValidationError('Please select a property rating.')
+        val = int(val)
+        if not (1 <= val <= 5):
+            raise forms.ValidationError('Rating must be between 1 and 5.')
+        return val
+
+    def clean_owner_rating(self):
+        val = self.cleaned_data.get('owner_rating')
+        if not val:
+            raise forms.ValidationError('Please select an owner rating.')
+        val = int(val)
+        if not (1 <= val <= 5):
+            raise forms.ValidationError('Rating must be between 1 and 5.')
+        return val

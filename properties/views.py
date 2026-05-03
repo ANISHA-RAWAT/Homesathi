@@ -2,16 +2,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Avg, Count
 from django.http import HttpResponseForbidden
 import json
 
-from .models import Property, Inquiry, InquiryReply
+from .models import Property, Inquiry, InquiryReply, Review
 from .forms import PropertyForm, PropertyImageFormSet, InquiryForm, ReplyForm, SearchForm
 
 
 def home(request):
-    from django.db.models import Count, Avg
     active = Property.objects.filter(status='active')
 
     featured_properties  = active.order_by('-view_count')[:8]
@@ -116,36 +115,123 @@ def property_detail(request, pk):
     property_obj = get_object_or_404(Property, pk=pk, status='active')
     property_obj.increment_view()
 
+    # ── All approved reviews for this property ─────────────────────────────
+    reviews = Review.objects.filter(
+        related_property=property_obj, is_approved=True
+    ).select_related('reviewer')
+
+    # Stats
+    stats        = reviews.aggregate(avg_p=Avg('property_rating'), avg_o=Avg('owner_rating'), total=Count('id'))
+    total_reviews    = stats['total'] or 0
+    avg_prop_rating  = round(stats['avg_p'] or 0, 1)
+    avg_owner_rating = round(stats['avg_o'] or 0, 1)
+    avg_overall      = round((avg_prop_rating + avg_owner_rating) / 2, 1) if total_reviews else 0
+
+    # Star breakdown counts for property_rating bars
+    property_star_counts = {i: 0 for i in range(1, 6)}
+    for r in reviews:
+        property_star_counts[r.property_rating] = property_star_counts.get(r.property_rating, 0) + 1
+
+    # Has current user already reviewed?
+    user_has_reviewed = False
+    user_review       = None
+    if request.user.is_authenticated:
+        user_review = Review.objects.filter(
+            related_property=property_obj, reviewer=request.user
+        ).first()
+        user_has_reviewed = user_review is not None
+
     inquiry_form = InquiryForm()
 
+    # ── POST handling ──────────────────────────────────────────────────────
     if request.method == 'POST':
-        inquiry_form = InquiryForm(request.POST)
-        if inquiry_form.is_valid():
-            # Block owner from messaging their own property
-            if request.user.is_authenticated and request.user == property_obj.owner:
-                messages.error(request, 'You cannot send an inquiry to your own property.')
-                return redirect('property_detail', pk=pk)
-            inquiry = inquiry_form.save(commit=False)
-            inquiry.property = property_obj
-            if request.user.is_authenticated:
-                inquiry.buyer = request.user
-                if not inquiry.seeker_name:
-                    inquiry.seeker_name = request.user.full_name
-            inquiry.save()
-            _notify_seller_new_inquiry(inquiry, property_obj)
-            messages.success(request, 'Your message has been sent to the owner!')
-            return redirect('inquiry_thread', pk=inquiry.pk)
+        action = request.POST.get('action', '')
 
-    return render(request, 'properties/property_detail.html', {
-        'property': property_obj,
-        'inquiry_form': inquiry_form,
-        'images': property_obj.images.all(),
-    })
+        # ── Submit new review ──────────────────────────────────────────────
+        if action == 'submit_review':
+            if not request.user.is_authenticated:
+                messages.error(request, 'Please log in to leave a review.')
+            elif request.user == property_obj.owner:
+                messages.error(request, 'You cannot review your own property.')
+            elif user_has_reviewed:
+                messages.error(request, 'You have already reviewed this property.')
+            else:
+                prop_rating  = request.POST.get('property_rating', '').strip()
+                owner_rating = request.POST.get('owner_rating', '').strip()
+                comment      = request.POST.get('comment', '').strip()
+                if not prop_rating or not owner_rating or not comment:
+                    messages.error(request, 'All review fields are required.')
+                elif not (prop_rating.isdigit() and owner_rating.isdigit()
+                          and 1 <= int(prop_rating) <= 5 and 1 <= int(owner_rating) <= 5):
+                    messages.error(request, 'Ratings must be between 1 and 5.')
+                else:
+                    Review.objects.update_or_create(
+                        related_property=property_obj,
+                        reviewer=request.user,
+                        defaults=dict(
+                            property_rating=int(prop_rating),
+                            owner_rating=int(owner_rating),
+                            comment=comment,
+                            is_approved=True,
+                        ),
+                    )
+                    messages.success(request, 'Your review has been posted!')
+                    return redirect('property_detail', pk=pk)
+
+        # ── Edit existing review ───────────────────────────────────────────
+        elif action == 'edit_review':
+            if request.user.is_authenticated and user_review:
+                prop_rating  = request.POST.get('property_rating', '').strip()
+                owner_rating = request.POST.get('owner_rating', '').strip()
+                comment      = request.POST.get('comment', '').strip()
+                if prop_rating and owner_rating and comment:
+                    user_review.property_rating = int(prop_rating)
+                    user_review.owner_rating    = int(owner_rating)
+                    user_review.comment         = comment
+                    user_review.save()
+                    messages.success(request, 'Your review has been updated!')
+                    return redirect('property_detail', pk=pk)
+
+        # ── Inquiry ────────────────────────────────────────────────────────
+        elif action == 'inquiry' or action == '':
+            inquiry_form = InquiryForm(request.POST)
+            if inquiry_form.is_valid():
+                if request.user.is_authenticated and request.user == property_obj.owner:
+                    messages.error(request, 'You cannot send an inquiry to your own property.')
+                    return redirect('property_detail', pk=pk)
+                inquiry = inquiry_form.save(commit=False)
+                inquiry.property = property_obj
+                if request.user.is_authenticated:
+                    inquiry.buyer = request.user
+                    if not inquiry.seeker_name:
+                        inquiry.seeker_name = request.user.full_name
+                inquiry.save()
+                _notify_seller_new_inquiry(inquiry, property_obj)
+                messages.success(request, 'Your message has been sent to the owner!')
+                return redirect('inquiry_thread', pk=inquiry.pk)
+
+    def _build_ctx():
+        return {
+            'property':             property_obj,
+            'inquiry_form':         inquiry_form,
+            'images':               property_obj.images.all(),
+            # reviews
+            'reviews':              reviews,
+            'total_reviews':        total_reviews,
+            'avg_prop_rating':      avg_prop_rating,
+            'avg_owner_rating':     avg_owner_rating,
+            'avg_overall':          avg_overall,
+            'property_star_counts': property_star_counts,
+            'user_has_reviewed':    user_has_reviewed,
+            'user_review':          user_review,
+            'review_form':          {},   # placeholder — template checks field names directly
+        }
+
+    return render(request, 'properties/property_detail.html', _build_ctx())
 
 
 @login_required
 def delete_review(request, pk, review_pk):
-    from .models import Review
     property_obj = get_object_or_404(Property, pk=pk)
     review = get_object_or_404(Review, pk=review_pk, related_property=property_obj, reviewer=request.user)
     if request.method == 'POST':
@@ -180,7 +266,6 @@ def inbox(request):
         property__owner=request.user
     ).select_related('property', 'buyer').order_by('property__id', '-updated_at')
 
-    # Group by property
     properties_with_inquiries = defaultdict(list)
     for inq in seller_inquiries:
         properties_with_inquiries[inq.property].append(inq)
@@ -264,10 +349,6 @@ def _notify_reply(inquiry, sender_role):
 
 
 def _notify_rented_to_others(prop, exclude_inquiry_pk=None):
-    """
-    Posts a system message in every OTHER buyer's inbox thread for this property
-    and emails them to say the property is no longer available.
-    """
     from django.core.mail import send_mail
 
     qs = Inquiry.objects.filter(property=prop)
@@ -275,10 +356,9 @@ def _notify_rented_to_others(prop, exclude_inquiry_pk=None):
         qs = qs.exclude(pk=exclude_inquiry_pk)
 
     for inquiry in qs:
-        # Drop a system message into their inbox thread
         InquiryReply.objects.create(
             inquiry=inquiry,
-            sender=None,          # system message — no human sender
+            sender=None,
             sender_role='seller',
             message=(
                 f"🏠 Update: This property has been rented/sold. "
@@ -287,11 +367,9 @@ def _notify_rented_to_others(prop, exclude_inquiry_pk=None):
                 f"please explore our other available listings!"
             ),
         )
-        # Mark thread closed
         inquiry.status = 'closed'
         inquiry.save(update_fields=['status', 'updated_at'])
 
-        # Email them if they have an account with an email address
         if inquiry.buyer and inquiry.buyer.email:
             try:
                 send_mail(
@@ -316,15 +394,12 @@ def _notify_rented_to_others(prop, exclude_inquiry_pk=None):
 def mark_rented(request, pk):
     prop = get_object_or_404(Property, pk=pk, owner=request.user)
     if request.method == 'POST':
-        # Owner may optionally select which buyer got the property.
-        # That buyer's thread is left untouched; everyone else gets notified.
         rented_to_pk = request.POST.get('rented_to_inquiry_pk') or None
 
         prop.is_rented = True
         prop.status    = 'sold'
         prop.save(update_fields=['is_rented', 'status'])
 
-        # Validate the selected inquiry belongs to this property
         exclude_pk = None
         if rented_to_pk:
             try:
@@ -344,7 +419,6 @@ def mark_rented(request, pk):
 
 @login_required
 def repost_property(request, pk):
-    """Flip a sold/rented property back to active without touching any other fields."""
     prop = get_object_or_404(Property, pk=pk, owner=request.user)
     if request.method == 'POST':
         prop.is_rented = False
@@ -387,7 +461,6 @@ def post_property_free(request):
             if pg_for:
                 property_obj.pg_for = pg_for
 
-            # Default integer fields that must not be NULL in DB
             if property_obj.bedrooms is None:
                 property_obj.bedrooms = 0
             if property_obj.bathrooms is None:
@@ -470,9 +543,6 @@ def delete_property(request, pk):
 
 
 # ── REVIEWS ────────────────────────────────────────────────────────────────
-from django.db.models import Avg, Count
-from .models import Review
-
 
 def _build_bar_and_stars(star_counts, max_count, avg):
     labels = {5: 'FIVE', 4: 'FOUR', 3: 'THREE', 2: 'TWO', 1: 'ONE'}
@@ -487,43 +557,63 @@ def _build_bar_and_stars(star_counts, max_count, avg):
 
 
 def reviews_page(request):
-    approved    = Review.objects.filter(is_approved=True)
-    stats       = approved.values('rating').annotate(count=Count('rating')).order_by('rating')
+    # Site-wide reviews: related_property is NULL, approved by admin
+    approved    = Review.objects.filter(is_approved=True, related_property__isnull=True)
+    stats       = approved.values('property_rating').annotate(count=Count('property_rating')).order_by('property_rating')
     total       = approved.count()
-    avg         = approved.aggregate(avg=Avg('rating'))['avg'] or 0
+    avg         = approved.aggregate(avg=Avg('property_rating'))['avg'] or 0
     star_counts = {i: 0 for i in range(1, 6)}
     for s in stats:
-        star_counts[s['rating']] = s['count']
+        star_counts[s['property_rating']] = s['count']
     max_count = max(star_counts.values()) if total else 1
 
-    if request.method == 'POST':
-        name    = request.POST.get('name', '').strip()
-        email   = request.POST.get('email', '').strip()
-        rating  = request.POST.get('rating', '').strip()
-        message = request.POST.get('message', '').strip()
-        error = None
-        if not name or not email or not rating or not message:
-            error = "All fields are required."
-        elif not rating.isdigit() or not (1 <= int(rating) <= 5):
-            error = "Please select a valid star rating (1–5)."
-        if error:
-            bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
-            return render(request, 'properties/reviews.html', {
-                'approved_reviews': approved, 'total': total,
-                'avg_display': round(avg, 1) if avg else 0,
-                'bar_data': bar_data, 'avg_stars': avg_stars,
-                'error': error, 'success': False,
-            })
-        Review.objects.create(name=name, email=email, rating=int(rating), message=message, is_approved=False)
-        return redirect(request.path + '?submitted=1')
+    user_already_reviewed = (
+        request.user.is_authenticated and
+        Review.objects.filter(reviewer=request.user, related_property__isnull=True).exists()
+    )
 
+    error   = None
     success = request.GET.get('submitted') == '1'
+
+    if request.method == 'POST':
+        # Must be logged in
+        if not request.user.is_authenticated:
+            messages.error(request, 'Please log in to leave a review.')
+            return redirect('login')
+
+        if user_already_reviewed:
+            error = "You have already submitted a site-wide review. Thank you!"
+        else:
+            rating  = request.POST.get('rating', '').strip()
+            comment = request.POST.get('comment', '').strip()
+
+            if not rating or not comment:
+                error = "Both a star rating and a comment are required."
+            elif not rating.isdigit() or not (1 <= int(rating) <= 5):
+                error = "Please select a valid star rating (1–5)."
+            else:
+                # related_property=None  →  site-wide review
+                # owner_rating defaults to same value since the model requires it
+                Review.objects.create(
+                    reviewer=request.user,
+                    related_property=None,
+                    property_rating=int(rating),
+                    owner_rating=int(rating),   # neutral default; field is required by model
+                    comment=comment,
+                    is_approved=False,           # waits for admin approval
+                )
+                return redirect(request.path + '?submitted=1')
+
     bar_data, avg_stars = _build_bar_and_stars(star_counts, max_count, avg)
     return render(request, 'properties/reviews.html', {
-        'approved_reviews': approved, 'total': total,
-        'avg_display': round(avg, 1) if avg else 0,
-        'bar_data': bar_data, 'avg_stars': avg_stars,
-        'error': None, 'success': success,
+        'approved_reviews':      approved,
+        'total':                 total,
+        'avg_display':           round(avg, 1) if avg else 0,
+        'bar_data':              bar_data,
+        'avg_stars':             avg_stars,
+        'error':                 error,
+        'success':               success,
+        'user_already_reviewed': user_already_reviewed,
     })
 
 

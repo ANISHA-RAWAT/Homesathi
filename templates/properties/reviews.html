@@ -55,17 +55,21 @@
                 {% if approved_reviews %}
                     {% for review in approved_reviews %}
                     <div class="review-card">
-                        <div class="review-avatar">{{ review.name|slice:":1"|upper }}</div>
+                        <div class="review-avatar">
+                            {% if review.reviewer %}{{ review.reviewer.get_full_name|default:review.reviewer.username|slice:":1"|upper }}{% else %}?{% endif %}
+                        </div>
                         <div class="review-body">
                             <div class="review-top">
-                                <span class="review-name">{{ review.name }}</span>
+                                <span class="review-name">
+                                    {% if review.reviewer %}{{ review.reviewer.get_full_name|default:review.reviewer.username }}{% else %}Anonymous{% endif %}
+                                </span>
                                 <span class="review-stars">
                                     {% for i in "12345" %}
-                                    <span class="{% if forloop.counter <= review.rating %}star-filled{% else %}star-empty{% endif %}">&#9733;</span>
+                                    <span class="{% if forloop.counter <= review.property_rating %}star-filled{% else %}star-empty{% endif %}">&#9733;</span>
                                     {% endfor %}
                                 </span>
                             </div>
-                            <p class="review-text">{{ review.message|truncatechars:140 }}</p>
+                            <p class="review-text">{{ review.comment|truncatechars:140 }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -80,34 +84,47 @@
             <div class="add-review-box">
                 <h2>Add a Review</h2>
 
-                {% if error %}
-                <div class="review-error">&#9888; {{ error }}</div>
+                {% if success %}
+                <div class="review-success">
+                    ✅ Thank you! Your review has been submitted and is pending approval.
+                </div>
+
+                {% elif user_already_reviewed %}
+                <div class="review-success">
+                    ✅ You've already submitted a review. Thank you for your feedback!
+                </div>
+
+                {% elif not user.is_authenticated %}
+                <div class="review-login-prompt">
+                    <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to leave a review.</p>
+                </div>
+
+                {% else %}
+
+                    {% if error %}
+                    <div class="review-error">&#9888; {{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST" class="review-form" id="reviewForm">
+                        {% csrf_token %}
+
+                        <label>Your Rating <span class="req">*</span></label>
+                        <div class="star-picker" id="starPicker">
+                            <span class="pick-star" data-val="1">&#9734;</span>
+                            <span class="pick-star" data-val="2">&#9734;</span>
+                            <span class="pick-star" data-val="3">&#9734;</span>
+                            <span class="pick-star" data-val="4">&#9734;</span>
+                            <span class="pick-star" data-val="5">&#9734;</span>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput">
+
+                        <label>Write Your Review <span class="req">*</span></label>
+                        <textarea name="comment" rows="4" placeholder="Share your experience with Homesathi..." required></textarea>
+
+                        <button type="submit">Submit Review</button>
+                    </form>
+
                 {% endif %}
-
-                <form method="POST" class="review-form" id="reviewForm">
-                    {% csrf_token %}
-
-                    <label>Add Your Rating <span class="req">*</span></label>
-                    <div class="star-picker" id="starPicker">
-                        <span class="pick-star" data-val="1">&#9734;</span>
-                        <span class="pick-star" data-val="2">&#9734;</span>
-                        <span class="pick-star" data-val="3">&#9734;</span>
-                        <span class="pick-star" data-val="4">&#9734;</span>
-                        <span class="pick-star" data-val="5">&#9734;</span>
-                    </div>
-                    <input type="hidden" name="rating" id="ratingInput">
-
-                    <label>Name <span class="req">*</span></label>
-                    <input type="text" name="name" placeholder="John Doe" required>
-
-                    <label>Email <span class="req">*</span></label>
-                    <input type="email" name="email" placeholder="john@example.com" required>
-
-                    <label>Write Your Review <span class="req">*</span></label>
-                    <textarea name="message" rows="4" placeholder="Write here..." required></textarea>
-
-                    <button type="submit">Submit</button>
-                </form>
             </div>
 
         </div>
@@ -118,9 +135,9 @@
 {% block extra_js %}
 <script>
 (function () {
-    // Star picker
     var stars = document.querySelectorAll('.pick-star');
     var input = document.getElementById('ratingInput');
+    if (!stars.length || !input) return;
 
     stars.forEach(function (star) {
         star.addEventListener('mouseenter', function () {
@@ -147,6 +164,17 @@
             });
         });
     });
+
+    // Prevent submit without a star selected
+    var form = document.getElementById('reviewForm');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (!input.value) {
+                e.preventDefault();
+                alert('Please select a star rating before submitting.');
+            }
+        });
+    }
 })();
 </script>
 {% endblock %}

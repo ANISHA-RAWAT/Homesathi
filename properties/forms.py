@@ -1,8 +1,18 @@
 from django import forms
 from .models import Property, PropertyImage, Inquiry, Review
 
+# ─────────────────────────────────────────────────────────────────────────────
+#  CHOICE LISTS
+#  Rule: every key that ANY JS panel can submit for a given field MUST appear
+#  in that field's choices list.  Django's MultipleChoiceField hard-fails on
+#  unknown values BEFORE clean_* runs, so listing them here is non-negotiable.
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ── FURNISHING ITEMS ──────────────────────────────────────────────────────────
-# Synced with pp-data.js → FURNISHING_ITEMS
+# Sources:
+#   post_propertyfree.js  → name="furnishing_items"
+#   pp-form-owner.js      → name="furnishing_items"
+#   pp-form-pg.js         → name="room_furnishing"   (merged in clean_)
 FURNISHING_ITEM_CHOICES = [
     ('bed',             'Bed'),
     ('wardrobe',        'Wardrobe'),
@@ -21,15 +31,23 @@ FURNISHING_ITEM_CHOICES = [
     ('stove',           'Stove / Hob'),
     ('curtains',        'Curtains'),
     ('exhaust_fan',     'Exhaust Fan'),
-    ('light_fixtures',  'Light Fixtures'),
-    # Added in pp-data.js — were missing before
+    ('light',           'Light Fixtures'),       # post_propertyfree.js key
+    ('light_fixtures',  'Light Fixtures'),       # pp-form-owner.js alias
     ('drawing_room',    'Drawing Room'),
+    ('kitchen',         'Kitchen'),
     ('store_room',      'Store Room'),
     ('servant_room',    'Servant Room'),
+    # pp-form-pg.js → room_furnishing chip (merged into furnishing_items on save)
+    ('mattress',        'Mattress'),
+    ('pillow',          'Pillow'),
+    ('study_table',     'Study Table'),
+    ('chair',           'Chair'),
 ]
 
-# ── AMENITIES (residential) ───────────────────────────────────────────────────
-# Synced with pp-data.js → AMENITIES
+# ── AMENITIES ─────────────────────────────────────────────────────────────────
+# Sources:
+#   post_propertyfree.js / pp-form-owner.js  → name="amenities"  (residential)
+#   pp-form-builder.js                       → name="amenities"  (may include plot keys)
 AMENITY_CHOICES = [
     ('lift',                 'Lift'),
     ('park',                 'Park'),
@@ -43,20 +61,17 @@ AMENITY_CHOICES = [
     ('cctv',                 'CCTV'),
     ('intercom',             'Intercom'),
     ('rainwater_harvesting', 'Rainwater Harvesting'),
-    # Builder plot / owner plot amenities (pp-form-owner.js furnishingPanel isPlot=True)
-    ('street_lights',  'Street Lights'),
-    ('sewage',         'Sewage / Drainage'),
-    ('gated',          'Gated Colony'),
-    ('security',       'Security Guard'),
-    ('playground',     'Playground'),
-    # Builder township amenities (pp-form-builder.js amenitiesPanel isPlot=True)
-    ('water_supply',   'Water Supply'),
-    ('club',           'Club House'),
-    ('shopping',       'Shopping Area'),
+    # Plot / township amenities
+    ('street_lights',        'Street Lights'),
+    ('sewage',               'Sewage / Drainage'),
+    ('gated',                'Gated Colony'),
+    ('security',             'Security Guard'),
+    ('playground',           'Playground'),
+    ('water_supply',         'Water Supply'),
+    ('club',                 'Club House'),
+    ('shopping',             'Shopping Area'),
 ]
 
-# ── COMMERCIAL AMENITIES ──────────────────────────────────────────────────────
-# Synced with pp-data.js → COMMERCIAL_AMENITIES
 COMMERCIAL_AMENITY_CHOICES = [
     ('power_backup',    'Power Backup'),
     ('lift',            'Lift'),
@@ -72,7 +87,7 @@ COMMERCIAL_AMENITY_CHOICES = [
     ('washroom',        'Washroom'),
 ]
 
-# Combined amenity choices: all valid keys from both residential + commercial
+# All valid amenity keys combined (residential + commercial + plot + utilities)
 ALL_AMENITY_CHOICES = list({k: v for k, v in (
     AMENITY_CHOICES +
     COMMERCIAL_AMENITY_CHOICES +
@@ -96,11 +111,18 @@ OVERLOOKING_CHOICES = [
     ('other_units', 'Other Units'),
 ]
 
-# ── PG AMENITIES (pg_amenities chip in pp-form-pg.js) ────────────────────────
-PG_AMENITY_CHOICES = [
+# ── PG COMMON AREAS ───────────────────────────────────────────────────────────
+# Sources (ALL merged into pg_common_areas on save):
+#   post_propertyfree.js  → name="pg_common_areas"
+#   pp-form-pg.js         → name="pg_amenities"    (amenitiesPanel)
+#   pp-form-pg.js         → name="common_areas"    (common area chip)
+#
+# Every key from all three sources must be listed here.
+PG_COMMON_AREA_CHOICES = [
+    # post_propertyfree.js pg_common_areas / pp-form-pg.js pg_amenities
     ('wifi',          'Wi-Fi'),
     ('ac_room',       'AC Room'),
-    ('attached_bath', 'Attached Bath'),
+    ('attached_bath', 'Attached Bathroom'),
     ('tv',            'TV'),
     ('fridge',        'Refrigerator'),
     ('laundry',       'Laundry'),
@@ -110,22 +132,8 @@ PG_AMENITY_CHOICES = [
     ('parking',       'Parking'),
     ('power_backup',  'Power Backup'),
     ('security',      'Security Guard'),
-    ('gym',           'Gym Access'),
+    ('gym',           'Gym Access'),           # ← was missing; caused the error
     ('study_room',    'Study Room'),
-]
-
-# ── PG COMMON AREAS (common_areas chip in pp-form-pg.js) ─────────────────────
-PG_COMMON_AREA_CHOICES = [
-    ('wifi',           'Wi-Fi'),
-    ('ac_room',        'AC Room'),
-    ('attached_bath',  'Attached Bathroom'),
-    ('tv',             'TV'),
-    ('fridge',         'Refrigerator'),
-    ('laundry',        'Laundry'),
-    ('meals',          'Meals Included'),
-    ('housekeeping',   'Housekeeping'),
-    ('cctv',           'CCTV'),
-    ('parking',        'Parking'),
     # pp-form-pg.js common_areas chip
     ('common_kitchen', 'Common Kitchen'),
     ('dining_area',    'Dining Area'),
@@ -135,22 +143,19 @@ PG_COMMON_AREA_CHOICES = [
     ('indoor_games',   'Indoor Games'),
 ]
 
-# ── UTILITIES (owner/builder plot forms) ──────────────────────────────────────
-UTILITY_CHOICES = [
-    ('electricity',      'Electricity Available'),
-    ('water_connection', 'Water Connection'),
-    ('sewer_connection', 'Sewer Connection'),
-    ('borewell',         'Borewell'),
+# ── BATHROOM TYPE ─────────────────────────────────────────────────────────────
+# Submitted by JS but has no dedicated model field.
+# Declared here so Django accepts and cleans it without error.
+BATHROOM_TYPE_CHOICES = [
+    ('',                  'Select'),
+    ('attached',          'Attached (En-suite)'),
+    ('separate',          'Separate'),
+    ('common',            'Common'),
+    ('both_attached_sep', 'Both Attached & Separate'),
+    ('both',              'Mix of Both'),
 ]
 
-# ── LEGAL STATUS (owner/builder plot forms) ───────────────────────────────────
-LEGAL_STATUS_CHOICES = [
-    ('clear_title',    'Clear Title'),
-    ('loan_approved',  'Loan Approved'),
-    ('registry_ready', 'Registry Ready'),
-]
-
-# ── PROPERTY TYPE GROUPINGS (for validation logic) ────────────────────────────
+# ── PROPERTY TYPE GROUPINGS ───────────────────────────────────────────────────
 RESIDENTIAL_TYPES = [
     ('', 'Select sub-type'),
     ('flat_apartment',          'Flat / Apartment'),
@@ -174,14 +179,15 @@ COMMERCIAL_TYPES = [
 ]
 
 PLOT_TYPES  = {'plot_land_res', 'plot_land_com'}
-FLOOR_TYPES = {'flat_apartment', 'builder_floor', 'studio_1rk', 'office', 'retail', 'coworking', 'showroom'}
+FLOOR_TYPES = {'flat_apartment', 'builder_floor', 'studio_1rk',
+               'office', 'retail', 'coworking', 'showroom'}
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PROPERTY FORM
 # ═════════════════════════════════════════════════════════════════════════════
 class PropertyForm(forms.ModelForm):
-    # Multi-select JSON fields — use MultipleChoiceField with ALL valid keys
+
     amenities = forms.MultipleChoiceField(
         choices=ALL_AMENITY_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -202,57 +208,55 @@ class PropertyForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
+    # Accepts JS-submitted bathroom_type without model-field requirement
+    bathroom_type = forms.ChoiceField(
+        choices=BATHROOM_TYPE_CHOICES,
+        required=False,
+    )
 
     class Meta:
         model = Property
         fields = [
-            # identity
             'seller_type', 'property_category', 'property_type',
             'listing_type', 'title', 'description',
-            # price
             'price', 'min_price', 'max_price',
-            # location
             'city', 'state', 'location', 'address',
-            # specs
             'bhk', 'bedrooms', 'bathrooms',
             'area_sqft', 'min_area', 'max_area', 'area_unit',
             'construction_status', 'posted_by', 'purchase_type',
             'furnishing', 'is_furnished', 'property_age', 'preferred_tenants',
-            # detail fields
             'floor_number', 'total_floors',
             'facing', 'overlooking', 'transaction_type', 'property_ownership',
             'flooring', 'width_of_facing_road', 'water_source',
             'key_highlights', 'key_facilities', 'vastu_compliant',
             'furnishing_items', 'amenities',
-            # pg specific
             'pg_for', 'pg_meals_included', 'pg_notice_period', 'pg_common_areas',
-            # builder specific
             'project_name', 'rera_id', 'total_units',
         ]
         widgets = {
-            'title':               forms.TextInput(attrs={'placeholder': 'e.g. Spacious 3BHK near Metro, Ludhiana'}),
-            'description':         forms.Textarea(attrs={'rows': 4}),
-            'price':               forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
-            'min_price':           forms.NumberInput(attrs={'placeholder': 'Min ₹'}),
-            'max_price':           forms.NumberInput(attrs={'placeholder': 'Max ₹'}),
-            'city':                forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
-            'state':               forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
-            'location':            forms.TextInput(attrs={'placeholder': 'Locality / Area'}),
-            'address':             forms.TextInput(attrs={'placeholder': 'Street / House No.'}),
-            'bedrooms':            forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
-            'bathrooms':           forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
-            'area_sqft':           forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
-            'min_area':            forms.NumberInput(attrs={'placeholder': 'Min'}),
-            'max_area':            forms.NumberInput(attrs={'placeholder': 'Max'}),
-            'floor_number':        forms.TextInput(attrs={'placeholder': 'e.g. 3 or Ground'}),
-            'total_floors':        forms.NumberInput(attrs={'placeholder': 'Total floors'}),
+            'title':                forms.TextInput(attrs={'placeholder': 'e.g. Spacious 3BHK near Metro, Ludhiana'}),
+            'description':          forms.Textarea(attrs={'rows': 4}),
+            'price':                forms.NumberInput(attrs={'placeholder': 'e.g. 15000'}),
+            'min_price':            forms.NumberInput(attrs={'placeholder': 'Min ₹'}),
+            'max_price':            forms.NumberInput(attrs={'placeholder': 'Max ₹'}),
+            'city':                 forms.TextInput(attrs={'placeholder': 'e.g. Ludhiana'}),
+            'state':                forms.TextInput(attrs={'placeholder': 'e.g. Punjab'}),
+            'location':             forms.TextInput(attrs={'placeholder': 'Locality / Area'}),
+            'address':              forms.TextInput(attrs={'placeholder': 'Street / House No.'}),
+            'bedrooms':             forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
+            'bathrooms':            forms.NumberInput(attrs={'placeholder': '0', 'min': '0'}),
+            'area_sqft':            forms.NumberInput(attrs={'placeholder': 'e.g. 1200'}),
+            'min_area':             forms.NumberInput(attrs={'placeholder': 'Min'}),
+            'max_area':             forms.NumberInput(attrs={'placeholder': 'Max'}),
+            'floor_number':         forms.TextInput(attrs={'placeholder': 'e.g. 3 or Ground'}),
+            'total_floors':         forms.NumberInput(attrs={'placeholder': 'Total floors'}),
             'width_of_facing_road': forms.TextInput(attrs={'placeholder': 'e.g. 30 ft'}),
-            'key_highlights':      forms.Textarea(attrs={'rows': 3}),
-            'key_facilities':      forms.TextInput(attrs={'placeholder': 'e.g. 24hr Security, CCTV'}),
-            'project_name':        forms.TextInput(attrs={'placeholder': 'Builder project / society name'}),
-            'rera_id':             forms.TextInput(attrs={'placeholder': 'RERA registration number'}),
-            'total_units':         forms.NumberInput(attrs={'placeholder': 'Total units in project'}),
-            'pg_notice_period':    forms.TextInput(attrs={'placeholder': 'e.g. 30 days'}),
+            'key_highlights':       forms.Textarea(attrs={'rows': 3}),
+            'key_facilities':       forms.TextInput(attrs={'placeholder': 'e.g. 24hr Security, CCTV'}),
+            'project_name':         forms.TextInput(attrs={'placeholder': 'Builder project / society name'}),
+            'rera_id':              forms.TextInput(attrs={'placeholder': 'RERA registration number'}),
+            'total_units':          forms.NumberInput(attrs={'placeholder': 'Total units in project'}),
+            'pg_notice_period':     forms.TextInput(attrs={'placeholder': 'e.g. 30 days'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -272,7 +276,6 @@ class PropertyForm(forms.ModelForm):
             ('commercial',  'Commercial'),
             ('pg',          'PG / Co-living'),
         ]
-
         self.fields['property_type'].choices = (
             [('', '— Select —')] +
             RESIDENTIAL_TYPES[1:] +
@@ -287,29 +290,39 @@ class PropertyForm(forms.ModelForm):
                     self.initial[field_name] = val
 
     # ── SAFE CLEAN METHODS ────────────────────────────────────────────────────
-    # These silently drop unknown/stale keys instead of raising a validation
-    # error. This is the key fix: Django's MultipleChoiceField normally hard-
-    # fails if ANY submitted value is not in its choices list. Our JS forms
-    # send different chip keys depending on property type (plot amenities are
-    # different from residential amenities, etc.), so we must filter instead
-    # of reject.
+    # Each method collects values from ALL POST keys that JS can use for that
+    # field, then filters to only known-valid keys — silently dropping anything
+    # unknown instead of raising a validation error.
 
     def clean_amenities(self):
         valid = {k for k, _ in ALL_AMENITY_CHOICES}
+        # 'amenities' is the only JS name for this field
         return [v for v in self.data.getlist('amenities') if v in valid]
 
     def clean_furnishing_items(self):
         valid = {k for k, _ in FURNISHING_ITEM_CHOICES}
-        return [v for v in self.data.getlist('furnishing_items') if v in valid]
+        # post_propertyfree.js + pp-form-owner.js → furnishing_items
+        # pp-form-pg.js                           → room_furnishing
+        values = (
+            self.data.getlist('furnishing_items') +
+            self.data.getlist('room_furnishing')
+        )
+        return list({v for v in values if v in valid})
 
     def clean_overlooking(self):
         valid = {k for k, _ in OVERLOOKING_CHOICES}
         return [v for v in self.data.getlist('overlooking') if v in valid]
 
     def clean_pg_common_areas(self):
-        # Accepts both pg_common_areas (PG panel) and common_areas (pp-form-pg.js)
         valid = {k for k, _ in PG_COMMON_AREA_CHOICES}
-        values = self.data.getlist('pg_common_areas') + self.data.getlist('common_areas')
+        # post_propertyfree.js  → pg_common_areas
+        # pp-form-pg.js         → pg_amenities  (amenitiesPanel)
+        # pp-form-pg.js         → common_areas  (common area chip)
+        values = (
+            self.data.getlist('pg_common_areas') +
+            self.data.getlist('pg_amenities') +
+            self.data.getlist('common_areas')
+        )
         return list({v for v in values if v in valid})
 
     def save(self, commit=True):
@@ -373,14 +386,14 @@ class ReplyForm(forms.Form):
 
 # ── SEARCH FORM ───────────────────────────────────────────────────────────────
 class SearchForm(forms.Form):
-    LISTING_TYPE_CHOICES  = [('', 'Any Type')]  + Property.LISTING_TYPE_CHOICES
+    LISTING_TYPE_CHOICES  = [('', 'Any Type')]     + Property.LISTING_TYPE_CHOICES
     PROPERTY_TYPE_CHOICES = [('', 'Any Property')] + Property.PROPERTY_TYPE_CHOICES
 
     q = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-input search-input',
-            'placeholder': 'Search by city, location or area…'
+            'placeholder': 'Search by city, location or area…',
         })
     )
     listing_type = forms.ChoiceField(
@@ -412,7 +425,9 @@ class SearchForm(forms.Form):
 
 # ── REVIEW FORM ───────────────────────────────────────────────────────────────
 class ReviewForm(forms.ModelForm):
-    STAR_CHOICES = [('', '— Select —')] + [(str(i), f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)]
+    STAR_CHOICES = [('', '— Select —')] + [
+        (str(i), f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)
+    ]
 
     property_rating = forms.ChoiceField(
         choices=STAR_CHOICES, label='Property Rating',

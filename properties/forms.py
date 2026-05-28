@@ -4,15 +4,13 @@ from .models import Property, PropertyImage, Inquiry, Review
 # ─────────────────────────────────────────────────────────────────────────────
 #  CHOICE LISTS
 #  Rule: every key that ANY JS panel can submit for a given field MUST appear
-#  in that field's choices list.  Django's MultipleChoiceField hard-fails on
-#  unknown values BEFORE clean_* runs, so listing them here is non-negotiable.
+#  in that field's choices list.  Django's MultipleChoiceField / ChoiceField
+#  hard-fails on unknown values BEFORE clean_* runs, so listing them here is
+#  non-negotiable — OR we override the field to be a plain CharField and clean
+#  it ourselves (used for facing, flooring, etc. below).
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── FURNISHING ITEMS ──────────────────────────────────────────────────────────
-# Sources:
-#   post_propertyfree.js  → name="furnishing_items"
-#   pp-form-owner.js      → name="furnishing_items"
-#   pp-form-pg.js         → name="room_furnishing"   (merged in clean_)
 FURNISHING_ITEM_CHOICES = [
     ('bed',             'Bed'),
     ('wardrobe',        'Wardrobe'),
@@ -31,13 +29,12 @@ FURNISHING_ITEM_CHOICES = [
     ('stove',           'Stove / Hob'),
     ('curtains',        'Curtains'),
     ('exhaust_fan',     'Exhaust Fan'),
-    ('light',           'Light Fixtures'),       # post_propertyfree.js key
-    ('light_fixtures',  'Light Fixtures'),       # pp-form-owner.js alias
+    ('light',           'Light Fixtures'),
+    ('light_fixtures',  'Light Fixtures'),
     ('drawing_room',    'Drawing Room'),
     ('kitchen',         'Kitchen'),
     ('store_room',      'Store Room'),
     ('servant_room',    'Servant Room'),
-    # pp-form-pg.js → room_furnishing chip (merged into furnishing_items on save)
     ('mattress',        'Mattress'),
     ('pillow',          'Pillow'),
     ('study_table',     'Study Table'),
@@ -45,9 +42,6 @@ FURNISHING_ITEM_CHOICES = [
 ]
 
 # ── AMENITIES ─────────────────────────────────────────────────────────────────
-# Sources:
-#   post_propertyfree.js / pp-form-owner.js  → name="amenities"  (residential)
-#   pp-form-builder.js                       → name="amenities"  (may include plot keys)
 AMENITY_CHOICES = [
     ('lift',                 'Lift'),
     ('park',                 'Park'),
@@ -61,7 +55,6 @@ AMENITY_CHOICES = [
     ('cctv',                 'CCTV'),
     ('intercom',             'Intercom'),
     ('rainwater_harvesting', 'Rainwater Harvesting'),
-    # Plot / township amenities
     ('street_lights',        'Street Lights'),
     ('sewage',               'Sewage / Drainage'),
     ('gated',                'Gated Colony'),
@@ -87,7 +80,6 @@ COMMERCIAL_AMENITY_CHOICES = [
     ('washroom',        'Washroom'),
 ]
 
-# All valid amenity keys combined (residential + commercial + plot + utilities)
 ALL_AMENITY_CHOICES = list({k: v for k, v in (
     AMENITY_CHOICES +
     COMMERCIAL_AMENITY_CHOICES +
@@ -112,47 +104,28 @@ OVERLOOKING_CHOICES = [
 ]
 
 # ── PG COMMON AREAS ───────────────────────────────────────────────────────────
-# Sources (ALL merged into pg_common_areas on save):
-#   post_propertyfree.js  → name="pg_common_areas"
-#   pp-form-pg.js         → name="pg_amenities"    (amenitiesPanel)
-#   pp-form-pg.js         → name="common_areas"    (common area chip)
-#
-# Every key from all three sources must be listed here.
+# Covers pg_common_areas + pg_amenities + common_areas POST keys
 PG_COMMON_AREA_CHOICES = [
-    # post_propertyfree.js pg_common_areas / pp-form-pg.js pg_amenities
-    ('wifi',          'Wi-Fi'),
-    ('ac_room',       'AC Room'),
-    ('attached_bath', 'Attached Bathroom'),
-    ('tv',            'TV'),
-    ('fridge',        'Refrigerator'),
-    ('laundry',       'Laundry'),
-    ('meals',         'Meals Included'),
-    ('housekeeping',  'Housekeeping'),
-    ('cctv',          'CCTV'),
-    ('parking',       'Parking'),
-    ('power_backup',  'Power Backup'),
-    ('security',      'Security Guard'),
-    ('gym',           'Gym Access'),           # ← was missing; caused the error
-    ('study_room',    'Study Room'),
-    # pp-form-pg.js common_areas chip
+    ('wifi',           'Wi-Fi'),
+    ('ac_room',        'AC Room'),
+    ('attached_bath',  'Attached Bathroom'),
+    ('tv',             'TV'),
+    ('fridge',         'Refrigerator'),
+    ('laundry',        'Laundry'),
+    ('meals',          'Meals Included'),
+    ('housekeeping',   'Housekeeping'),
+    ('cctv',           'CCTV'),
+    ('parking',        'Parking'),
+    ('power_backup',   'Power Backup'),
+    ('security',       'Security Guard'),
+    ('gym',            'Gym Access'),
+    ('study_room',     'Study Room'),
     ('common_kitchen', 'Common Kitchen'),
     ('dining_area',    'Dining Area'),
     ('tv_lounge',      'TV Lounge'),
     ('terrace',        'Terrace Access'),
     ('garden',         'Garden'),
     ('indoor_games',   'Indoor Games'),
-]
-
-# ── BATHROOM TYPE ─────────────────────────────────────────────────────────────
-# Submitted by JS but has no dedicated model field.
-# Declared here so Django accepts and cleans it without error.
-BATHROOM_TYPE_CHOICES = [
-    ('',                  'Select'),
-    ('attached',          'Attached (En-suite)'),
-    ('separate',          'Separate'),
-    ('common',            'Common'),
-    ('both_attached_sep', 'Both Attached & Separate'),
-    ('both',              'Mix of Both'),
 ]
 
 # ── PROPERTY TYPE GROUPINGS ───────────────────────────────────────────────────
@@ -188,6 +161,7 @@ FLOOR_TYPES = {'flat_apartment', 'builder_floor', 'studio_1rk',
 # ═════════════════════════════════════════════════════════════════════════════
 class PropertyForm(forms.ModelForm):
 
+    # ── Multi-select JSON fields ──────────────────────────────────────────────
     amenities = forms.MultipleChoiceField(
         choices=ALL_AMENITY_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -208,11 +182,31 @@ class PropertyForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    # Accepts JS-submitted bathroom_type without model-field requirement
-    bathroom_type = forms.ChoiceField(
-        choices=BATHROOM_TYPE_CHOICES,
-        required=False,
-    )
+
+    # ── Single-choice fields overridden as CharField ──────────────────────────
+    # The model uses CharField (no DB-level enforcement), so we override these
+    # form fields to plain CharFields. This means Django never validates the
+    # submitted value against a fixed list — whatever the JS sends gets saved.
+    # clean_* methods below still strip obviously bad values.
+    facing = forms.CharField(required=False)
+    flooring = forms.CharField(required=False)
+    construction_status = forms.CharField(required=False)
+    property_age = forms.CharField(required=False)
+    transaction_type = forms.CharField(required=False)
+    property_ownership = forms.CharField(required=False)
+    water_source = forms.CharField(required=False)
+    area_unit = forms.CharField(required=False)
+    furnishing = forms.CharField(required=False)
+    preferred_tenants = forms.CharField(required=False)
+    purchase_type = forms.CharField(required=False)
+    bhk = forms.CharField(required=False)
+    listing_type = forms.CharField(required=False)
+    seller_type = forms.CharField(required=False)
+    property_category = forms.CharField(required=False)
+    property_type = forms.CharField(required=False)
+    pg_for = forms.CharField(required=False)
+    # bathroom_type is submitted by JS but has no model field; accept silently
+    bathroom_type = forms.CharField(required=False)
 
     class Meta:
         model = Property
@@ -266,43 +260,21 @@ class PropertyForm(forms.ModelForm):
         for name, field in self.fields.items():
             field.required = name in required_fields
 
-        for wf in ('listing_type', 'property_category', 'property_type', 'seller_type'):
-            if wf in self.fields:
-                self.fields[wf].required = False
-
-        self.fields['property_category'].choices = [
-            ('', '— Select —'),
-            ('residential', 'Residential'),
-            ('commercial',  'Commercial'),
-            ('pg',          'PG / Co-living'),
-        ]
-        self.fields['property_type'].choices = (
-            [('', '— Select —')] +
-            RESIDENTIAL_TYPES[1:] +
-            COMMERCIAL_TYPES[1:] +
-            [('pg_hostel', 'PG / Hostel')]
-        )
-
         if self.instance and self.instance.pk:
             for field_name in ('amenities', 'furnishing_items', 'overlooking', 'pg_common_areas'):
                 val = getattr(self.instance, field_name, [])
                 if val:
                     self.initial[field_name] = val
 
-    # ── SAFE CLEAN METHODS ────────────────────────────────────────────────────
-    # Each method collects values from ALL POST keys that JS can use for that
-    # field, then filters to only known-valid keys — silently dropping anything
-    # unknown instead of raising a validation error.
+    # ── SAFE CLEAN METHODS — multi-choice fields ──────────────────────────────
+    # Collect from ALL POST keys JS uses for each field, filter to valid keys.
 
     def clean_amenities(self):
         valid = {k for k, _ in ALL_AMENITY_CHOICES}
-        # 'amenities' is the only JS name for this field
         return [v for v in self.data.getlist('amenities') if v in valid]
 
     def clean_furnishing_items(self):
         valid = {k for k, _ in FURNISHING_ITEM_CHOICES}
-        # post_propertyfree.js + pp-form-owner.js → furnishing_items
-        # pp-form-pg.js                           → room_furnishing
         values = (
             self.data.getlist('furnishing_items') +
             self.data.getlist('room_furnishing')
@@ -315,15 +287,58 @@ class PropertyForm(forms.ModelForm):
 
     def clean_pg_common_areas(self):
         valid = {k for k, _ in PG_COMMON_AREA_CHOICES}
-        # post_propertyfree.js  → pg_common_areas
-        # pp-form-pg.js         → pg_amenities  (amenitiesPanel)
-        # pp-form-pg.js         → common_areas  (common area chip)
         values = (
             self.data.getlist('pg_common_areas') +
             self.data.getlist('pg_amenities') +
             self.data.getlist('common_areas')
         )
         return list({v for v in values if v in valid})
+
+    # ── SAFE CLEAN METHODS — single-choice CharField overrides ────────────────
+    # These accept whatever the JS sends and store it as-is (model is CharField,
+    # no DB enforcement).  Empty string is fine — model fields have blank=True.
+
+    def clean_facing(self):
+        return (self.cleaned_data.get('facing') or '').strip()
+
+    def clean_flooring(self):
+        return (self.cleaned_data.get('flooring') or '').strip()
+
+    def clean_construction_status(self):
+        return (self.cleaned_data.get('construction_status') or '').strip()
+
+    def clean_property_age(self):
+        return (self.cleaned_data.get('property_age') or '').strip()
+
+    def clean_transaction_type(self):
+        return (self.cleaned_data.get('transaction_type') or '').strip()
+
+    def clean_property_ownership(self):
+        return (self.cleaned_data.get('property_ownership') or '').strip()
+
+    def clean_water_source(self):
+        return (self.cleaned_data.get('water_source') or '').strip()
+
+    def clean_area_unit(self):
+        return (self.cleaned_data.get('area_unit') or '').strip()
+
+    def clean_furnishing(self):
+        # Also checks furnishing_status (old JS name) as fallback
+        val = self.cleaned_data.get('furnishing') or self.data.get('furnishing_status', '')
+        return val.strip()
+
+    def clean_preferred_tenants(self):
+        return (self.cleaned_data.get('preferred_tenants') or '').strip()
+
+    def clean_listing_type(self):
+        # Sync from hidden hListingType input
+        val = (self.cleaned_data.get('listing_type') or
+               self.data.get('listing_type', '')).strip()
+        return val
+
+    def clean_bathroom_type(self):
+        # Not saved to model — just prevent Django choking on it
+        return (self.cleaned_data.get('bathroom_type') or '').strip()
 
     def save(self, commit=True):
         instance = super().save(commit=False)
